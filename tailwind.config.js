@@ -1,9 +1,14 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["./src/**/*.{svelte,html,js}"],
+  content: ["./src/**/*.{svelte,html,js}", "./node_modules/flowbite-svelte/**/*.{html,js,svelte,ts}"],
+  darkMode: 'class',
+
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+      }
+    }
   },
-  plugins: [require("daisyui")],
+  plugins: [require("daisyui"), require('flowbite/plugin')],
 }
 

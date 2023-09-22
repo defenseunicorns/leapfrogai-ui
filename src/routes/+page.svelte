@@ -6,13 +6,14 @@
         SunSolid,
         SunOutline,
     } from "flowbite-svelte-icons";
+    import { Listgroup, ListgroupItem, Label, Input } from "flowbite-svelte";
 
     let conversations = writable([]);
     let prompts = writable([]);
     let showSettings = false;
 
     function newChat() {
-        // dummy function
+        $conversations.push("New");
     }
 
     function newFolder() {
@@ -63,9 +64,13 @@
     let model = "";
     let systemPrompt = "";
     let temperature = 0;
+    let currentMessage = writable("");
 
     function sendMessage() {
-        // dummy function
+        if ($currentMessage.trim() !== "") {
+            $chatMessages = [...$chatMessages, $currentMessage];
+            currentMessage.set("");
+        }
     }
 
     function regenerateResponse() {
@@ -108,7 +113,7 @@
         <img src="leapfrogai.png" alt="LeapfrogAI" class="w-40" />
         <label class="swap swap-rotate" on:change={toggleTheme}>
             <!-- this hidden checkbox controls the state -->
-            <input type="checkbox" />
+            <input type="checkbox" class="invisible" />
 
             <SunSolid class="swap-on" />
             <SunOutline class="swap-off" />
@@ -124,13 +129,13 @@
                 >Clear conversations</button
             >
             <input
-                class="mb-2"
+                class="input input-bordered w-full max-w-xs mb-2"
                 type="text"
                 placeholder="Search"
                 on:input={search}
             />
             <div class="mb-2 overflow-auto">
-                {#each Array.from($conversations.values()) as conversation}
+                {#each $conversations as conversation}
                     <div>{conversation}</div>
                 {/each}
             </div>
@@ -161,10 +166,11 @@
 
         <!-- Center Panel -->
         <div class="w-3/5 bg-blue-600 p-4 flex flex-col text-white">
-            <h2>Chat</h2>
             <div class="mb-2 overflow-auto flex-grow">
-                {#each Array.from($chatMessages.values()) as message}
-                    <div>{message}</div>
+                {#each $chatMessages as message}
+                    <div class="p-2 m-2 bg-white text-black rounded">
+                        {message}
+                    </div>
                 {/each}
             </div>
             {#if showSettings}
@@ -197,19 +203,21 @@
             <button class="btn mb-2" on:click={regenerateResponse}
                 >Regenerate Response</button
             >
-            <div class="mb-2 flex items-center">
-                <input
-                    class="flex-grow"
-                    type="text"
-                    placeholder="Type your message here..."
-                />
-                <button class="btn ml-2" on:click={sendMessage}>
-                    <ArrowRightSolid />
-                </button>
-                <button class="btn ml-2" on:click={settings}>
-                    <UserSettingsSolid />
-                </button>
-            </div>
+                <form on:submit|preventDefault={sendMessage} class="mb-2 flex items-center">
+                    <Input
+                        id="small-input"
+                        size="sm"
+                        placeholder="Type your message here..."
+                        bind:value={$currentMessage}
+                        class="flex p-2"
+                    />
+                    <button class="btn ml-2 p-2" on:click={sendMessage}>
+                        <ArrowRightSolid />
+                    </button>
+                    <button class="btn ml-2 p-2" on:click={settings}>
+                        <UserSettingsSolid />
+                    </button>
+                </form>
         </div>
 
         <!-- Side Panel 2 -->
@@ -217,7 +225,7 @@
             <h2>Prompts</h2>
             <button class="btn mb-2" on:click={newPrompt}>New prompt</button>
             <input
-                class="mb-2"
+                class="input input-bordered w-full max-w-xs mb-2"
                 type="text"
                 placeholder="Search"
                 on:input={search}
@@ -230,15 +238,15 @@
             <h2>Prompt Details</h2>
             <div class="mb-2">
                 <label for="prompt-name">Prompt Name:</label>
-                <input id="prompt-name" type="text" />
+                <input id="prompt-name" type="text" class="input input-bordered w-full max-w-xs mb-2" />
             </div>
             <div class="mb-2">
                 <label for="prompt-description">Prompt Description:</label>
-                <input id="prompt-description" type="text" />
+                <input id="prompt-description" type="text" class="input input-bordered w-full max-w-xs mb-2" />
             </div>
             <div class="mb-2">
                 <label for="prompt-details">Prompt Details:</label>
-                <input id="prompt-details" type="text" />
+                <input id="prompt-details" type="text" class="input input-bordered w-full max-w-xs mb-2" />
             </div>
             <button class="btn mb-2" on:click={savePrompt}>Save</button>
             <button class="btn mb-2" on:click={cancelPrompt}>Cancel</button>
