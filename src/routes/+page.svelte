@@ -7,6 +7,12 @@
         SunOutline,
     } from "flowbite-svelte-icons";
     import { Listgroup, ListgroupItem, Label, Input } from "flowbite-svelte";
+    import configs from "../../configs.json";
+    import { OpenAI } from "openai";
+
+    const openai = new OpenAI({
+        apiKey: configs.OPENAI_API_KEY,
+    });
 
     let conversations = writable([]);
     let prompts = writable([]);
@@ -203,21 +209,24 @@
             <button class="btn mb-2" on:click={regenerateResponse}
                 >Regenerate Response</button
             >
-                <form on:submit|preventDefault={sendMessage} class="mb-2 flex items-center">
-                    <Input
-                        id="small-input"
-                        size="sm"
-                        placeholder="Type your message here..."
-                        bind:value={$currentMessage}
-                        class="flex p-2"
-                    />
-                    <button class="btn ml-2 p-2" on:click={sendMessage}>
-                        <ArrowRightSolid />
-                    </button>
-                    <button class="btn ml-2 p-2" on:click={settings}>
-                        <UserSettingsSolid />
-                    </button>
-                </form>
+            <form
+                on:submit|preventDefault={sendMessage}
+                class="mb-2 flex items-center"
+            >
+                <Input
+                    id="small-input"
+                    size="sm"
+                    placeholder="Type your message here..."
+                    bind:value={$currentMessage}
+                    class="flex p-2"
+                />
+                <button class="btn ml-2 p-2" on:click={sendMessage}>
+                    <ArrowRightSolid />
+                </button>
+                <button class="btn ml-2 p-2" on:click={settings}>
+                    <UserSettingsSolid />
+                </button>
+            </form>
         </div>
 
         <!-- Side Panel 2 -->
@@ -238,15 +247,27 @@
             <h2>Prompt Details</h2>
             <div class="mb-2">
                 <label for="prompt-name">Prompt Name:</label>
-                <input id="prompt-name" type="text" class="input input-bordered w-full max-w-xs mb-2" />
+                <input
+                    id="prompt-name"
+                    type="text"
+                    class="input input-bordered w-full max-w-xs mb-2"
+                />
             </div>
             <div class="mb-2">
                 <label for="prompt-description">Prompt Description:</label>
-                <input id="prompt-description" type="text" class="input input-bordered w-full max-w-xs mb-2" />
+                <input
+                    id="prompt-description"
+                    type="text"
+                    class="input input-bordered w-full max-w-xs mb-2"
+                />
             </div>
             <div class="mb-2">
                 <label for="prompt-details">Prompt Details:</label>
-                <input id="prompt-details" type="text" class="input input-bordered w-full max-w-xs mb-2" />
+                <input
+                    id="prompt-details"
+                    type="text"
+                    class="input input-bordered w-full max-w-xs mb-2"
+                />
             </div>
             <button class="btn mb-2" on:click={savePrompt}>Save</button>
             <button class="btn mb-2" on:click={cancelPrompt}>Cancel</button>
