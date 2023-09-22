@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.dark {
+    /* Dark theme styles */
+}
+
+.light {
+    /* Light theme styles */
+}
+
+.btn-selected {
+    background-color: #0000cd; /* or any color you want */
+    color: white; /* or any color you want */
+}
