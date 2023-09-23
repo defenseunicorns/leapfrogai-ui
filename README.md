@@ -2,7 +2,7 @@ UI Built with SvelteKit, Tailwind CSS with Daisy UI and [Flowbite Svelte](https:
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Once you've created a project and installed dependencies with `npm install` or `pnpm install` or `yarn` (in the server folder as well), start a development server:
 
 ```bash
 npm run dev

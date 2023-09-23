@@ -7,11 +7,13 @@
         SunOutline,
     } from "flowbite-svelte-icons";
     import { Listgroup, ListgroupItem, Label, Input } from "flowbite-svelte";
-    import configs from "../../configs.json";
+    import configs from "../configs.json";
     import { OpenAI } from "openai";
 
     const openai = new OpenAI({
         apiKey: configs.OPENAI_API_KEY,
+        baseURL: configs.OPENAI_API_HOST,
+        dangerouslyAllowBrowser: true,
     });
 
     let conversations = writable([]);
@@ -51,7 +53,7 @@
     }
 
     function newPrompt() {
-        // dummy function
+        showPromptDetails = !showPromptDetails;
     }
 
     function search() {
@@ -66,21 +68,83 @@
         // dummy function
     }
 
-    let chatMessages = writable([]);
-    let model = "";
-    let systemPrompt = "";
-    let temperature = 0;
-    let currentMessage = writable("");
+    // @ts-ignore
+    let chatContainer;
 
-    function sendMessage() {
-        if ($currentMessage.trim() !== "") {
-            $chatMessages = [...$chatMessages, $currentMessage];
-            currentMessage.set("");
-        }
+    function scrollToBottom() {
+        // @ts-ignore
+        chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
-    function regenerateResponse() {
-        // dummy function
+    let chatMessages = writable([]);
+    let model = "";
+    let systemPrompt = configs.NEXT_PUBLIC_DEFAULT_SYSTEM_PROMPT;
+    let temperature = 0.5;
+    let currentMessage = writable("");
+    let showPromptDetails = false;
+
+    // @ts-ignore
+    function getMessage(source, text) {
+        return { role: source, content: text };
+    }
+
+    async function sendMessage() {
+        let lastMessage = getMessage("user", $currentMessage);
+
+        if ($currentMessage.trim() !== "") {
+            $chatMessages = [...$chatMessages, lastMessage];
+            currentMessage.set("");
+        }
+
+        let chatCompletion = {
+            key: "",
+            messages: [
+                {
+                    role: "system",
+                    content: systemPrompt,
+                },
+                ...$chatMessages,
+            ],
+            model: model,
+            max_tokens: 1000,
+            temperature: temperature,
+            stream: false,
+        };
+
+        const myRequest = new Request("http://localhost:3001/chat-completion", {
+            method: "POST",
+            body: JSON.stringify(chatCompletion),
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${configs.OPENAI_API_KEY}`,
+            },
+        });
+
+        fetch(myRequest)
+            .then((response) => {
+                return response.json();
+            })
+            .then((data) => {
+                let newMessage = getMessage(
+                    "assistant",
+                    data["choices"][0]["message"]["content"]
+                );
+                if (newMessage.content.trim() !== "") {
+                    $chatMessages = [...$chatMessages, newMessage];
+                }
+            });
+
+        scrollToBottom();
+    }
+
+    async function regenerateResponse() {
+        // Remove the last assistant message
+        $chatMessages = $chatMessages.filter((message, index, self) => {
+            return index !== self.length - 1 || message.role !== "assistant";
+        });
+
+        // Request a new message
+        await sendMessage();
     }
 
     function savePrompt() {
@@ -172,10 +236,18 @@
 
         <!-- Center Panel -->
         <div class="w-3/5 bg-blue-600 p-4 flex flex-col text-white">
-            <div class="mb-2 overflow-auto flex-grow">
+            <div
+                bind:this={chatContainer}
+                class="chat-container mb-2 overflow-auto flex-grow"
+            >
                 {#each $chatMessages as message}
-                    <div class="p-2 m-2 bg-white text-black rounded">
-                        {message}
+                    <Label class="message-label">{message.role}</Label>
+                    <div
+                        class="p-2 m-2 rounded {message.role === 'user'
+                            ? 'user-message'
+                            : 'assistant-message'} text-black"
+                    >
+                        {message.content}
                     </div>
                 {/each}
             </div>
@@ -183,12 +255,14 @@
                 <div class="mb-2">
                     <label for="model">Model:</label>
                     <select id="model" bind:value={model}>
-                        <!-- Add options here -->
+                        <option value="mpt-7b-8k-chat">mpt-7b-8k-chat</option>
+                        <option value="Test">Test</option>
                     </select>
                 </div>
                 <div class="mb-2">
                     <label for="system-prompt">System Prompt:</label>
                     <input
+                        class="input input-bordered w-full max-w-xs mb-2"
                         id="system-prompt"
                         type="text"
                         bind:value={systemPrompt}
@@ -209,24 +283,26 @@
             <button class="btn mb-2" on:click={regenerateResponse}
                 >Regenerate Response</button
             >
-            <form
-                on:submit|preventDefault={sendMessage}
-                class="mb-2 flex items-center"
-            >
-                <Input
-                    id="small-input"
-                    size="sm"
-                    placeholder="Type your message here..."
-                    bind:value={$currentMessage}
-                    class="flex p-2"
-                />
-                <button class="btn ml-2 p-2" on:click={sendMessage}>
+            <div class="mb-2 flex items-center">
+                <form
+                    on:submit|preventDefault={sendMessage}
+                    class="mb-2 flex-grow items-center"
+                >
+                    <Input
+                        id="small-input"
+                        size="sm"
+                        placeholder="Type your message here..."
+                        bind:value={$currentMessage}
+                        class="flex p-2"
+                    />
+                </form>
+                <button class="btn ml-2 p-2">
                     <ArrowRightSolid />
                 </button>
                 <button class="btn ml-2 p-2" on:click={settings}>
                     <UserSettingsSolid />
                 </button>
-            </form>
+            </div>
         </div>
 
         <!-- Side Panel 2 -->
@@ -244,33 +320,35 @@
                     <div>{prompt}</div>
                 {/each}
             </div>
-            <h2>Prompt Details</h2>
-            <div class="mb-2">
-                <label for="prompt-name">Prompt Name:</label>
-                <input
-                    id="prompt-name"
-                    type="text"
-                    class="input input-bordered w-full max-w-xs mb-2"
-                />
-            </div>
-            <div class="mb-2">
-                <label for="prompt-description">Prompt Description:</label>
-                <input
-                    id="prompt-description"
-                    type="text"
-                    class="input input-bordered w-full max-w-xs mb-2"
-                />
-            </div>
-            <div class="mb-2">
-                <label for="prompt-details">Prompt Details:</label>
-                <input
-                    id="prompt-details"
-                    type="text"
-                    class="input input-bordered w-full max-w-xs mb-2"
-                />
-            </div>
-            <button class="btn mb-2" on:click={savePrompt}>Save</button>
-            <button class="btn mb-2" on:click={cancelPrompt}>Cancel</button>
+            {#if showPromptDetails}
+                <h2>Prompt Details</h2>
+                <div class="mb-2">
+                    <label for="prompt-name">Prompt Name:</label>
+                    <input
+                        id="prompt-name"
+                        type="text"
+                        class="input input-bordered w-full max-w-xs mb-2"
+                    />
+                </div>
+                <div class="mb-2">
+                    <label for="prompt-description">Prompt Description:</label>
+                    <input
+                        id="prompt-description"
+                        type="text"
+                        class="input input-bordered w-full max-w-xs mb-2"
+                    />
+                </div>
+                <div class="mb-2">
+                    <label for="prompt-details">Prompt Details:</label>
+                    <input
+                        id="prompt-details"
+                        type="text"
+                        class="input input-bordered w-full max-w-xs mb-2"
+                    />
+                </div>
+                <button class="btn mb-2" on:click={savePrompt}>Save</button>
+                <button class="btn mb-2" on:click={cancelPrompt}>Cancel</button>
+            {/if}
         </div>
     </div>
 </div>

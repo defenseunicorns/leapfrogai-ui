@@ -3,20 +3,53 @@
 @tailwind utilities;
 
 .dark {
-    /* Dark theme styles */
+    .user-message {
+        background-color: #34495E; /* Dark Blue */
+        color: #ECF0F1; /* Light Grey */
+    }
+    
+    .assistant-message {
+        background-color: #2C3E50; /* Even Darker Blue */
+        color: #ECF0F1; /* Light Grey */
+    }
 }
 
 .light {
-    /* Light theme styles */
+    .user-message {
+        background-color: #F5F5F5; /* Light Grey */
+        color: #000000; /* Black */
+    }
+    
+    .assistant-message {
+        background-color: #E8E8E8; /* Slightly Darker Grey */
+        color: #000000; /* Black */
+    }
 }
 
 .btn-selected {
     background-color: #0000cd;
-    /* or any color you want */
     color: white;
-    /* or any color you want */
 }
 
 input[type=button] {
     outline: none;
+}
+
+.chat-container {
+    height: 75vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-container::-webkit-scrollbar {
+    width: 10px;
+}
+
+.chat-container::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+.chat-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
