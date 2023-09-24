@@ -4,7 +4,7 @@
 	"private": true,
 	"scripts": {
 		"server": "node ./server/server.js",
-		"dev": "concurrently \"npm run server\" \"vite dev\"",
+		"dev": "concurrently \"npm run server\" \"vite dev --host 0.0.0.0\"",
 		"build": "vite build",
 		"preview":"concurrently \"npm run server\" \"vite preview\"",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
