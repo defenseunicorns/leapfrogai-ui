@@ -1,24 +1,20 @@
 <script>
-    import { writable } from "svelte/store";
     import {
-        TrashBinSolid,
-        FileEditSolid,
-        ArrowRightSolid,
-        UserSettingsSolid,
-        SunSolid,
-        SunOutline,
-        EditOutline,
-    } from "flowbite-svelte-icons";
-    import {
-        Listgroup,
-        ListgroupItem,
-        Label,
-        Input,
-        Button,
         Heading,
+        Input,
+        Label
     } from "flowbite-svelte";
-    import configs from "../configs.json";
+    import {
+        ArrowRightSolid,
+        EditOutline,
+        SunOutline,
+        SunSolid,
+        TrashBinSolid,
+        UserSettingsSolid
+    } from "flowbite-svelte-icons";
     import { OpenAI } from "openai";
+    import { writable } from "svelte/store";
+    import configs from "../configs.json";
 
     const openai = new OpenAI({
         apiKey: configs.OPENAI_API_KEY,
@@ -38,8 +34,12 @@
         folders.set([]);
     }
 
+    let chatId = 0;
+    let currentConversation = writable(null);
+
     function newChat() {
-        conversations.update((n) => [...n, "New Conversation"]);
+        conversations.update((n) => [...n, { id: chatId++, name: "New conversation", messages: [] }]);
+        currentConversation.set(chatId - 1)
     }
 
     function clearConversations() {
@@ -74,14 +74,6 @@
         // dummy function
     }
 
-    function createFolder() {
-        // dummy function
-    }
-
-    function collapsePanel() {
-        // dummy function
-    }
-
     // @ts-ignore
     let chatContainer;
 
@@ -106,10 +98,25 @@
         let lastMessage = getMessage("user", $currentMessage);
 
         if ($currentMessage.trim() !== "") {
-            $chatMessages = [...$chatMessages, lastMessage];
+            // If there's no current conversation, create a new one
+            if ($currentConversation === null) {
+                newChat();
+                currentConversation.set(chatId - 1); // Set the current conversation to the newly created one
+            }
+
+            conversations.update((n) => {
+                const conversation = n.find(
+                    (c) => c.id === $currentConversation
+                );
+                if (conversation) {
+                    conversation.messages.push(lastMessage);
+                }
+                return n;
+            });
             currentMessage.set("");
         }
 
+        // Payload to send to the local chat-completion endpoint
         let chatCompletion = {
             key: "",
             messages: [
@@ -117,7 +124,8 @@
                     role: "system",
                     content: systemPrompt,
                 },
-                ...$chatMessages,
+                ...$conversations.find((c) => c.id === $currentConversation)
+                    .messages,
             ],
             model: model,
             max_tokens: 1000,
@@ -125,6 +133,7 @@
             stream: false,
         };
 
+        // Request is sent to the local-chat completion server, then routed to the real endpoint
         const myRequest = new Request("http://localhost:3001/chat-completion", {
             method: "POST",
             body: JSON.stringify(chatCompletion),
@@ -144,7 +153,15 @@
                     data["choices"][0]["message"]["content"]
                 );
                 if (newMessage.content.trim() !== "") {
-                    $chatMessages = [...$chatMessages, newMessage];
+                    conversations.update((n) => {
+                        const conversation = n.find(
+                            (c) => c.id === $currentConversation
+                        );
+                        if (conversation) {
+                            conversation.messages.push(newMessage);
+                        }
+                        return n;
+                    });
                 }
             });
 
@@ -178,11 +195,8 @@
         });
     }
 
-    function removeConversation(index) {
-        conversations.update((conversations) => {
-            conversations.splice(index, 1);
-            return conversations;
-        });
+    function removeConversation(id) {
+        conversations.update((n) => n.filter((c) => c.id !== id));
     }
 
     let editingFolderIndex = -1;
@@ -212,7 +226,7 @@
 
     function startEditingConversationName(index) {
         editingConversationIndex = index;
-        tempConversationName = $conversations[index];
+        tempConversationName = $conversations[index].name;
     }
 
     function handleConversationKeyDown(event) {
@@ -223,7 +237,7 @@
 
     function editConversationName(newName) {
         conversations.update((conversations) => {
-            conversations[editingConversationIndex] = newName;
+            conversations[editingConversationIndex].name = newName;
             return conversations;
         });
         editingConversationIndex = -1;
@@ -268,7 +282,12 @@
                 <div class="menu bg-base-200 w-full rounded-box">
                     {#each $conversations as conversation, index}
                         <div class="flex">
-                            <button class="btn">{conversation}</button>
+                            <button
+                                class="btn"
+                                on:click={() =>
+                                    currentConversation.set(conversation.id)}
+                                >{conversation.name}</button
+                            >
                             {#if editingConversationIndex === index}
                                 <input
                                     class="input input-bordered w-full max-w-xs mb-2"
@@ -294,7 +313,7 @@
                     {/each}
                 </div>
             {/if}
-            <Heading class="underline-heading"  tag="h4">Folders</Heading>
+            <Heading class="underline-heading" tag="h4">Folders</Heading>
             <button class="btn mb-2" on:click={newFolder}>New folder</button>
             <button class="btn mb-2" on:click={clearFolders}
                 >Clear Folders</button
@@ -329,7 +348,8 @@
                     {/each}
                 </div>
             {/if}
-            <Heading class="underline-heading"  tag="h4">Data Management</Heading>
+            <Heading class="underline-heading" tag="h4">Data Management</Heading
+            >
             <button class="btn mb-2" on:click={importFiles}>Import files</button
             >
             <button class="btn mb-2" on:click={importData}>Import data</button>
@@ -344,16 +364,18 @@
                 bind:this={chatContainer}
                 class="chat-container mb-2 overflow-auto flex-grow"
             >
-                {#each $chatMessages as message}
-                    <Label class="message-label">{message.role}</Label>
-                    <div
-                        class="p-2 m-2 rounded {message.role === 'user'
-                            ? 'user-message'
-                            : 'assistant-message'} text-black"
-                    >
-                        {message.content}
-                    </div>
-                {/each}
+                {#if $currentConversation !== null && $conversations.find((c) => c.id === $currentConversation)}
+                    {#each $conversations.find((c) => c.id === $currentConversation).messages as message}
+                        <Label class="message-label">{message.role}</Label>
+                        <div
+                            class="p-2 m-2 rounded {message.role === 'user'
+                                ? 'user-message'
+                                : 'assistant-message'} text-black"
+                        >
+                            {message.content}
+                        </div>
+                    {/each}
+                {/if}
             </div>
             {#if showSettings}
                 <div class="mb-2">
