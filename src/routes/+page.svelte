@@ -1,16 +1,12 @@
 <script>
-    import {
-        Heading,
-        Input,
-        Label
-    } from "flowbite-svelte";
+    import { Heading, Input, Label } from "flowbite-svelte";
     import {
         ArrowRightSolid,
         EditOutline,
         SunOutline,
         SunSolid,
         TrashBinSolid,
-        UserSettingsSolid
+        UserSettingsSolid,
     } from "flowbite-svelte-icons";
     import { OpenAI } from "openai";
     import { writable } from "svelte/store";
@@ -38,8 +34,11 @@
     let currentConversation = writable(null);
 
     function newChat() {
-        conversations.update((n) => [...n, { id: chatId++, name: "New conversation", messages: [] }]);
-        currentConversation.set(chatId - 1)
+        conversations.update((n) => [
+            ...n,
+            { id: chatId++, name: "New conversation", messages: [] },
+        ]);
+        currentConversation.set(chatId - 1);
     }
 
     function clearConversations() {
@@ -88,6 +87,7 @@
     let temperature = 0.5;
     let currentMessage = writable("");
     let showPromptDetails = false;
+    let showSettingsModal = false;
 
     // @ts-ignore
     function getMessage(source, text) {
@@ -354,7 +354,11 @@
             >
             <button class="btn mb-2" on:click={importData}>Import data</button>
             <button class="btn mb-2" on:click={exportData}>Export data</button>
-            <button class="btn mb-2" on:click={settings}>Settings</button>
+            <button
+                class="btn mb-2"
+                on:click={() => (showSettingsModal = !showSettingsModal)}
+                >Settings</button
+            >
             <button class="btn mb-2" on:click={pluginKeys}>Plugin Keys</button>
         </div>
 
@@ -425,7 +429,10 @@
                 <button class="btn ml-2 p-2">
                     <ArrowRightSolid />
                 </button>
-                <button class="btn ml-2 p-2" on:click={settings}>
+                <button
+                    class="btn ml-2 p-2"
+                    on:click={() => (showSettingsModal = !showSettingsModal)}
+                >
                     <UserSettingsSolid />
                 </button>
             </div>
@@ -478,6 +485,43 @@
         </div>
     </div>
 </div>
+
+{#if showSettingsModal}
+    <div class="fixed inset-0 flex items-center justify-center z-10">
+        <div class="modal-box p-4 rounded shadow-lg">
+            <div class="mb-2">
+                <label for="model">Model:</label>
+                <select id="model" bind:value={model} class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52">
+                    <option value="mpt-7b-8k-chat">mpt-7b-8k-chat</option>
+                    <option value="Test">Test</option>
+                </select>
+            </div>
+            <div class="mb-2">
+                <label for="system-prompt">System Prompt:</label>
+                <input
+                    class="input input-bordered w-full max-w-xs mb-2"
+                    id="system-prompt"
+                    type="text"
+                    bind:value={systemPrompt}
+                />
+            </div>
+            <div class="mb-2">
+                <label for="temperature">Temperature:</label>
+                <input
+                    id="temperature"
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    bind:value={temperature}
+                />
+            </div>
+            <button class="btn" on:click={() => (showSettingsModal = false)}
+                >Close</button
+            >
+        </div>
+    </div>
+{/if}
 
 <style lang="postcss">
     :global(html) {
