@@ -53,3 +53,7 @@ input[type=button] {
 .chat-container::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+
+.underline-heading {
+    text-decoration: underline;
+}

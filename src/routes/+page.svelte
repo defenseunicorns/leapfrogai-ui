@@ -1,12 +1,22 @@
 <script>
     import { writable } from "svelte/store";
     import {
+        TrashBinSolid,
+        FileEditSolid,
         ArrowRightSolid,
         UserSettingsSolid,
         SunSolid,
         SunOutline,
+        EditOutline,
     } from "flowbite-svelte-icons";
-    import { Listgroup, ListgroupItem, Label, Input } from "flowbite-svelte";
+    import {
+        Listgroup,
+        ListgroupItem,
+        Label,
+        Input,
+        Button,
+        Heading,
+    } from "flowbite-svelte";
     import configs from "../configs.json";
     import { OpenAI } from "openai";
 
@@ -20,16 +30,20 @@
     let prompts = writable([]);
     let showSettings = false;
 
-    function newChat() {
-        $conversations.push("New");
+    function newFolder() {
+        folders.update((n) => [...n, "New Folder"]);
     }
 
-    function newFolder() {
-        // dummy function
+    function clearFolders() {
+        folders.set([]);
+    }
+
+    function newChat() {
+        conversations.update((n) => [...n, "New Conversation"]);
     }
 
     function clearConversations() {
-        // dummy function
+        conversations.set([]);
     }
 
     function importFiles() {
@@ -157,16 +171,62 @@
 
     let folders = writable([]);
 
-    function addFolder() {
-        // dummy function
+    function removeFolder(index) {
+        folders.update((folders) => {
+            folders.splice(index, 1);
+            return folders;
+        });
     }
 
-    function removeFolder() {
-        // dummy function
+    function removeConversation(index) {
+        conversations.update((conversations) => {
+            conversations.splice(index, 1);
+            return conversations;
+        });
     }
 
-    function editFolderName() {
-        // dummy function
+    let editingFolderIndex = -1;
+    let tempFolderName = "";
+
+    function startEditingFolderName(index) {
+        editingFolderIndex = index;
+        tempFolderName = $folders[index];
+    }
+
+    function handleKeyDown(event) {
+        if (event.key === "Enter") {
+            editFolderName(tempFolderName);
+        }
+    }
+
+    function editFolderName(newName) {
+        folders.update((folders) => {
+            folders[editingFolderIndex] = newName;
+            return folders;
+        });
+        editingFolderIndex = -1;
+    }
+
+    let editingConversationIndex = -1;
+    let tempConversationName = "";
+
+    function startEditingConversationName(index) {
+        editingConversationIndex = index;
+        tempConversationName = $conversations[index];
+    }
+
+    function handleConversationKeyDown(event) {
+        if (event.key === "Enter") {
+            editConversationName(tempConversationName);
+        }
+    }
+
+    function editConversationName(newName) {
+        conversations.update((conversations) => {
+            conversations[editingConversationIndex] = newName;
+            return conversations;
+        });
+        editingConversationIndex = -1;
     }
 
     let theme = writable("dark");
@@ -193,7 +253,7 @@
     <div class="flex flex-grow">
         <!-- Side Panel 1 -->
         <div class="w-1/5 bg-blue-800 p-4 flex flex-col text-white">
-            <h2>Conversations</h2>
+            <Heading class="underline-heading" tag="h4">Conversations</Heading>
             <button class="btn mb-2" on:click={newChat}>New chat</button>
             <button class="btn mb-2" on:click={clearConversations}
                 >Clear conversations</button
@@ -204,28 +264,72 @@
                 placeholder="Search"
                 on:input={search}
             />
-            <div class="mb-2 overflow-auto">
-                {#each $conversations as conversation}
-                    <div>{conversation}</div>
-                {/each}
-            </div>
-            <h2>Folders</h2>
+            {#if $conversations.length > 0}
+                <div class="menu bg-base-200 w-full rounded-box">
+                    {#each $conversations as conversation, index}
+                        <div class="flex">
+                            <button class="btn">{conversation}</button>
+                            {#if editingConversationIndex === index}
+                                <input
+                                    class="input input-bordered w-full max-w-xs mb-2"
+                                    type="text"
+                                    bind:value={tempConversationName}
+                                    on:keydown={handleConversationKeyDown}
+                                    autofocus
+                                />
+                            {:else}
+                                <button
+                                    class="btn"
+                                    on:click={() =>
+                                        startEditingConversationName(index)}
+                                    ><EditOutline /></button
+                                >
+                            {/if}
+                            <button
+                                class="btn"
+                                on:click={() => removeConversation(index)}
+                                ><TrashBinSolid /></button
+                            >
+                        </div>
+                    {/each}
+                </div>
+            {/if}
+            <Heading class="underline-heading"  tag="h4">Folders</Heading>
             <button class="btn mb-2" on:click={newFolder}>New folder</button>
-            <button class="btn mb-2" on:click={addFolder}>Add Folder</button>
-            <div class="mb-2 overflow-auto">
-                {#each Array.from($folders.values()) as folder}
-                    <div>
-                        {folder}
-                        <button class="btn" on:click={removeFolder}
-                            >Remove</button
-                        >
-                        <button class="btn" on:click={editFolderName}
-                            >Edit Name</button
-                        >
-                    </div>
-                {/each}
-            </div>
-            <h2>Data Management</h2>
+            <button class="btn mb-2" on:click={clearFolders}
+                >Clear Folders</button
+            >
+            {#if $folders.length > 0}
+                <div class="menu bg-base-200 w-full rounded-box">
+                    {#each $folders as folder, index}
+                        <div class="flex">
+                            <button class="btn">{folder}</button>
+                            {#if editingFolderIndex === index}
+                                <input
+                                    class="input input-bordered w-full max-w-xs mb-2"
+                                    type="text"
+                                    bind:value={tempFolderName}
+                                    on:keydown={handleKeyDown}
+                                    autofocus
+                                />
+                            {:else}
+                                <button
+                                    class="btn"
+                                    on:click={() =>
+                                        startEditingFolderName(index)}
+                                    ><EditOutline /></button
+                                >
+                            {/if}
+                            <button
+                                class="btn"
+                                on:click={() => removeFolder(index)}
+                                ><TrashBinSolid /></button
+                            >
+                        </div>
+                    {/each}
+                </div>
+            {/if}
+            <Heading class="underline-heading"  tag="h4">Data Management</Heading>
             <button class="btn mb-2" on:click={importFiles}>Import files</button
             >
             <button class="btn mb-2" on:click={importData}>Import data</button>
@@ -307,7 +411,7 @@
 
         <!-- Side Panel 2 -->
         <div class="w-1/5 bg-blue-800 p-4 flex flex-col text-white">
-            <h2>Prompts</h2>
+            <Heading class="underline-heading" tag="h4">Prompts</Heading>
             <button class="btn mb-2" on:click={newPrompt}>New prompt</button>
             <input
                 class="input input-bordered w-full max-w-xs mb-2"
