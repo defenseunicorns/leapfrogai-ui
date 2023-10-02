@@ -3,10 +3,9 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"server": "node ./server/server.js",
-		"dev": "concurrently \"npm run server\" \"vite dev --host 0.0.0.0\"",
+		"dev": "vite dev --host 0.0.0.0",
 		"build": "vite build",
-		"preview":"concurrently \"npm run server\" \"vite preview\"",
+		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
 	},
@@ -27,12 +26,10 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"axios": "^1.5.0",
+		"axios": "^1.5.1",
 		"concurrently": "^8.2.1",
-		"express": "^4.18.2",
 		"flowbite": "^1.8.1",
 		"openai": "^4.10.0",
-		"openai-fetch": "^1.6.3",
-		"cors": "^2.8.5"
+		"openai-fetch": "^1.6.3"
 	}
 }

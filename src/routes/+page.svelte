@@ -8,15 +8,8 @@
         TrashBinSolid,
         UserSettingsSolid,
     } from "flowbite-svelte-icons";
-    import { OpenAI } from "openai";
     import { writable } from "svelte/store";
     import configs from "../configs.json";
-
-    const openai = new OpenAI({
-        apiKey: configs.OPENAI_API_KEY,
-        baseURL: configs.OPENAI_API_HOST,
-        dangerouslyAllowBrowser: true,
-    });
 
     let conversations = writable([]);
     let prompts = writable([]);
@@ -134,7 +127,7 @@
         };
 
         // Request is sent to the local-chat completion server, then routed to the real endpoint
-        const myRequest = new Request("http://localhost:3001/chat-completion", {
+        const myRequest = new Request("/api/chat-completion", {
             method: "POST",
             body: JSON.stringify(chatCompletion),
             headers: {
@@ -491,7 +484,11 @@
         <div class="modal-box p-4 rounded shadow-lg">
             <div class="mb-2">
                 <label for="model">Model:</label>
-                <select id="model" bind:value={model} class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52">
+                <select
+                    id="model"
+                    bind:value={model}
+                    class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52"
+                >
                     <option value="mpt-7b-8k-chat">mpt-7b-8k-chat</option>
                     <option value="Test">Test</option>
                 </select>
