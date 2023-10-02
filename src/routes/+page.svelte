@@ -123,8 +123,18 @@
             model: model,
             max_tokens: 1000,
             temperature: temperature,
-            stream: false,
+            stream: true,
         };
+
+        // Create a new assistant message with empty content
+        let newMessage = getMessage("assistant", "");
+        conversations.update((n) => {
+            const conversation = n.find((c) => c.id === $currentConversation);
+            if (conversation) {
+                conversation.messages.push(newMessage);
+            }
+            return n;
+        });
 
         // Request is sent to the local-chat completion server, then routed to the real endpoint
         const myRequest = new Request("/api/chat-completion", {
@@ -137,25 +147,32 @@
         });
 
         fetch(myRequest)
-            .then((response) => {
-                return response.json();
-            })
-            .then((data) => {
-                let newMessage = getMessage(
-                    "assistant",
-                    data["choices"][0]["message"]["content"]
-                );
-                if (newMessage.content.trim() !== "") {
-                    conversations.update((n) => {
-                        const conversation = n.find(
-                            (c) => c.id === $currentConversation
-                        );
-                        if (conversation) {
-                            conversation.messages.push(newMessage);
+            .then((response) => response.body)
+            .then((body) => {
+                const reader = body.getReader();
+                return new ReadableStream({
+                    start(controller) {
+                        return pump();
+                        function pump() {
+                            return reader.read().then(({ done, value }) => {
+                                // When no more data needs to be consumed, close the stream
+                                if (done) {
+                                    controller.close();
+                                    return;
+                                }
+                                // Enqueue the next data chunk into our target stream
+                                controller.enqueue(value);
+                                const textValue = new TextDecoder().decode(
+                                    value
+                                );
+                                console.log(textValue);
+                                newMessage.content += textValue;
+                                conversations.set($conversations);
+                                return pump();
+                            });
                         }
-                        return n;
-                    });
-                }
+                    },
+                });
             });
 
         scrollToBottom();
