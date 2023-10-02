@@ -2,7 +2,10 @@ UI Built with SvelteKit, Tailwind CSS with Daisy UI and [Flowbite Svelte](https:
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` or `pnpm install` or `yarn` (in the server folder as well), start a development server:
+Once you've created a project and installed dependencies with `npm install` or `pnpm install` or `yarn`:
+
+Copy `/src/configs.json.example` into `/src/configs.json` and set all the variables accordingly.
+* [Note] If the UI is running within a docker container and tailscale is being used then `OPENAI_API_HOST` value needs to be the [fully qualified domain name](https://tailscale.com/kb/1081/magicdns/#fully-qualified-domain-names-vs-machine-names) of the server.
 
 ```bash
 npm run dev
@@ -26,7 +29,7 @@ You can preview the production build with `npm run preview`.
 ```bash
 docker pull nginx:alpine
 docker build -t ask-frogs .
-docker run -i -p 5173:5173 -p 3001:3001 ask-frogs
+docker run -i -p 5173:5173 ask-frogs
 ```
 
 ![screenshot](./static/ui-screenshot.png "Screenshot")
