@@ -436,7 +436,7 @@
                         class="flex p-2"
                     />
                 </form>
-                <button class="btn ml-2 p-2">
+                <button on:click={sendMessage} class="btn ml-2 p-2">
                     <ArrowRightSolid />
                 </button>
                 <button

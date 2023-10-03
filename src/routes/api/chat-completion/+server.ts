@@ -30,7 +30,7 @@ export async function POST(event: RequestEvent) {
                 for await (const part of chatCompletion) {
                     const content = part.choices[0]['message'].content;
                     controller.enqueue(content || '');
-                    console.log(content || '')
+                    // console.log(content || '')
                 }
                 controller.close();
             }
