@@ -1,5 +1,7 @@
 <script>
-    import { Heading, Input, Label } from "flowbite-svelte";
+    // @ts-nocheck
+
+    import { FloatingLabelInput, Heading, Input, Label } from "flowbite-svelte";
     import {
         ArrowRightSolid,
         EditOutline,
@@ -14,6 +16,7 @@
     let conversations = writable([]);
     let prompts = writable([]);
     let showSettings = false;
+    let fileInput;
 
     function newFolder() {
         folders.update((n) => [...n, "New Folder"]);
@@ -42,12 +45,32 @@
         // dummy function
     }
 
-    function importData() {
-        // dummy function
+    async function importData(event) {
+        const file = event.target.files[0];
+        if (file) {
+            try {
+                const fileText = await file.text();
+
+                conversations.set(JSON.parse(fileText));
+
+                // Clear the file input for potential future use
+                event.target.value = "";
+            } catch (error) {
+                console.error("Error reading or parsing JSON:", error);
+            }
+        }
     }
 
     function exportData() {
-        // dummy function
+        const conversationJson = JSON.stringify($conversations, null, 2);
+        const blob = new Blob([conversationJson], { type: "application/json" });
+        const a = document.createElement("a");
+
+        a.href = URL.createObjectURL(blob);
+        a.download = "ask_frogs_history_" + Date.now();
+        a.click();
+
+        URL.revokeObjectURL(a.href);
     }
 
     function settings() {
@@ -62,10 +85,6 @@
         showPromptDetails = !showPromptDetails;
     }
 
-    function search() {
-        // dummy function
-    }
-
     // @ts-ignore
     let chatContainer;
 
@@ -74,7 +93,6 @@
         chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
-    let chatMessages = writable([]);
     let model = "";
     let systemPrompt = configs.NEXT_PUBLIC_DEFAULT_SYSTEM_PROMPT;
     let temperature = 0.5;
@@ -82,6 +100,8 @@
     let showPromptDetails = false;
     let showSettingsModal = false;
     let conversationSearch = "";
+    let promptSearch = "";
+    let currentPromptId = 0;
 
     // @ts-ignore
     function getMessage(source, text) {
@@ -181,7 +201,9 @@
 
     async function regenerateResponse() {
         // Remove the last assistant message
-        $chatMessages = $chatMessages.filter((message, index, self) => {
+        $conversations[$currentConversation].messages = $conversations[
+            $currentConversation
+        ].messages.filter((message, index, self) => {
             return index !== self.length - 1 || message.role !== "assistant";
         });
 
@@ -189,12 +211,33 @@
         await sendMessage();
     }
 
+    let newPromptName = "";
+    let newPromptDescription = "";
+    let newPromptDetails = "";
+    let promptId = 0;
+
+    function clearNewPrompt() {
+        newPromptName = "";
+        newPromptDescription = "";
+        newPromptDetails = "";
+    }
+
     function savePrompt() {
-        // dummy function
+        prompts.update((n) => [
+            ...n,
+            {
+                id: promptId++,
+                name: newPromptName,
+                description: newPromptDescription,
+                details: newPromptDetails,
+            },
+        ]);
+        showPromptDetails = false;
+        clearNewPrompt();
     }
 
     function cancelPrompt() {
-        // dummy function
+        showPromptDetails = false;
     }
 
     let folders = writable([]);
@@ -208,6 +251,10 @@
 
     function removeConversation(id) {
         conversations.update((n) => n.filter((c) => c.id !== id));
+    }
+
+    function removePrompt(id) {
+        prompts.update((n) => n.filter((p) => p.id !== id));
     }
 
     let editingFolderIndex = -1;
@@ -285,7 +332,6 @@
                 type="text"
                 placeholder="Search"
                 bind:value={conversationSearch}
-                on:input={search}
             />
             {#if $conversations.length > 0}
                 <div class="menu bg-base-200 w-full rounded-box">
@@ -332,14 +378,10 @@
             >
             <Heading class="underline-heading" tag="h4">Folders</Heading>
             <button class="btn mb-2" on:click={newFolder}>New folder</button>
-            <button class="btn mb-2" on:click={clearFolders}
-                >Clear Folders</button
-            >
             {#if $folders.length > 0}
                 <div class="menu bg-base-200 w-full rounded-box">
                     {#each $folders as folder, index}
                         <div class="flex">
-                            <button class="btn">{folder}</button>
                             {#if editingFolderIndex === index}
                                 <input
                                     class="input input-bordered w-full max-w-xs mb-2"
@@ -349,6 +391,7 @@
                                     autofocus
                                 />
                             {:else}
+                                <button class="btn">{folder}</button>
                                 <button
                                     class="btn"
                                     on:click={() =>
@@ -365,18 +408,29 @@
                     {/each}
                 </div>
             {/if}
+            <button class="btn mb-2" on:click={clearFolders}
+                >Clear Folders</button
+            >
             <Heading class="underline-heading" tag="h4">Data Management</Heading
             >
             <button class="btn mb-2" on:click={importFiles}>Import files</button
             >
-            <button class="btn mb-2" on:click={importData}>Import data</button>
+            <input
+                type="file"
+                accept=".json"
+                on:change={importData}
+                bind:this={fileInput}
+                class="hidden"
+            />
+            <button class="btn mb-2" on:click={() => fileInput.click()}
+                >Import data</button
+            >
             <button class="btn mb-2" on:click={exportData}>Export data</button>
             <button
                 class="btn mb-2"
                 on:click={() => (showSettingsModal = !showSettingsModal)}
                 >Settings</button
             >
-            <button class="btn mb-2" on:click={pluginKeys}>Plugin Keys</button>
         </div>
 
         <!-- Center Panel -->
@@ -463,36 +517,60 @@
                 class="input input-bordered w-full max-w-xs mb-2"
                 type="text"
                 placeholder="Search"
-                on:input={search}
+                bind:value={promptSearch}
             />
-            <div class="mb-2 overflow-auto">
-                {#each Array.from($prompts.values()) as prompt}
-                    <div>{prompt}</div>
-                {/each}
-            </div>
+            {#each $prompts as prompt}
+                {#if promptSearch == "" || prompt.name
+                        .toLowerCase()
+                        .includes(promptSearch.toLowerCase())}
+                    <div class="menu bg-base-200 w-full rounded-box">
+                        <div class="flex">
+                            <button
+                                class="btn"
+                                on:click={() => {
+                                    document
+                                        .getElementById("prompt_modal")
+                                        .showModal();
+                                    currentPromptId = prompt.id;
+                                }}>{prompt.name}</button
+                            >
+                            <button
+                                class="btn"
+                                on:click={() => removePrompt(prompt.id)}
+                                ><TrashBinSolid /></button
+                            >
+                        </div>
+                    </div>
+                {/if}
+            {/each}
             {#if showPromptDetails}
-                <h2>Prompt Details</h2>
+                <Heading class="underline-heading" tag="h5"
+                    >Prompt Details</Heading
+                >
                 <div class="mb-2">
-                    <label for="prompt-name">Prompt Name:</label>
                     <input
                         id="prompt-name"
                         type="text"
+                        placeholder="Prompt Name..."
+                        bind:value={newPromptName}
                         class="input input-bordered w-full max-w-xs mb-2"
                     />
                 </div>
                 <div class="mb-2">
-                    <label for="prompt-description">Prompt Description:</label>
                     <input
                         id="prompt-description"
                         type="text"
+                        placeholder="Prompt Description..."
+                        bind:value={newPromptDescription}
                         class="input input-bordered w-full max-w-xs mb-2"
                     />
                 </div>
                 <div class="mb-2">
-                    <label for="prompt-details">Prompt Details:</label>
                     <input
                         id="prompt-details"
                         type="text"
+                        placeholder="Prompt Details..."
+                        bind:value={newPromptDetails}
                         class="input input-bordered w-full max-w-xs mb-2"
                     />
                 </div>
@@ -542,6 +620,22 @@
             >
         </div>
     </div>
+{/if}
+
+{#if $prompts.length > 0}
+    <dialog id="prompt_modal" class="modal">
+        <div class="modal-box">
+            <h3 class="font-bold text-lg">{$prompts[currentPromptId].name}</h3>
+            <p class="py-4">{$prompts[currentPromptId].description}</p>
+            <p class="py-4">{$prompts[currentPromptId].details}</p>
+            <div class="modal-action">
+                <form method="dialog">
+                    <!-- if there is a button in form, it will close the modal -->
+                    <button class="btn">Close</button>
+                </form>
+            </div>
+        </div>
+    </dialog>
 {/if}
 
 <style lang="postcss">
