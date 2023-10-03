@@ -81,6 +81,7 @@
     let currentMessage = writable("");
     let showPromptDetails = false;
     let showSettingsModal = false;
+    let conversationSearch = "";
 
     // @ts-ignore
     function getMessage(source, text) {
@@ -279,50 +280,56 @@
         <div class="w-1/5 bg-blue-800 p-4 flex flex-col text-white">
             <Heading class="underline-heading" tag="h4">Conversations</Heading>
             <button class="btn mb-2" on:click={newChat}>New chat</button>
-            <button class="btn mb-2" on:click={clearConversations}
-                >Clear conversations</button
-            >
             <input
                 class="input input-bordered w-full max-w-xs mb-2"
                 type="text"
                 placeholder="Search"
+                bind:value={conversationSearch}
                 on:input={search}
             />
             {#if $conversations.length > 0}
                 <div class="menu bg-base-200 w-full rounded-box">
                     {#each $conversations as conversation, index}
-                        <div class="flex">
-                            <button
-                                class="btn"
-                                on:click={() =>
-                                    currentConversation.set(conversation.id)}
-                                >{conversation.name}</button
-                            >
-                            {#if editingConversationIndex === index}
-                                <input
-                                    class="input input-bordered w-full max-w-xs mb-2"
-                                    type="text"
-                                    bind:value={tempConversationName}
-                                    on:keydown={handleConversationKeyDown}
-                                    autofocus
-                                />
-                            {:else}
+                        {#if conversationSearch == "" || conversation.name
+                                .toLowerCase()
+                                .includes(conversationSearch.toLowerCase())}
+                            <div class="flex">
+                                {#if editingConversationIndex === index}
+                                    <input
+                                        class="input input-bordered w-full max-w-xs mb-2"
+                                        type="text"
+                                        bind:value={tempConversationName}
+                                        on:keydown={handleConversationKeyDown}
+                                        autofocus
+                                    />
+                                {:else}
+                                    <button
+                                        class="btn"
+                                        on:click={() =>
+                                            currentConversation.set(
+                                                conversation.id
+                                            )}>{conversation.name}</button
+                                    >
+                                    <button
+                                        class="btn"
+                                        on:click={() =>
+                                            startEditingConversationName(index)}
+                                        ><EditOutline /></button
+                                    >
+                                {/if}
                                 <button
                                     class="btn"
-                                    on:click={() =>
-                                        startEditingConversationName(index)}
-                                    ><EditOutline /></button
+                                    on:click={() => removeConversation(index)}
+                                    ><TrashBinSolid /></button
                                 >
-                            {/if}
-                            <button
-                                class="btn"
-                                on:click={() => removeConversation(index)}
-                                ><TrashBinSolid /></button
-                            >
-                        </div>
+                            </div>
+                        {/if}
                     {/each}
                 </div>
             {/if}
+            <button class="btn mb-2" on:click={clearConversations}
+                >Clear conversations</button
+            >
             <Heading class="underline-heading" tag="h4">Folders</Heading>
             <button class="btn mb-2" on:click={newFolder}>New folder</button>
             <button class="btn mb-2" on:click={clearFolders}
