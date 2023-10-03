@@ -29,7 +29,8 @@ You can preview the production build with `npm run preview`.
 ```bash
 docker pull nginx:alpine
 docker build -t ask-frogs .
-docker run -i -p 5173:5173 ask-frogs
+docker run -i -p 5173:5173 ask-frogs (interactive)
+docker run -it -d --rm -p 5173:5173 ask-frogs (non-interactive)
 ```
 
 ![screenshot](./static/ui-screenshot.png "Screenshot")
