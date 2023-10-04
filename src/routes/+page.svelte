@@ -12,11 +12,23 @@
     } from "flowbite-svelte-icons";
     import { writable } from "svelte/store";
     import configs from "../configs.json";
+    import { onMount } from "svelte";
 
     let conversations = writable([]);
     let prompts = writable([]);
+    let models = writable([]);
     let showSettings = false;
     let fileInput;
+
+    onMount(async () => {
+        models.set(await getModels())
+    });
+
+    async function getModels() {
+        const response = await fetch("/api/models");
+        const models = await response.json();
+        return models;
+    }
 
     function newFolder() {
         folders.update((n) => [...n, "New Folder"]);
@@ -93,7 +105,7 @@
         chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
-    let model = "";
+    let selectedModel = "mpt-7b-8k-chat";
     let systemPrompt = configs.NEXT_PUBLIC_DEFAULT_SYSTEM_PROMPT;
     let temperature = 0.5;
     let currentMessage = writable("");
@@ -141,7 +153,7 @@
                 ...$conversations.find((c) => c.id === $currentConversation)
                     .messages,
             ],
-            model: model,
+            model: selectedModel,
             max_tokens: 1000,
             temperature: temperature,
             stream: true,
@@ -452,35 +464,6 @@
                     {/each}
                 {/if}
             </div>
-            {#if showSettings}
-                <div class="mb-2">
-                    <label for="model">Model:</label>
-                    <select id="model" bind:value={model}>
-                        <option value="mpt-7b-8k-chat">mpt-7b-8k-chat</option>
-                        <option value="Test">Test</option>
-                    </select>
-                </div>
-                <div class="mb-2">
-                    <label for="system-prompt">System Prompt:</label>
-                    <input
-                        class="input input-bordered w-full max-w-xs mb-2"
-                        id="system-prompt"
-                        type="text"
-                        bind:value={systemPrompt}
-                    />
-                </div>
-                <div class="mb-2">
-                    <label for="temperature">Temperature:</label>
-                    <input
-                        id="temperature"
-                        type="range"
-                        min="0"
-                        max="1"
-                        step="0.01"
-                        bind:value={temperature}
-                    />
-                </div>
-            {/if}
             <button class="btn mb-2" on:click={regenerateResponse}
                 >Regenerate Response</button
             >
@@ -588,11 +571,12 @@
                 <label for="model">Model:</label>
                 <select
                     id="model"
-                    bind:value={model}
+                    bind:value={selectedModel}
                     class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52"
                 >
-                    <option value="mpt-7b-8k-chat">mpt-7b-8k-chat</option>
-                    <option value="Test">Test</option>
+                    {#each $models as model}
+                    <option value="{model}">{model}</option>
+                    {/each}
                 </select>
             </div>
             <div class="mb-2">
