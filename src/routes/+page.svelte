@@ -1,7 +1,7 @@
 <script>
     // @ts-nocheck
 
-    import { FloatingLabelInput, Heading, Input, Label } from "flowbite-svelte";
+    import { Heading, Input, Label } from "flowbite-svelte";
     import {
         ArrowRightSolid,
         EditOutline,
@@ -10,18 +10,34 @@
         TrashBinSolid,
         UserSettingsSolid,
     } from "flowbite-svelte-icons";
+    import { onMount } from "svelte";
     import { writable } from "svelte/store";
     import configs from "../configs.json";
-    import { onMount } from "svelte";
 
     let conversations = writable([]);
     let prompts = writable([]);
     let models = writable([]);
     let showSettings = false;
     let fileInput;
+    let fileInputRag;
+
+    let ragEndpointActive = false;
+    let ragEnabled = false;
+
+    async function updateRagEndpointState() {
+        fetch("/api/rag/health")
+            .then((response) => response.json())
+            .then((body) => {
+                ragEndpointActive = body.enabled;
+            })
+            .catch((e) => {
+                console.log(e);
+            });
+    }
 
     onMount(async () => {
-        models.set(await getModels())
+        models.set(await getModels());
+        updateRagEndpointState();
     });
 
     async function getModels() {
@@ -53,8 +69,47 @@
         conversations.set([]);
     }
 
-    function importFiles() {
-        // dummy function
+    async function queryRag(query) {
+        try {
+            return await fetch("/api/rag/query", {
+                method: "POST",
+                body: JSON.stringify({
+                    input: query,
+                    collection_name: "default",
+                }),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }).then((response) => {
+                return response.text();
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async function importFiles(event) {
+        const files = event.target.files;
+
+        for (let i = 0; i < files.length; i++) {
+            const file = event.target.files[i];
+            if (file) {
+                try {
+                    const formData = new FormData();
+                    formData.append("file", file);
+
+                    await fetch("/api/rag/upload", {
+                        method: "POST",
+                        body: formData,
+                    });
+
+                    // Clear the file input for potential future use
+                    event.target.value = "";
+                } catch (error) {
+                    console.error("Error reading or parsing JSON:", error);
+                }
+            }
+        }
     }
 
     async function importData(event) {
@@ -142,6 +197,29 @@
             currentMessage.set("");
         }
 
+        /* Copy the current messages into a new array so that the RAG results can be
+            inserted without changing what the user sees. */
+        let conversationMessages = [
+            ...$conversations.find((c) => c.id === $currentConversation)
+                .messages,
+        ];
+
+        // Only use RAG if the server is available and if the user has it enabled
+        if (ragEndpointActive && ragEnabled) {
+            // Construct the RAG message that will be inserted before the user's message
+            let ragResponse = {
+                role: "system",
+                content: await queryRag(lastMessage.content),
+            };
+
+            // Insert the RAG message before the user's message
+            conversationMessages.splice(
+                conversationMessages.length - 1,
+                0,
+                ragResponse
+            );
+        }
+
         // Payload to send to the local chat-completion endpoint
         let chatCompletion = {
             key: "",
@@ -150,8 +228,7 @@
                     role: "system",
                     content: systemPrompt,
                 },
-                ...$conversations.find((c) => c.id === $currentConversation)
-                    .messages,
+                ...conversationMessages,
             ],
             model: selectedModel,
             max_tokens: 1000,
@@ -198,7 +275,6 @@
                                 const textValue = new TextDecoder().decode(
                                     value
                                 );
-                                console.log(textValue);
                                 newMessage.content += textValue;
                                 conversations.set($conversations);
                                 return pump();
@@ -425,8 +501,19 @@
             >
             <Heading class="underline-heading" tag="h4">Data Management</Heading
             >
-            <button class="btn mb-2" on:click={importFiles}>Import files</button
-            >
+            {#if ragEndpointActive}
+                <input
+                    type="file"
+                    accept=".txt,.pdf"
+                    on:change={importFiles}
+                    bind:this={fileInputRag}
+                    multiple="multiple"
+                    class="hidden"
+                />
+                <button class="btn mb-2" on:click={() => fileInputRag.click()}
+                    >Import files</button
+                >
+            {/if}
             <input
                 type="file"
                 accept=".json"
@@ -575,7 +662,7 @@
                     class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52"
                 >
                     {#each $models as model}
-                    <option value="{model}">{model}</option>
+                        <option value={model}>{model}</option>
                     {/each}
                 </select>
             </div>
@@ -599,6 +686,18 @@
                     bind:value={temperature}
                 />
             </div>
+            {#if ragEndpointActive}
+                <div class="mb-2">
+                    <div>
+                        <span>Retrieval Augmented Generation</span>
+                        <input
+                            type="checkbox"
+                            class="checkbox"
+                            bind:checked={ragEnabled}
+                        />
+                    </div>
+                </div>
+            {/if}
             <button class="btn" on:click={() => (showSettingsModal = false)}
                 >Close</button
             >
