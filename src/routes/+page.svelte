@@ -15,7 +15,7 @@
     import configs from "../configs.json";
 
     let conversations = writable([]);
-    let presets = writable([]);
+    let personas = writable([]);
     let models = writable([]);
     let showSettings = false;
     let fileInput;
@@ -148,14 +148,14 @@
         // dummy function
     }
 
-    function newPreset() {
-        showPresetDetails = !showPresetDetails;
+    function newPersona() {
+        showPersonaDetails = !showPersonaDetails;
     }
 
-    function applyPreset(preset) {
-        systemPrompt = preset.systemPrompt;
-        temperature = preset.temperature;
-        selectedModel = preset.model;
+    function applyPersona(persona) {
+        systemPrompt = persona.systemPrompt;
+        temperature = persona.temperature;
+        selectedModel = persona.model;
     }
 
     // @ts-ignore
@@ -170,11 +170,11 @@
     let systemPrompt = configs.NEXT_PUBLIC_DEFAULT_SYSTEM_PROMPT;
     let temperature = 0.5;
     let currentMessage = writable("");
-    let showPresetDetails = false;
+    let showPersonaDetails = false;
     let showSettingsModal = false;
     let conversationSearch = "";
-    let presetSearch = "";
-    let currentPresetId = 0;
+    let personaSearch = "";
+    let currentPersonaId = 0;
 
     // @ts-ignore
     function getMessage(source, text) {
@@ -305,54 +305,54 @@
         await sendMessage();
     }
 
-    let newPresetName = "";
-    let newPresetDescription = "";
-    let presetId = 0;
-    let newPresetSystemPrompt = systemPrompt;
-    let newPresetTemperature = temperature;
-    let newPresetModel = selectedModel;
+    let newPersonaName = "";
+    let newPersonaDescription = "";
+    let personaId = 0;
+    let newPersonaSystemPrompt = systemPrompt;
+    let newPersonaTemperature = temperature;
+    let newPersonaModel = selectedModel;
 
-    function clearNewPreset() {
-        newPresetName = "";
-        newPresetDescription = "";
-        newPresetSystemPrompt = systemPrompt;
-        newPresetTemperature = temperature;
-        newPresetModel = selectedModel;
+    function clearNewPersona() {
+        newPersonaName = "";
+        newPersonaDescription = "";
+        newPersonaSystemPrompt = systemPrompt;
+        newPersonaTemperature = temperature;
+        newPersonaModel = selectedModel;
     }
 
-    function savePreset() {
-        presets.update((n) => [
+    function savePersona() {
+        personas.update((n) => [
             ...n,
             {
-                id: presetId++,
-                name: newPresetName,
-                description: newPresetDescription,
-                systemPrompt: newPresetSystemPrompt,
-                temperature: newPresetTemperature,
-                model: newPresetModel,
+                id: personaId++,
+                name: newPersonaName,
+                description: newPersonaDescription,
+                systemPrompt: newPersonaSystemPrompt,
+                temperature: newPersonaTemperature,
+                model: newPersonaModel,
             },
         ]);
-        showPresetDetails = false;
-        clearNewPreset();
+        showPersonaDetails = false;
+        clearNewPersona();
     }
 
-    function cancelPreset() {
-        showPresetDetails = false;
+    function cancelPersona() {
+        showPersonaDetails = false;
     }
 
-    function updatePreset() {
-        presets.update((n) => {
-            const preset = n.find((p) => p.id === currentPresetId);
-            if (preset) {
-                preset.name = $presets[currentPresetId].name;
-                preset.description = $presets[currentPresetId].description;
-                preset.systemPrompt = $presets[currentPresetId].systemPrompt;
-                preset.temperature = $presets[currentPresetId].temperature;
-                preset.model = $presets[currentPresetId].model;
+    function updatePersona() {
+        personas.update((n) => {
+            const persona = n.find((p) => p.id === currentPersonaId);
+            if (persona) {
+                persona.name = $personas[currentPersonaId].name;
+                persona.description = $personas[currentPersonaId].description;
+                persona.systemPrompt = $personas[currentPersonaId].systemPrompt;
+                persona.temperature = $personas[currentPersonaId].temperature;
+                persona.model = $personas[currentPersonaId].model;
             }
             return n;
         });
-        document.getElementById("preset_modal").close();
+        document.getElementById("persona_modal").close();
     }
 
     let folders = writable([]);
@@ -368,8 +368,8 @@
         conversations.update((n) => n.filter((c) => c.id !== id));
     }
 
-    function removePreset(id) {
-        presets.update((n) => n.filter((p) => p.id !== id));
+    function removePersona(id) {
+        personas.update((n) => n.filter((p) => p.id !== id));
     }
 
     let editingFolderIndex = -1;
@@ -608,72 +608,72 @@
 
         <!-- Side Panel 2 -->
         <div class="w-1/5 bg-blue-800 p-4 flex flex-col text-white">
-            <Heading class="underline-heading" tag="h4">Presets</Heading>
-            <button class="btn mb-2" on:click={newPreset}>New preset</button>
+            <Heading class="underline-heading" tag="h4">Personas</Heading>
+            <button class="btn mb-2" on:click={newPersona}>New persona</button>
             <input
                 class="input input-bordered w-full max-w-xs mb-2"
                 type="text"
                 placeholder="Search"
-                bind:value={presetSearch}
+                bind:value={personaSearch}
             />
-            {#each $presets as preset}
-                {#if presetSearch == "" || preset.name
+            {#each $personas as persona}
+                {#if personaSearch == "" || persona.name
                         .toLowerCase()
-                        .includes(presetSearch.toLowerCase())}
+                        .includes(personaSearch.toLowerCase())}
                     <div class="menu bg-base-200 w-full rounded-box">
                         <div class="flex">
                             <button
                                 class="btn"
                                 on:click={() => {
-                                    applyPreset(preset);
-                                }}>{preset.name}</button
+                                    applyPersona(persona);
+                                }}>{persona.name}</button
                             >
                             <button
                                 class="btn"
                                 on:click={() => {
                                     document
-                                        .getElementById("preset_modal")
+                                        .getElementById("persona_modal")
                                         .showModal();
-                                    currentPresetId = preset.id;
+                                    currentPersonaId = persona.id;
                                 }}><EditOutline /></button
                             >
                             <button
                                 class="btn"
-                                on:click={() => removePreset(preset.id)}
+                                on:click={() => removePersona(persona.id)}
                                 ><TrashBinSolid /></button
                             >
                         </div>
                     </div>
                 {/if}
             {/each}
-            {#if showPresetDetails}
+            {#if showPersonaDetails}
                 <Heading class="underline-heading" tag="h5"
-                    >Preset Details</Heading
+                    >Persona Details</Heading
                 >
                 <div class="mb-2">
                     <input
-                        id="preset-name"
+                        id="persona-name"
                         type="text"
-                        placeholder="Preset Name..."
-                        bind:value={newPresetName}
+                        placeholder="Persona Name..."
+                        bind:value={newPersonaName}
                         class="input input-bordered w-full max-w-xs mb-2"
                     />
                 </div>
                 <div class="mb-2">
                     <input
-                        id="preset-description"
+                        id="persona-description"
                         type="text"
-                        placeholder="Preset Description..."
-                        bind:value={newPresetDescription}
+                        placeholder="Persona Description..."
+                        bind:value={newPersonaDescription}
                         class="input input-bordered w-full max-w-xs mb-2"
                     />
                 </div>
                 <div class="mb-2">
                     <input
-                        id="preset-system-prompt"
+                        id="persona-system-prompt"
                         type="text"
                         placeholder="System Prompt..."
-                        bind:value={newPresetSystemPrompt}
+                        bind:value={newPersonaSystemPrompt}
                         class="input input-bordered w-full max-w-xs mb-2"
                     />
                 </div>
@@ -685,14 +685,14 @@
                         min="0"
                         max="1"
                         step="0.01"
-                        bind:value={newPresetTemperature}
+                        bind:value={newPersonaTemperature}
                     />
                 </div>
                 <div class="mb-2">
                     <label for="model">Model:</label>
                     <select
                         id="model"
-                        bind:value={newPresetModel}
+                        bind:value={newPersonaModel}
                         class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52"
                     >
                         {#each $models as model}
@@ -700,8 +700,8 @@
                         {/each}
                     </select>
                 </div>
-                <button class="btn mb-2" on:click={savePreset}>Save</button>
-                <button class="btn mb-2" on:click={cancelPreset}>Cancel</button>
+                <button class="btn mb-2" on:click={savePersona}>Save</button>
+                <button class="btn mb-2" on:click={cancelPersona}>Cancel</button>
             {/if}
         </div>
     </div>
@@ -761,54 +761,54 @@
     </div>
 {/if}
 
-{#if $presets.length > 0}
-    <dialog id="preset_modal" class="modal">
+{#if $personas.length > 0}
+    <dialog id="persona_modal" class="modal">
         <div class="modal-box">
-            <h3 class="font-bold text-lg">{$presets[currentPresetId].name}</h3>
-            <form on:submit|preventDefault={updatePreset}>
+            <h3 class="font-bold text-lg">{$personas[currentPersonaId].name}</h3>
+            <form on:submit|preventDefault={updatePersona}>
                 <div class="py-4">
-                    <label for="preset-name">Name:</label>
+                    <label for="persona-name">Name:</label>
                     <input
-                        id="preset-name"
+                        id="persona-name"
                         type="text"
-                        bind:value={$presets[currentPresetId].name}
+                        bind:value={$personas[currentPersonaId].name}
                         class="input input-bordered w-full max-w-xs mb-2"
                     />
                 </div>
                 <div class="py-4">
-                    <label for="preset-description">Description:</label>
+                    <label for="persona-description">Description:</label>
                     <input
-                        id="preset-description"
+                        id="persona-description"
                         type="text"
-                        bind:value={$presets[currentPresetId].description}
+                        bind:value={$personas[currentPersonaId].description}
                         class="input input-bordered w-full max-w-xs mb-2"
                     />
                 </div>
                 <div class="py-4">
-                    <label for="preset-system-prompt">System Prompt:</label>
+                    <label for="persona-system-prompt">System Prompt:</label>
                     <input
-                        id="preset-system-prompt"
+                        id="persona-system-prompt"
                         type="text"
-                        bind:value={$presets[currentPresetId].systemPrompt}
+                        bind:value={$personas[currentPersonaId].systemPrompt}
                         class="input input-bordered w-full max-w-xs mb-2"
                     />
                 </div>
                 <div class="py-4">
-                    <label for="preset-temperature">Temperature:</label>
+                    <label for="persona-temperature">Temperature:</label>
                     <input
-                        id="preset-temperature"
+                        id="persona-temperature"
                         type="range"
                         min="0"
                         max="1"
                         step="0.01"
-                        bind:value={$presets[currentPresetId].temperature}
+                        bind:value={$personas[currentPersonaId].temperature}
                     />
                 </div>
                 <div class="py-4">
-                    <label for="preset-model">Model:</label>
+                    <label for="persona-model">Model:</label>
                     <select
-                        id="preset-model"
-                        bind:value={$presets[currentPresetId].model}
+                        id="persona-model"
+                        bind:value={$personas[currentPersonaId].model}
                         class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52"
                     >
                         {#each $models as model}
@@ -822,7 +822,7 @@
                         type="button"
                         class="btn"
                         on:click={() =>
-                            document.getElementById("preset_modal").close()}
+                            document.getElementById("persona_modal").close()}
                         >Close</button
                     >
                 </div>
