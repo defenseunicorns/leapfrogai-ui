@@ -15,7 +15,7 @@
     import configs from "../configs.json";
 
     let conversations = writable([]);
-    let prompts = writable([]);
+    let presets = writable([]);
     let models = writable([]);
     let showSettings = false;
     let fileInput;
@@ -148,8 +148,14 @@
         // dummy function
     }
 
-    function newPrompt() {
-        showPromptDetails = !showPromptDetails;
+    function newPreset() {
+        showPresetDetails = !showPresetDetails;
+    }
+
+    function applyPreset(preset) {
+        systemPrompt = preset.systemPrompt;
+        temperature = preset.temperature;
+        selectedModel = preset.model;
     }
 
     // @ts-ignore
@@ -164,11 +170,11 @@
     let systemPrompt = configs.NEXT_PUBLIC_DEFAULT_SYSTEM_PROMPT;
     let temperature = 0.5;
     let currentMessage = writable("");
-    let showPromptDetails = false;
+    let showPresetDetails = false;
     let showSettingsModal = false;
     let conversationSearch = "";
-    let promptSearch = "";
-    let currentPromptId = 0;
+    let presetSearch = "";
+    let currentPresetId = 0;
 
     // @ts-ignore
     function getMessage(source, text) {
@@ -299,33 +305,54 @@
         await sendMessage();
     }
 
-    let newPromptName = "";
-    let newPromptDescription = "";
-    let newPromptDetails = "";
-    let promptId = 0;
+    let newPresetName = "";
+    let newPresetDescription = "";
+    let presetId = 0;
+    let newPresetSystemPrompt = systemPrompt;
+    let newPresetTemperature = temperature;
+    let newPresetModel = selectedModel;
 
-    function clearNewPrompt() {
-        newPromptName = "";
-        newPromptDescription = "";
-        newPromptDetails = "";
+    function clearNewPreset() {
+        newPresetName = "";
+        newPresetDescription = "";
+        newPresetSystemPrompt = systemPrompt;
+        newPresetTemperature = temperature;
+        newPresetModel = selectedModel;
     }
 
-    function savePrompt() {
-        prompts.update((n) => [
+    function savePreset() {
+        presets.update((n) => [
             ...n,
             {
-                id: promptId++,
-                name: newPromptName,
-                description: newPromptDescription,
-                details: newPromptDetails,
+                id: presetId++,
+                name: newPresetName,
+                description: newPresetDescription,
+                systemPrompt: newPresetSystemPrompt,
+                temperature: newPresetTemperature,
+                model: newPresetModel,
             },
         ]);
-        showPromptDetails = false;
-        clearNewPrompt();
+        showPresetDetails = false;
+        clearNewPreset();
     }
 
-    function cancelPrompt() {
-        showPromptDetails = false;
+    function cancelPreset() {
+        showPresetDetails = false;
+    }
+
+    function updatePreset() {
+        presets.update((n) => {
+            const preset = n.find((p) => p.id === currentPresetId);
+            if (preset) {
+                preset.name = $presets[currentPresetId].name;
+                preset.description = $presets[currentPresetId].description;
+                preset.systemPrompt = $presets[currentPresetId].systemPrompt;
+                preset.temperature = $presets[currentPresetId].temperature;
+                preset.model = $presets[currentPresetId].model;
+            }
+            return n;
+        });
+        document.getElementById("preset_modal").close();
     }
 
     let folders = writable([]);
@@ -341,8 +368,8 @@
         conversations.update((n) => n.filter((c) => c.id !== id));
     }
 
-    function removePrompt(id) {
-        prompts.update((n) => n.filter((p) => p.id !== id));
+    function removePreset(id) {
+        presets.update((n) => n.filter((p) => p.id !== id));
     }
 
     let editingFolderIndex = -1;
@@ -581,71 +608,100 @@
 
         <!-- Side Panel 2 -->
         <div class="w-1/5 bg-blue-800 p-4 flex flex-col text-white">
-            <Heading class="underline-heading" tag="h4">Prompts</Heading>
-            <button class="btn mb-2" on:click={newPrompt}>New prompt</button>
+            <Heading class="underline-heading" tag="h4">Presets</Heading>
+            <button class="btn mb-2" on:click={newPreset}>New preset</button>
             <input
                 class="input input-bordered w-full max-w-xs mb-2"
                 type="text"
                 placeholder="Search"
-                bind:value={promptSearch}
+                bind:value={presetSearch}
             />
-            {#each $prompts as prompt}
-                {#if promptSearch == "" || prompt.name
+            {#each $presets as preset}
+                {#if presetSearch == "" || preset.name
                         .toLowerCase()
-                        .includes(promptSearch.toLowerCase())}
+                        .includes(presetSearch.toLowerCase())}
                     <div class="menu bg-base-200 w-full rounded-box">
                         <div class="flex">
                             <button
                                 class="btn"
                                 on:click={() => {
-                                    document
-                                        .getElementById("prompt_modal")
-                                        .showModal();
-                                    currentPromptId = prompt.id;
-                                }}>{prompt.name}</button
+                                    applyPreset(preset);
+                                }}>{preset.name}</button
                             >
                             <button
                                 class="btn"
-                                on:click={() => removePrompt(prompt.id)}
+                                on:click={() => {
+                                    document
+                                        .getElementById("preset_modal")
+                                        .showModal();
+                                    currentPresetId = preset.id;
+                                }}><EditOutline /></button
+                            >
+                            <button
+                                class="btn"
+                                on:click={() => removePreset(preset.id)}
                                 ><TrashBinSolid /></button
                             >
                         </div>
                     </div>
                 {/if}
             {/each}
-            {#if showPromptDetails}
+            {#if showPresetDetails}
                 <Heading class="underline-heading" tag="h5"
-                    >Prompt Details</Heading
+                    >Preset Details</Heading
                 >
                 <div class="mb-2">
                     <input
-                        id="prompt-name"
+                        id="preset-name"
                         type="text"
-                        placeholder="Prompt Name..."
-                        bind:value={newPromptName}
+                        placeholder="Preset Name..."
+                        bind:value={newPresetName}
                         class="input input-bordered w-full max-w-xs mb-2"
                     />
                 </div>
                 <div class="mb-2">
                     <input
-                        id="prompt-description"
+                        id="preset-description"
                         type="text"
-                        placeholder="Prompt Description..."
-                        bind:value={newPromptDescription}
+                        placeholder="Preset Description..."
+                        bind:value={newPresetDescription}
                         class="input input-bordered w-full max-w-xs mb-2"
                     />
                 </div>
                 <div class="mb-2">
                     <input
-                        id="prompt-details"
+                        id="preset-system-prompt"
                         type="text"
-                        placeholder="Prompt Details..."
-                        bind:value={newPromptDetails}
+                        placeholder="System Prompt..."
+                        bind:value={newPresetSystemPrompt}
                         class="input input-bordered w-full max-w-xs mb-2"
                     />
                 </div>
-                <button class="btn mb-2" on:click={savePrompt}>Save</button>
-                <button class="btn mb-2" on:click={cancelPrompt}>Cancel</button>
+                <div class="mb-2">
+                    <label for="temperature">Temperature:</label>
+                    <input
+                        id="temperature"
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.01"
+                        bind:value={newPresetTemperature}
+                    />
+                </div>
+                <div class="mb-2">
+                    <label for="model">Model:</label>
+                    <select
+                        id="model"
+                        bind:value={newPresetModel}
+                        class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52"
+                    >
+                        {#each $models as model}
+                            <option value={model}>{model}</option>
+                        {/each}
+                    </select>
+                </div>
+                <button class="btn mb-2" on:click={savePreset}>Save</button>
+                <button class="btn mb-2" on:click={cancelPreset}>Cancel</button>
             {/if}
         </div>
     </div>
@@ -705,18 +761,72 @@
     </div>
 {/if}
 
-{#if $prompts.length > 0}
-    <dialog id="prompt_modal" class="modal">
+{#if $presets.length > 0}
+    <dialog id="preset_modal" class="modal">
         <div class="modal-box">
-            <h3 class="font-bold text-lg">{$prompts[currentPromptId].name}</h3>
-            <p class="py-4">{$prompts[currentPromptId].description}</p>
-            <p class="py-4">{$prompts[currentPromptId].details}</p>
-            <div class="modal-action">
-                <form method="dialog">
-                    <!-- if there is a button in form, it will close the modal -->
-                    <button class="btn">Close</button>
-                </form>
-            </div>
+            <h3 class="font-bold text-lg">{$presets[currentPresetId].name}</h3>
+            <form on:submit|preventDefault={updatePreset}>
+                <div class="py-4">
+                    <label for="preset-name">Name:</label>
+                    <input
+                        id="preset-name"
+                        type="text"
+                        bind:value={$presets[currentPresetId].name}
+                        class="input input-bordered w-full max-w-xs mb-2"
+                    />
+                </div>
+                <div class="py-4">
+                    <label for="preset-description">Description:</label>
+                    <input
+                        id="preset-description"
+                        type="text"
+                        bind:value={$presets[currentPresetId].description}
+                        class="input input-bordered w-full max-w-xs mb-2"
+                    />
+                </div>
+                <div class="py-4">
+                    <label for="preset-system-prompt">System Prompt:</label>
+                    <input
+                        id="preset-system-prompt"
+                        type="text"
+                        bind:value={$presets[currentPresetId].systemPrompt}
+                        class="input input-bordered w-full max-w-xs mb-2"
+                    />
+                </div>
+                <div class="py-4">
+                    <label for="preset-temperature">Temperature:</label>
+                    <input
+                        id="preset-temperature"
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.01"
+                        bind:value={$presets[currentPresetId].temperature}
+                    />
+                </div>
+                <div class="py-4">
+                    <label for="preset-model">Model:</label>
+                    <select
+                        id="preset-model"
+                        bind:value={$presets[currentPresetId].model}
+                        class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52"
+                    >
+                        {#each $models as model}
+                            <option value={model}>{model}</option>
+                        {/each}
+                    </select>
+                </div>
+                <div class="modal-action">
+                    <button type="submit" class="btn">Save</button>
+                    <button
+                        type="button"
+                        class="btn"
+                        on:click={() =>
+                            document.getElementById("preset_modal").close()}
+                        >Close</button
+                    >
+                </div>
+            </form>
         </div>
     </dialog>
 {/if}
