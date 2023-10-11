@@ -480,12 +480,12 @@
             />
             {#if $conversations.length > 0}
                 <div class="menu bg-base-200 w-full rounded-box">
-                    {#each $conversations as conversation, index}
+                    {#each $conversations as conversation}
                         {#if conversationSearch == "" || conversation.name
                                 .toLowerCase()
                                 .includes(conversationSearch.toLowerCase())}
                             <div class="flex">
-                                {#if editingConversationIndex === index}
+                                {#if editingConversationIndex === conversation.id}
                                     <input
                                         class="input input-bordered w-full max-w-xs mb-2"
                                         type="text"
