@@ -1,7 +1,12 @@
 <script>
     // @ts-nocheck
 
-    import { Heading, Input, Label } from "flowbite-svelte";
+    import { 
+        Heading, 
+        Input, 
+        Label, 
+        Spinner, 
+    } from "flowbite-svelte";
     import {
         ArrowRightSolid,
         EditOutline,
@@ -14,9 +19,11 @@
     import { writable } from "svelte/store";
     import configs from "../configs.json";
 
+    let localStorage
     let conversations = writable([]);
     let personas = writable([]);
     let models = writable([]);
+    let loading = writable(true)
     let showSettings = false;
     let fileInput;
     let fileInputRag;
@@ -36,9 +43,25 @@
     }
 
     onMount(async () => {
+        loading.set(true)
+        // required to access localStorage after mount
+        localStorage = window.localStorage
+        getLocalConversations()        
+
         models.set(await getModels());
-        updateRagEndpointState();
+        await updateRagEndpointState().then(() => {
+            loading.set(false)
+        });
     });
+
+    function getLocalConversations() {
+        if (localStorage) {
+            const storedConversations = JSON.parse(localStorage.getItem("conversations"))
+            if (storedConversations?.length > 0) {
+                conversations.set(storedConversations)
+            }
+        }
+    }
 
     async function getModels() {
         const response = await fetch("/api/models");
@@ -56,6 +79,14 @@
 
     let chatId = 0;
     let currentConversation = writable(null);
+
+    function persistConversations(data=conversations) {
+        if (localStorage) {
+            localStorage.setItem("conversations", JSON.stringify(data))
+        }
+    }
+
+    conversations.subscribe(persistConversations);
 
     function newChat() {
         conversations.update((n) => [
@@ -119,7 +150,6 @@
                 const fileText = await file.text();
 
                 conversations.set(JSON.parse(fileText));
-
                 // Clear the file input for potential future use
                 event.target.value = "";
             } catch (error) {
@@ -436,7 +466,7 @@
             <SunOutline class="swap-off" />
         </label>
     </div>
-
+    {#if !$loading}
     <div class="flex flex-grow">
         <!-- Side Panel 1 -->
         <div class="w-1/5 bg-blue-800 p-4 flex flex-col text-white">
@@ -474,13 +504,13 @@
                                     <button
                                         class="btn"
                                         on:click={() =>
-                                            startEditingConversationName(index)}
+                                            startEditingConversationName(conversation.id)}
                                         ><EditOutline /></button
                                     >
                                 {/if}
                                 <button
                                     class="btn"
-                                    on:click={() => removeConversation(index)}
+                                    on:click={() => removeConversation(conversation.id)}
                                     ><TrashBinSolid /></button
                                 >
                             </div>
@@ -705,7 +735,13 @@
             {/if}
         </div>
     </div>
+    {:else}
+    <div class="text-center p-20">
+        <Spinner size={20} color={"blue"} />
+    </div>
+    {/if}
 </div>
+
 
 {#if showSettingsModal}
     <div class="fixed inset-0 flex items-center justify-center z-10">
