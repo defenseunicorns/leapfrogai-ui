@@ -5,7 +5,8 @@ UI Built with SvelteKit, Tailwind CSS with Daisy UI and [Flowbite Svelte](https:
 Once you've created a project and installed dependencies with `npm install` or `pnpm install` or `yarn`:
 
 Copy `/src/configs.json.example` into `/src/configs.json` and set all the variables accordingly.
-* [Note] If the UI is running within a docker container and tailscale is being used then `OPENAI_API_HOST` value needs to be the [fully qualified domain name](https://tailscale.com/kb/1081/magicdns/#fully-qualified-domain-names-vs-machine-names) of the server.
+
+-   [Note] If the UI is running within a docker container and tailscale is being used then `OPENAI_API_HOST` value needs to be the [fully qualified domain name](https://tailscale.com/kb/1081/magicdns/#fully-qualified-domain-names-vs-machine-names) of the server.
 
 ```bash
 npm run dev
@@ -33,4 +34,10 @@ docker run -i -p 5173:5173 ask-frogs (interactive)
 docker run -it -d --rm -p 5173:5173 ask-frogs (non-interactive)
 ```
 
-![screenshot](./static/ui-screenshot.png "Screenshot")
+![screenshot](./static/ui-screenshot.png 'Screenshot')
+
+## Lint and Format
+
+You can lint the source code with the eslint config using `npm run lint`
+
+You can also format the source code with the prettier configs using `npm run format`
