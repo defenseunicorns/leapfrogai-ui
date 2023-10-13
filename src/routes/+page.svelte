@@ -166,7 +166,7 @@
         chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
-    let selectedModel = "mpt-7b-8k-chat";
+    let selectedModel = configs.DEFAULT_MODEL;
     let systemPrompt = configs.NEXT_PUBLIC_DEFAULT_SYSTEM_PROMPT;
     let temperature = 0.5;
     let currentMessage = writable("");
