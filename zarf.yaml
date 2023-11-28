@@ -22,7 +22,7 @@ components:
     required: true
     manifests:
       - name: leapfrog-ui
-        namespace: leapfrog-ui
+        namespace: leapfrogai
         files:
           - manifests/deploy.yaml
           - manifests/svc.yaml
@@ -36,5 +36,5 @@ components:
               cluster:
                 kind: Deployment
                 name: leapfrog-ui
-                namespace: leapfrog-ui
+                namespace: leapfrogai
                 condition: Available
