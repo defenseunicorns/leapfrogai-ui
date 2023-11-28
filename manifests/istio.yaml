@@ -4,8 +4,7 @@ metadata:
   name: leapfrog-ui
 spec:
   gateways:
-    - istio-system/leapfrogai
-    - istio-system/tenant
+    - istio-system/leapfrog-ui
   hosts:
     - "*"
   http:
@@ -14,3 +13,30 @@ spec:
             host: leapfrog-ui.leapfrog-ui.svc.cluster.local
             port:
               number: 3000
+---
+apiVersion: v1
+kind: Gateway
+metadata:
+  name: leapfrog-ui
+spec:
+  selector:
+    app: tenant-ingressgateway
+  servers:
+    - hosts:
+        - '*'
+      port:
+        name: http
+        number: 8081
+        protocol: HTTP
+      tls:
+        httpsRedirect: true
+    - hosts:
+        - '*'
+      port:
+        name: https
+        number: 8444
+        protocol: HTTPS
+      tls:
+        credentialName: tenant-cert
+        minProtocolVersion: TLSV1_3
+        mode: SIMPLE
