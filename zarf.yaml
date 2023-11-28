@@ -27,7 +27,6 @@ components:
           - manifests/deploy.yaml
           - manifests/svc.yaml
           - manifests/istio.yaml
-          - manifests/namespace.yaml
     images:
       - ghcr.io/defenseunicorns/leapfrog-ui:0.0.1
     actions:
