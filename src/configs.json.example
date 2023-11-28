@@ -3,6 +3,6 @@
     "NEXT_PUBLIC_DEFAULT_TEMPERATURE":"0.1",
     "NEXT_PUBLIC_DEFAULT_SYSTEM_PROMPT":"You are ChatGPT, a large language model trained by OpenAI. Follow the user's instructions carefully. Respond using markdown.",
     "OPENAI_API_KEY":"my-test-key",
-    "OPENAI_API_HOST":"https://api.openai.com/v1",
+    "OPENAI_API_HOST":"http://localhost:3000/openai/v1",
     "RAG_API_HOST": "http://localhost:8000"
 }
