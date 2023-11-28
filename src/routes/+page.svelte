@@ -866,18 +866,3 @@
         </div>
     </dialog>
 {/if}
-
-<style lang="postcss">
-    :global(html) {
-        background-color: #000033; /* dark blue */
-    }
-    .bg-dark-blue {
-        background-color: #000033; /* dark blue */
-    }
-    .bg-blue-800 {
-        background-color: #000080; /* lighter blue */
-    }
-    .bg-blue-600 {
-        background-color: #0000cd; /* even lighter blue */
-    }
-</style>

@@ -12,6 +12,16 @@
         background-color: #2C3E50; /* Even Darker Blue */
         color: #ECF0F1; /* Light Grey */
     }
+
+    .bg-dark-blue {
+        background-color: #0D133D; /* dark blue */
+    }
+    .bg-blue-800 {
+        background-color: #0D133D; /* lighter blue */
+    }
+    .bg-blue-600 {
+        background-color: #0A0E2E;
+    }
 }
 
 .light {
@@ -23,6 +33,16 @@
     .assistant-message {
         background-color: #E8E8E8; /* Slightly Darker Grey */
         color: #000000; /* Black */
+    }
+
+    .bg-dark-blue {
+        background-color: #14539a; /* dark blue */
+    }
+    .bg-blue-800 {
+        background-color: #14539a; /* lighter blue */
+    }
+    .bg-blue-600 {
+        background-color: #5c80a9;
     }
 }
 
