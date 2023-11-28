@@ -18,6 +18,7 @@ apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
   name: leapfrog-ui
+  namespace: istio-system
 spec:
   selector:
     app: tenant-ingressgateway
