@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: leapfrog-ui
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: leapfrog-ui
+  labels:
+    app: leapfrog-ui
+    service: leapfrog-ui
+spec:
+  selector:
+    app: leapfrog-ui
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+      protocol: TCP

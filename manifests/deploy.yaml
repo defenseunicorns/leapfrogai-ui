@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: leapfrog-ui
+spec:
+  selector:
+    matchLabels:
+      app: leapfrog-ui
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: leapfrog-ui
+    spec:
+      containers:
+        - name: leapfrog-ui
+          image: ghcr.io/defenseunicorns/leapfrog-ui:0.0.1
+          ports:
+            - containerPort: 3000
+          env:
+            - name: LEAPFROGAI_BASE_URL
+              value: "###ZARF_VAR_LEAPFROGAI_BASE_URL###"
+            - name: ORIGIN
+              value: "https://###ZARF_VAR_DOMAIN###"
+          resources:
+            requests:
+              memory: "5Gi"
+              cpu: "500m"
+            limits:
+              memory: "5Gi"
+              cpu: "1000m"
