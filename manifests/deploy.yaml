@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: leapfrog-ui
+  namespace: leapfrogai
 spec:
   selector:
     matchLabels:
