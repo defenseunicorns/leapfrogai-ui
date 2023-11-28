@@ -1,12 +1,7 @@
 <script>
     // @ts-nocheck
 
-    import { 
-        Heading, 
-        Input, 
-        Label, 
-        Spinner, 
-    } from "flowbite-svelte";
+    import { Heading, Input, Label, Spinner, Indicator } from "flowbite-svelte";
     import {
         ArrowRightSolid,
         EditOutline,
@@ -19,11 +14,11 @@
     import { writable } from "svelte/store";
     import configs from "../configs.json";
 
-    let localStorage
+    let localStorage;
     let conversations = writable([]);
     let personas = writable([]);
     let models = writable([]);
-    let loading = writable(true)
+    let loading = writable(true);
     let showSettings = false;
     let fileInput;
     let fileInputRag;
@@ -43,22 +38,23 @@
     }
 
     onMount(async () => {
-        loading.set(true)
+        loading.set(true);
         // required to access localStorage after mount
-        localStorage = window.localStorage
-        getLocalConversations()        
+        localStorage = window.localStorage;
+        getLocalConversations();
 
         models.set(await getModels());
-        await updateRagEndpointState().then(() => {
-            loading.set(false)
-        });
+        loading.set(false);
+        await updateRagEndpointState();
     });
 
     function getLocalConversations() {
         if (localStorage) {
-            const storedConversations = JSON.parse(localStorage.getItem("conversations"))
+            const storedConversations = JSON.parse(
+                localStorage.getItem("conversations"),
+            );
             if (storedConversations?.length > 0) {
-                conversations.set(storedConversations)
+                conversations.set(storedConversations);
             }
         }
     }
@@ -80,9 +76,9 @@
     let chatId = 0;
     let currentConversation = writable(null);
 
-    function persistConversations(data=conversations) {
+    function persistConversations(data = conversations) {
         if (localStorage) {
-            localStorage.setItem("conversations", JSON.stringify(data))
+            localStorage.setItem("conversations", JSON.stringify(data));
         }
     }
 
@@ -223,7 +219,7 @@
 
             conversations.update((n) => {
                 const conversation = n.find(
-                    (c) => c.id === $currentConversation
+                    (c) => c.id === $currentConversation,
                 );
                 if (conversation) {
                     conversation.messages.push(lastMessage);
@@ -252,7 +248,7 @@
             conversationMessages.splice(
                 conversationMessages.length - 1,
                 0,
-                ragResponse
+                ragResponse,
             );
         }
 
@@ -309,7 +305,7 @@
                                 // Enqueue the next data chunk into our target stream
                                 controller.enqueue(value);
                                 const textValue = new TextDecoder().decode(
-                                    value
+                                    value,
                                 );
                                 newMessage.content += textValue;
                                 conversations.set($conversations);
@@ -466,7 +462,6 @@
             <SunOutline class="swap-off" />
         </label>
     </div>
-    {#if !$loading}
     <div class="flex flex-grow">
         <!-- Side Panel 1 -->
         <div class="w-1/5 bg-blue-800 p-4 flex flex-col text-white">
@@ -498,19 +493,21 @@
                                         class="btn"
                                         on:click={() =>
                                             currentConversation.set(
-                                                conversation.id
+                                                conversation.id,
                                             )}>{conversation.name}</button
                                     >
                                     <button
                                         class="btn"
                                         on:click={() =>
-                                            startEditingConversationName(conversation.id)}
-                                        ><EditOutline /></button
+                                            startEditingConversationName(
+                                                conversation.id,
+                                            )}><EditOutline /></button
                                     >
                                 {/if}
                                 <button
                                     class="btn"
-                                    on:click={() => removeConversation(conversation.id)}
+                                    on:click={() =>
+                                        removeConversation(conversation.id)}
                                     ><TrashBinSolid /></button
                                 >
                             </div>
@@ -633,6 +630,13 @@
                 >
                     <UserSettingsSolid />
                 </button>
+                <span class="flex items-center ml-2">
+                    {#if !$loading}
+                        <Indicator color="green" size="sm"/>
+                    {:else}
+                        <Indicator color="red" size="sm"/>
+                    {/if}
+                </span>
             </div>
         </div>
 
@@ -731,17 +735,12 @@
                     </select>
                 </div>
                 <button class="btn mb-2" on:click={savePersona}>Save</button>
-                <button class="btn mb-2" on:click={cancelPersona}>Cancel</button>
+                <button class="btn mb-2" on:click={cancelPersona}>Cancel</button
+                >
             {/if}
         </div>
     </div>
-    {:else}
-    <div class="text-center p-20">
-        <Spinner size={20} color={"blue"} />
-    </div>
-    {/if}
 </div>
-
 
 {#if showSettingsModal}
     <div class="fixed inset-0 flex items-center justify-center z-10">
@@ -800,7 +799,9 @@
 {#if $personas.length > 0}
     <dialog id="persona_modal" class="modal">
         <div class="modal-box">
-            <h3 class="font-bold text-lg">{$personas[currentPersonaId].name}</h3>
+            <h3 class="font-bold text-lg">
+                {$personas[currentPersonaId].name}
+            </h3>
             <form on:submit|preventDefault={updatePersona}>
                 <div class="py-4">
                     <label for="persona-name">Name:</label>
