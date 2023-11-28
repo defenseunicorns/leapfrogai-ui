@@ -16,11 +16,6 @@ variables:
     default: bigbang.dev
     prompt: true
     sensitive: true
-  - name: SUMMARIZATION_MODEL
-    description: The LLM to use for transcript summarization
-    default: ctransformers
-    prompt: true
-    sensitive: false
 
 components:
   - name: leapfrog-ui
