@@ -28,7 +28,7 @@
 	"type": "module",
 	"dependencies": {
 		"flowbite": "^1.8.1",
-		"openai": "^4.10.0",
+		"openai": "^4.20.1",
 		"openai-fetch": "^1.6.3"
 	}
 }

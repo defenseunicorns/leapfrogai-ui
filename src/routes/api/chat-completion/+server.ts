@@ -19,7 +19,7 @@ export async function POST(event: RequestEvent) {
         // Make a request to OpenAI's Chat Completion API
         const chatCompletion = await openai.chat.completions.create({
             messages: messages,
-            model: configs.DEFAULT_MODEL,
+            model: data["model"],
             temperature: data["temperature"],
             max_tokens: data["max_tokens"],
             stream: true
