@@ -1,7 +1,5 @@
-<script>
-    // @ts-nocheck
-
-    import { Heading, Input, Label, Spinner, Indicator } from "flowbite-svelte";
+<script lang="ts">
+    import { Heading, Input, Label, Indicator } from "flowbite-svelte";
     import {
         ArrowRightSolid,
         EditOutline,
@@ -11,7 +9,7 @@
         UserSettingsSolid,
     } from "flowbite-svelte-icons";
     import { onMount } from "svelte";
-    import { writable } from "svelte/store";
+    import {writable} from "svelte/store";
     import configs from "../configs.json";
 
     let localStorage;
@@ -76,9 +74,9 @@
     let chatId = 0;
     let currentConversation = writable(null);
 
-    function persistConversations(data = conversations) {
+    function persistConversations(value: any[]) {
         if (localStorage) {
-            localStorage.setItem("conversations", JSON.stringify(data));
+            localStorage.setItem("conversations", JSON.stringify(value));
         }
     }
 
@@ -378,7 +376,7 @@
             }
             return n;
         });
-        document.getElementById("persona_modal").close();
+        document.getElementById("persona_modal")['close']();
     }
 
     let folders = writable([]);
@@ -561,7 +559,7 @@
                     accept=".txt,.pdf"
                     on:change={importFiles}
                     bind:this={fileInputRag}
-                    multiple="multiple"
+                    multiple={true}
                     class="hidden"
                 />
                 <button class="btn mb-2" on:click={() => fileInputRag.click()}
@@ -665,9 +663,7 @@
                             <button
                                 class="btn"
                                 on:click={() => {
-                                    document
-                                        .getElementById("persona_modal")
-                                        .showModal();
+                                    document.getElementById("persona_modal")['showModal']();
                                     currentPersonaId = persona.id;
                                 }}><EditOutline /></button
                             >
@@ -858,8 +854,7 @@
                     <button
                         type="button"
                         class="btn"
-                        on:click={() =>
-                            document.getElementById("persona_modal").close()}
+                        on:click={() => document.getElementById("persona_modal")['close']() }
                         >Close</button
                     >
                 </div>
