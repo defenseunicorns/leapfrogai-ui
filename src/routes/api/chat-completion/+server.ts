@@ -28,7 +28,7 @@ export async function POST(event: RequestEvent) {
         const body = new ReadableStream({
             async pull(controller) {
                 for await (const part of chatCompletion) {
-                    const content = part.choices[0]['message'].content;
+                    const content = part.choices[0]['delta'].content;
                     controller.enqueue(content || '');
                     // console.log(content || '')
                 }
