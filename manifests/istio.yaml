@@ -11,7 +11,7 @@ spec:
   http:
     - route:
         - destination:
-            host: leapfrog-ui.leapfrog-ui.svc.cluster.local
+            host: leapfrog-ui.leapfrogai.svc.cluster.local
             port:
               number: 3000
 ---
