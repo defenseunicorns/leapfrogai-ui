@@ -19,10 +19,18 @@ spec:
           ports:
             - containerPort: 3000
           env:
-            - name: LEAPFROGAI_BASE_URL
+            - name: OPENAI_API_HOST
               value: "###ZARF_VAR_LEAPFROGAI_BASE_URL###"
+            - name: RAG_API_HOST
+              value: "###ZARF_VAR_LEAPFROGAI_RAG_URL###"
             - name: ORIGIN
               value: "https://###ZARF_VAR_DOMAIN###"
+            - name: PUBLIC_DEFAULT_MODEL
+              value: "https://###ZARF_VAR_MODEL###"
+            - name: PUBLIC_DEFAULT_SYSTEM_PROMPT
+              value: "https://###ZARF_VAR_SYSTEM_PROMPT###"
+            - name: PUBLIC_DEFAULT_TEMPERATURE
+              value: "https://###ZARF_VAR_TEMPERATURE###"
           resources:
             requests:
               memory: "5Gi"
