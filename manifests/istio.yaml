@@ -11,9 +11,9 @@ spec:
   http:
    - match:
      - uri:
-         prefix: "/chat/"
+         prefix: "###ZARF_VAR_PREFIX###/"
      - uri:
-         prefix: "/chat"
+         prefix: "###ZARF_VAR_PREFIX###"
      rewrite:
        uri: "/"
      route:

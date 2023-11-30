@@ -38,7 +38,7 @@ variables:
     sensitive: false
   - name: PREFIX
     description: Prefix for requests to the backend api
-    default: ""
+    default: "/chat"
     prompt: true
     sensitive: false
 
