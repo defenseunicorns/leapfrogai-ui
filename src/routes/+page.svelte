@@ -10,7 +10,7 @@
     } from "flowbite-svelte-icons";
     import { onMount } from "svelte";
     import {writable} from "svelte/store";
-    import configs from "../configs.json";
+    import {env} from "$env/dynamic/public";
 
     let localStorage;
     let conversations = writable([]);
@@ -190,8 +190,8 @@
         chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
-    let selectedModel = configs.DEFAULT_MODEL;
-    let systemPrompt = configs.NEXT_PUBLIC_DEFAULT_SYSTEM_PROMPT;
+    let selectedModel = env.DEFAULT_MODEL;
+    let systemPrompt = env.NEXT_PUBLIC_DEFAULT_SYSTEM_PROMPT;
     let temperature = 0.5;
     let currentMessage = writable("");
     let showPersonaDetails = false;
@@ -281,7 +281,7 @@
             body: JSON.stringify(chatCompletion),
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${configs.OPENAI_API_KEY}`,
+                Authorization: `Bearer ${env.OPENAI_API_KEY}`,
             },
         });
 
