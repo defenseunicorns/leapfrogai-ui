@@ -31,6 +31,8 @@ spec:
               value: "###ZARF_VAR_SYSTEM_PROMPT###"
             - name: PUBLIC_DEFAULT_TEMPERATURE
               value: "###ZARF_VAR_TEMPERATURE###"
+            - name: PUBLIC_URL_PREFIX
+              value: "###ZARF_VAR_PREFIX###"
           resources:
             requests:
               memory: "5Gi"
