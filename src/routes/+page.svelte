@@ -190,9 +190,9 @@
         chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
-    let selectedModel = env.DEFAULT_MODEL;
-    let systemPrompt = env.NEXT_PUBLIC_DEFAULT_SYSTEM_PROMPT;
-    let temperature = 0.5;
+    let selectedModel = env.PUBLIC_DEFAULT_MODEL;
+    let systemPrompt = env.PUBLIC_DEFAULT_SYSTEM_PROMPT;
+    let temperature = env.PUBLIC_DEFAULT_TEMPERATURE;
     let currentMessage = writable("");
     let showPersonaDetails = false;
     let showSettingsModal = false;
