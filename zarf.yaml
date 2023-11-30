@@ -11,6 +11,11 @@ variables:
     default: http://api.leapfrogai.svc.cluster.local:8080/openai/v1
     prompt: true
     sensitive: true
+  - name: LEAPFROGAI_API_KEY
+    description: The api key the Leapfrog AI API (can be left default for local development)
+    default: my-test-key
+    prompt: true
+    sensitive: true
   - name: LEAPFROGAI_RAG_URL
     description: The URL for the Leapfrog AI rag api
     default: http://rag.leapfrogai.svc.cluster.local:8080

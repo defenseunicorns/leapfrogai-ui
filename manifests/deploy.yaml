@@ -33,6 +33,8 @@ spec:
               value: "###ZARF_VAR_TEMPERATURE###"
             - name: PUBLIC_URL_PREFIX
               value: "###ZARF_VAR_PREFIX###"
+            - name: OPENAI_API_KEY
+              value: "###ZARF_VAR_LEAPFROGAI_API_KEY###"
           resources:
             requests:
               memory: "5Gi"
