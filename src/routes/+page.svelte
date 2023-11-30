@@ -263,7 +263,6 @@
             model: selectedModel,
             max_tokens: 1000,
             temperature: temperature,
-            stream: true,
         };
 
         // Create a new assistant message with empty content

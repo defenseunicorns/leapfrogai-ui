@@ -14,8 +14,6 @@ export async function POST(event: RequestEvent) {
         const data = await event.request.json()
         const messages = data["messages"];
 
-        // console.log(data)
-
         // Make a request to OpenAI's Chat Completion API
         const chatCompletion = await openai.chat.completions.create({
             messages: messages,
@@ -29,7 +27,6 @@ export async function POST(event: RequestEvent) {
             async pull(controller) {
                 for await (const part of chatCompletion) {
                     const content = part.choices[0]['delta'].content;
-                    // console.log(content)
                     controller.enqueue(content || '');
                 }
                 controller.close();
