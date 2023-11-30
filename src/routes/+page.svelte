@@ -11,6 +11,7 @@
     import { onMount } from "svelte";
     import {writable} from "svelte/store";
     import {env} from "$env/dynamic/public";
+    import {urlConcat} from "$lib/helper";
 
     let localStorage;
     let conversations = writable([]);
@@ -25,7 +26,7 @@
     let ragEnabled = false;
 
     async function updateRagEndpointState() {
-        fetch("/api/rag/health")
+        fetch(urlConcat("/api/rag/health"))
             .then((response) => response.json())
             .then((body) => {
                 ragEndpointActive = body.enabled;
@@ -58,7 +59,7 @@
     }
 
     async function getModels() {
-        const response = await fetch("/api/models");
+        const response = await fetch(urlConcat("/api/models"));
         const models = await response.json();
         return models;
     }
@@ -96,7 +97,7 @@
 
     async function queryRag(query) {
         try {
-            return await fetch("/api/rag/query", {
+            return await fetch(urlConcat("/api/rag/query"), {
                 method: "POST",
                 body: JSON.stringify({
                     input: query,
@@ -123,7 +124,7 @@
                     const formData = new FormData();
                     formData.append("file", file);
 
-                    await fetch("/api/rag/upload", {
+                    await fetch(urlConcat("/api/rag/upload"), {
                         method: "POST",
                         body: formData,
                     });
@@ -276,12 +277,11 @@
         });
 
         // Request is sent to the local-chat completion server, then routed to the real endpoint
-        const myRequest = new Request("/api/chat-completion", {
+        const myRequest = new Request(urlConcat("/api/chat-completion"), {
             method: "POST",
             body: JSON.stringify(chatCompletion),
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${env.OPENAI_API_KEY}`,
             },
         });
 

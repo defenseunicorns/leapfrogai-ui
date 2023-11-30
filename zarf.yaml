@@ -36,6 +36,11 @@ variables:
     default: "0.1"
     prompt: true
     sensitive: false
+  - name: PREFIX
+    description: Prefix for requests to the backend api
+    default: ""
+    prompt: true
+    sensitive: false
 
 components:
   - name: leapfrog-ui
