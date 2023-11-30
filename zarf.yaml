@@ -18,7 +18,7 @@ variables:
     sensitive: true
   - name: DOMAIN
     description: The domain to use for the application (istio-ingress shenanigans)
-    default: bigbang.dev
+    default: https://localhost:3000
     prompt: true
     sensitive: true
   - name: MODEL

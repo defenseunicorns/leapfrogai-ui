@@ -24,13 +24,13 @@ spec:
             - name: RAG_API_HOST
               value: "###ZARF_VAR_LEAPFROGAI_RAG_URL###"
             - name: ORIGIN
-              value: "https://###ZARF_VAR_DOMAIN###"
+              value: "###ZARF_VAR_DOMAIN###"
             - name: PUBLIC_DEFAULT_MODEL
-              value: "https://###ZARF_VAR_MODEL###"
+              value: "###ZARF_VAR_MODEL###"
             - name: PUBLIC_DEFAULT_SYSTEM_PROMPT
-              value: "https://###ZARF_VAR_SYSTEM_PROMPT###"
+              value: "###ZARF_VAR_SYSTEM_PROMPT###"
             - name: PUBLIC_DEFAULT_TEMPERATURE
-              value: "https://###ZARF_VAR_TEMPERATURE###"
+              value: "###ZARF_VAR_TEMPERATURE###"
           resources:
             requests:
               memory: "5Gi"
