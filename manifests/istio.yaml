@@ -5,40 +5,19 @@ metadata:
   namespace: leapfrogai
 spec:
   gateways:
-    - istio-system/leapfrog-ui
+    - istio-system/leapfrogai
   hosts:
     - "*"
   http:
-    - route:
-        - destination:
-            host: leapfrog-ui.leapfrogai.svc.cluster.local
-            port:
-              number: 3000
----
-apiVersion: networking.istio.io/v1beta1
-kind: Gateway
-metadata:
-  name: leapfrog-ui
-  namespace: istio-system
-spec:
-  selector:
-    app: tenant-ingressgateway
-  servers:
-    - hosts:
-        - '*'
-      port:
-        name: http
-        number: 8081
-        protocol: HTTP
-      tls:
-        httpsRedirect: true
-    - hosts:
-        - '*'
-      port:
-        name: https
-        number: 8444
-        protocol: HTTPS
-      tls:
-        credentialName: tenant-cert
-        minProtocolVersion: TLSV1_3
-        mode: SIMPLE
+   - match:
+     - uri:
+       prefix: "/chat/"
+     - uri:
+       prefix: "/chat"
+     rewrite:
+       uri: "/"
+     route:
+     - destination:
+        host: leapfrog-ui.leapfrogai.svc.cluster.local
+        port:
+          number: 3000
