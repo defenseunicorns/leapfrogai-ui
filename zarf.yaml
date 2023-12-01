@@ -1,9 +1,15 @@
 kind: ZarfPackageConfig
 metadata:
-  name: leapfrog-ui
-  version: 0.0.1
+  name: "###ZARF_PKG_TMPL_NAME###"
+  version: "###ZARF_PKG_TMPL_IMAGE_VERSION###"
   description: >
     A UI for LeapFrog AI
+
+constants:
+  - name: IMAGE_VERSION
+    value: "###ZARF_PKG_TMPL_IMAGE_VERSION###"
+  - name: NAME
+    value: "###ZARF_PKG_TMPL_NAME###"
 
 variables:
   - name: LEAPFROGAI_BASE_URL
@@ -58,7 +64,7 @@ components:
           - manifests/svc.yaml
           - manifests/istio.yaml
     images:
-      - ghcr.io/defenseunicorns/leapfrog-ui:0.0.1
+      - ghcr.io/defenseunicorns/leapfrogai/leapfrog-ui:###ZARF_PKG_TMPL_IMAGE_VERSION###
     actions:
       onDeploy:
         after:
