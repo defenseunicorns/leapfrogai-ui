@@ -1,0 +1,76 @@
+kind: ZarfPackageConfig
+metadata:
+  name: "###ZARF_PKG_TMPL_NAME###"
+  version: "###ZARF_PKG_TMPL_IMAGE_VERSION###"
+  description: >
+    A UI for LeapFrog AI
+
+constants:
+  - name: IMAGE_VERSION
+    value: "###ZARF_PKG_TMPL_IMAGE_VERSION###"
+  - name: NAME
+    value: "###ZARF_PKG_TMPL_NAME###"
+
+variables:
+  - name: LEAPFROGAI_BASE_URL
+    description: The base URL for the Leapfrog AI API
+    default: http://api.leapfrogai.svc.cluster.local:8080/openai/v1
+    prompt: true
+    sensitive: true
+  - name: LEAPFROGAI_API_KEY
+    description: The api key the Leapfrog AI API (can be left default for local development)
+    default: my-test-key
+    prompt: true
+    sensitive: true
+  - name: LEAPFROGAI_RAG_URL
+    description: The URL for the Leapfrog AI rag api
+    default: http://rag.leapfrogai.svc.cluster.local:8080
+    prompt: true
+    sensitive: true
+  - name: DOMAIN
+    description: The domain to use for the application (istio-ingress shenanigans)
+    default: https://localhost:3000
+    prompt: true
+    sensitive: true
+  - name: MODEL
+    description: The default model to use for the LLM to query
+    default: ctransformers
+    prompt: true
+    sensitive: false
+  - name: SYSTEM_PROMPT
+    description: The default system prompt to use for the LLM
+    default: "You are an advanced conversational agent modeled after OpenAI's GPT architecture."
+    prompt: true
+    sensitive: false
+  - name: TEMPERATURE
+    description: The default temperature for the LLM
+    default: "0.1"
+    prompt: true
+    sensitive: false
+  - name: PREFIX
+    description: Prefix for requests to the backend api
+    default: "/chat"
+    prompt: true
+    sensitive: false
+
+components:
+  - name: leapfrog-ui
+    required: true
+    manifests:
+      - name: leapfrog-ui
+        namespace: leapfrogai
+        files:
+          - manifests/deploy.yaml
+          - manifests/svc.yaml
+          - manifests/istio.yaml
+    images:
+      - ghcr.io/defenseunicorns/leapfrogai/leapfrog-ui:###ZARF_PKG_TMPL_IMAGE_VERSION###
+    actions:
+      onDeploy:
+        after:
+          - wait:
+              cluster:
+                kind: Deployment
+                name: leapfrog-ui
+                namespace: leapfrogai
+                condition: Available

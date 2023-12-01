@@ -1,0 +1,26 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: leapfrog-ui
+  namespace: leapfrogai
+spec:
+  gateways:
+    - istio-system/leapfrogai
+  hosts:
+    - "*"
+  http:
+   - match:
+     - uri:
+         prefix: "###ZARF_VAR_PREFIX###/"
+     rewrite:
+       uri: "/"
+     route:
+     - destination:
+        host: leapfrog-ui.leapfrogai.svc.cluster.local
+        port:
+          number: 3000
+   - match:
+       - uri:
+           prefix: "###ZARF_VAR_PREFIX###"
+     rewrite:
+       uri: "###ZARF_VAR_PREFIX###/"

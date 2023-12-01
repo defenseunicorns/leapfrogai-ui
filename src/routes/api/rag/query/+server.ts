@@ -1,12 +1,12 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import configs from "../../../../configs.json";
+import {env} from "$env/dynamic/private";
 
 /** @type {import('./$types').RequestEvent} */
 export async function POST(event: RequestEvent) {
     try {
         const data = await event.request.json();
 
-        const result = await fetch(`${configs.RAG_API_HOST}/query/`, {
+        const result = await fetch(`${env.RAG_API_HOST}/query/`, {
             method: "POST",
             body: JSON.stringify(data),
             headers: {

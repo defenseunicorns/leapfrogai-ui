@@ -1,10 +1,10 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import configs from "../../../../configs.json";
+import {env} from "$env/dynamic/private";
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET(event: RequestEvent) {
     try {
-        await fetch(`${configs.RAG_API_HOST}/health/`)
+        await fetch(`${env.RAG_API_HOST}/health/`)
 
         return new Response(JSON.stringify({"enabled": true}), {
             status: 200,

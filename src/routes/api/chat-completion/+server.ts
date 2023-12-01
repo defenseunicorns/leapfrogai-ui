@@ -1,11 +1,10 @@
 import OpenAI from 'openai';
-import configs from '../../../configs.json';
 import type { RequestEvent } from '@sveltejs/kit';
-import { Readable } from 'stream';
+import {env} from "$env/dynamic/private";
 
 const openai = new OpenAI({
-    apiKey: configs.OPENAI_API_KEY,
-    baseURL: configs.OPENAI_API_HOST
+    apiKey: env.OPENAI_API_KEY,
+    baseURL: env.OPENAI_API_HOST
 });
 
 /** @type {import('./$types').RequestHandler} */

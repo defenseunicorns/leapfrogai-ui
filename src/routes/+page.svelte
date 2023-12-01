@@ -10,7 +10,8 @@
     } from "flowbite-svelte-icons";
     import { onMount } from "svelte";
     import {writable} from "svelte/store";
-    import configs from "../configs.json";
+    import {env} from "$env/dynamic/public";
+    import {urlConcat} from "$lib/helper";
 
     let localStorage;
     let conversations = writable([]);
@@ -25,7 +26,7 @@
     let ragEnabled = false;
 
     async function updateRagEndpointState() {
-        fetch("/api/rag/health")
+        fetch(urlConcat("/api/rag/health"))
             .then((response) => response.json())
             .then((body) => {
                 ragEndpointActive = body.enabled;
@@ -58,17 +59,9 @@
     }
 
     async function getModels() {
-        const response = await fetch("/api/models");
+        const response = await fetch(urlConcat("/api/models"));
         const models = await response.json();
         return models;
-    }
-
-    function newFolder() {
-        folders.update((n) => [...n, "New Folder"]);
-    }
-
-    function clearFolders() {
-        folders.set([]);
     }
 
     let chatId = 0;
@@ -96,7 +89,7 @@
 
     async function queryRag(query) {
         try {
-            return await fetch("/api/rag/query", {
+            return await fetch(urlConcat("/api/rag/query"), {
                 method: "POST",
                 body: JSON.stringify({
                     input: query,
@@ -123,7 +116,7 @@
                     const formData = new FormData();
                     formData.append("file", file);
 
-                    await fetch("/api/rag/upload", {
+                    await fetch(urlConcat("/api/rag/upload"), {
                         method: "POST",
                         body: formData,
                     });
@@ -190,9 +183,9 @@
         chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
-    let selectedModel = configs.DEFAULT_MODEL;
-    let systemPrompt = configs.NEXT_PUBLIC_DEFAULT_SYSTEM_PROMPT;
-    let temperature = 0.5;
+    let selectedModel = env.PUBLIC_DEFAULT_MODEL;
+    let systemPrompt = env.PUBLIC_DEFAULT_SYSTEM_PROMPT;
+    let temperature = env.PUBLIC_DEFAULT_TEMPERATURE;
     let currentMessage = writable("");
     let showPersonaDetails = false;
     let showSettingsModal = false;
@@ -276,12 +269,11 @@
         });
 
         // Request is sent to the local-chat completion server, then routed to the real endpoint
-        const myRequest = new Request("/api/chat-completion", {
+        const myRequest = new Request(urlConcat("/api/chat-completion"), {
             method: "POST",
             body: JSON.stringify(chatCompletion),
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${configs.OPENAI_API_KEY}`,
             },
         });
 
@@ -378,43 +370,12 @@
         document.getElementById("persona_modal")['close']();
     }
 
-    let folders = writable([]);
-
-    function removeFolder(index) {
-        folders.update((folders) => {
-            folders.splice(index, 1);
-            return folders;
-        });
-    }
-
     function removeConversation(id) {
         conversations.update((n) => n.filter((c) => c.id !== id));
     }
 
     function removePersona(id) {
         personas.update((n) => n.filter((p) => p.id !== id));
-    }
-
-    let editingFolderIndex = -1;
-    let tempFolderName = "";
-
-    function startEditingFolderName(index) {
-        editingFolderIndex = index;
-        tempFolderName = $folders[index];
-    }
-
-    function handleKeyDown(event) {
-        if (event.key === "Enter") {
-            editFolderName(tempFolderName);
-        }
-    }
-
-    function editFolderName(newName) {
-        folders.update((folders) => {
-            folders[editingFolderIndex] = newName;
-            return folders;
-        });
-        editingFolderIndex = -1;
     }
 
     let editingConversationIndex = -1;
@@ -514,41 +475,6 @@
             {/if}
             <button class="btn mb-2" on:click={clearConversations}
                 >Clear conversations</button
-            >
-            <Heading class="underline-heading" tag="h4">Folders</Heading>
-            <button class="btn mb-2" on:click={newFolder}>New folder</button>
-            {#if $folders.length > 0}
-                <div class="menu bg-base-200 w-full rounded-box">
-                    {#each $folders as folder, index}
-                        <div class="flex">
-                            {#if editingFolderIndex === index}
-                                <input
-                                    class="input input-bordered w-full max-w-xs mb-2"
-                                    type="text"
-                                    bind:value={tempFolderName}
-                                    on:keydown={handleKeyDown}
-                                    autofocus
-                                />
-                            {:else}
-                                <button class="btn">{folder}</button>
-                                <button
-                                    class="btn"
-                                    on:click={() =>
-                                        startEditingFolderName(index)}
-                                    ><EditOutline /></button
-                                >
-                            {/if}
-                            <button
-                                class="btn"
-                                on:click={() => removeFolder(index)}
-                                ><TrashBinSolid /></button
-                            >
-                        </div>
-                    {/each}
-                </div>
-            {/if}
-            <button class="btn mb-2" on:click={clearFolders}
-                >Clear Folders</button
             >
             <Heading class="underline-heading" tag="h4">Data Management</Heading
             >

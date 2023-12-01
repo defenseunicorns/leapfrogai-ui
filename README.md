@@ -4,7 +4,7 @@ UI Built with SvelteKit, Tailwind CSS with Daisy UI and [Flowbite Svelte](https:
 
 Once you've created a project and installed dependencies with `npm install` or `pnpm install` or `yarn`:
 
-Copy `/src/configs.json.example` into `/src/configs.json` and set all the variables accordingly.
+Copy `.env.example` into `.env` and set all the variables accordingly.
 * [Note] If the UI is running within a docker container and tailscale is being used then `OPENAI_API_HOST` value needs to be the [fully qualified domain name](https://tailscale.com/kb/1081/magicdns/#fully-qualified-domain-names-vs-machine-names) of the server.
 
 ```bash
