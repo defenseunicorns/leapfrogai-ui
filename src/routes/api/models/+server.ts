@@ -6,7 +6,7 @@ import {env} from "$env/dynamic/private";
 export async function GET(event: RequestEvent) {
     const openai = new OpenAI({
         apiKey: env.OPENAI_API_KEY,
-        baseURL: env.OPENAI_API_KEY
+        baseURL: env.OPENAI_API_HOST
     });
 
     try {
