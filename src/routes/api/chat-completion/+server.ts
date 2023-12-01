@@ -2,13 +2,13 @@ import OpenAI from 'openai';
 import type { RequestEvent } from '@sveltejs/kit';
 import {env} from "$env/dynamic/private";
 
-const openai = new OpenAI({
-    apiKey: env.OPENAI_API_KEY,
-    baseURL: env.OPENAI_API_HOST
-});
-
 /** @type {import('./$types').RequestHandler} */
 export async function POST(event: RequestEvent) {
+    const openai = new OpenAI({
+        apiKey: env.OPENAI_API_KEY,
+        baseURL: env.OPENAI_API_HOST
+    });
+
     try {
         const data = await event.request.json()
         const messages = data["messages"];
