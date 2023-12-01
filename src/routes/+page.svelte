@@ -64,14 +64,6 @@
         return models;
     }
 
-    function newFolder() {
-        folders.update((n) => [...n, "New Folder"]);
-    }
-
-    function clearFolders() {
-        folders.set([]);
-    }
-
     let chatId = 0;
     let currentConversation = writable(null);
 
@@ -378,43 +370,12 @@
         document.getElementById("persona_modal")['close']();
     }
 
-    let folders = writable([]);
-
-    function removeFolder(index) {
-        folders.update((folders) => {
-            folders.splice(index, 1);
-            return folders;
-        });
-    }
-
     function removeConversation(id) {
         conversations.update((n) => n.filter((c) => c.id !== id));
     }
 
     function removePersona(id) {
         personas.update((n) => n.filter((p) => p.id !== id));
-    }
-
-    let editingFolderIndex = -1;
-    let tempFolderName = "";
-
-    function startEditingFolderName(index) {
-        editingFolderIndex = index;
-        tempFolderName = $folders[index];
-    }
-
-    function handleKeyDown(event) {
-        if (event.key === "Enter") {
-            editFolderName(tempFolderName);
-        }
-    }
-
-    function editFolderName(newName) {
-        folders.update((folders) => {
-            folders[editingFolderIndex] = newName;
-            return folders;
-        });
-        editingFolderIndex = -1;
     }
 
     let editingConversationIndex = -1;
@@ -514,41 +475,6 @@
             {/if}
             <button class="btn mb-2" on:click={clearConversations}
                 >Clear conversations</button
-            >
-            <Heading class="underline-heading" tag="h4">Folders</Heading>
-            <button class="btn mb-2" on:click={newFolder}>New folder</button>
-            {#if $folders.length > 0}
-                <div class="menu bg-base-200 w-full rounded-box">
-                    {#each $folders as folder, index}
-                        <div class="flex">
-                            {#if editingFolderIndex === index}
-                                <input
-                                    class="input input-bordered w-full max-w-xs mb-2"
-                                    type="text"
-                                    bind:value={tempFolderName}
-                                    on:keydown={handleKeyDown}
-                                    autofocus
-                                />
-                            {:else}
-                                <button class="btn">{folder}</button>
-                                <button
-                                    class="btn"
-                                    on:click={() =>
-                                        startEditingFolderName(index)}
-                                    ><EditOutline /></button
-                                >
-                            {/if}
-                            <button
-                                class="btn"
-                                on:click={() => removeFolder(index)}
-                                ><TrashBinSolid /></button
-                            >
-                        </div>
-                    {/each}
-                </div>
-            {/if}
-            <button class="btn mb-2" on:click={clearFolders}
-                >Clear Folders</button
             >
             <Heading class="underline-heading" tag="h4">Data Management</Heading
             >
