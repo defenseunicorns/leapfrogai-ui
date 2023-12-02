@@ -6,6 +6,7 @@ let openai = undefined;
 
 /** @type {import('./$types').RequestHandler} */
 export async function POST(event: RequestEvent) {
+    // This load the openai client at runtime to prevent a compile time dependency on  the environment variables
     if (openai === undefined) {
         openai = new OpenAI({
             apiKey: env.OPENAI_API_KEY,
