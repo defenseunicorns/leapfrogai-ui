@@ -6,7 +6,7 @@ let openai = new OpenAI();
 
 /** @type {import('./$types').RequestHandler} */
 export async function POST(event: RequestEvent) {
-    // This set the openai client values at runtime to prevent a compile time dependency on the environment variables
+    // This sets the openai client values at runtime to prevent a compile time dependency on the environment variables
     openai.apiKey = env.OPENAI_API_KEY;
     openai.baseURL = env.OPENAI_API_HOST;
 
