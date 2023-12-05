@@ -1,11 +1,12 @@
 <script lang="ts">
     import { Heading, Input, Label, Indicator } from "flowbite-svelte";
     import {
+        AnnotationOutline,
         ArrowRightSolid,
         EditOutline,
         SunOutline,
         SunSolid,
-        TrashBinSolid,
+        TrashBinSolid, UserEditOutline, UserEditSolid,
         UserSettingsSolid,
     } from "flowbite-svelte-icons";
     import { onMount } from "svelte";
@@ -422,44 +423,51 @@
     </div>
     <div class="flex flex-grow">
         <!-- Side Panel 1 -->
-        <div class="w-1/5 bg-blue-800 p-4 flex flex-col text-white">
+        <div class="w-1/6 bg-blue-800 p-4 flex flex-col text-white">
             <Heading class="underline-heading" tag="h4">Conversations</Heading>
             <button class="btn mb-2" on:click={newChat}>New chat</button>
             <input
-                class="input input-bordered w-full max-w-xs mb-2"
+                class="input input-bordered w-full mb-2"
                 type="text"
                 placeholder="Search"
                 bind:value={conversationSearch}
             />
             {#if $conversations.length > 0}
-                <div class="menu bg-base-200 w-full rounded-box">
+                <div class="menu mb-2 w-full">
                     {#each $conversations as conversation}
                         {#if conversationSearch == "" || conversation.name
                                 .toLowerCase()
                                 .includes(conversationSearch.toLowerCase())}
-                            <div class="flex">
+                            <div class="grid grid-cols-7 my-1 bg-base-200 rounded-box">
                                 {#if editingConversationIndex === conversation.id}
                                     <input
-                                        class="input input-bordered w-full max-w-xs mb-2"
+                                        class="input input-bordered col-start-1 col-end-6"
                                         type="text"
                                         bind:value={tempConversationName}
                                         on:keydown={handleConversationKeyDown}
                                         autofocus
                                     />
+                                    <button
+                                            class="btn"
+                                            on:click={() => editConversationName(tempConversationName)}>
+                                        <UserEditOutline />
+                                    </button>
                                 {:else}
                                     <button
-                                        class="btn"
+                                        class="btn justify-start col-start-1 col-end-6"
                                         on:click={() =>
                                             currentConversation.set(
                                                 conversation.id,
-                                            )}>{conversation.name}</button
+                                            )}>
+                                        <AnnotationOutline></AnnotationOutline>
+                                        {conversation.name}</button
                                     >
                                     <button
                                         class="btn"
                                         on:click={() =>
                                             startEditingConversationName(
                                                 conversation.id,
-                                            )}><EditOutline /></button
+                                            )}><UserEditSolid /></button
                                     >
                                 {/if}
                                 <button
@@ -510,7 +518,7 @@
         </div>
 
         <!-- Center Panel -->
-        <div class="w-3/5 bg-blue-600 p-4 flex flex-col text-white">
+        <div class="w-4/6 bg-blue-600 p-4 flex flex-col text-white">
             <div
                 bind:this={chatContainer}
                 class="chat-container mb-2 overflow-auto flex-grow"
@@ -564,11 +572,11 @@
         </div>
 
         <!-- Side Panel 2 -->
-        <div class="w-1/5 bg-blue-800 p-4 flex flex-col text-white">
+        <div class="w-1/6 bg-blue-800 p-4 flex flex-col text-white">
             <Heading class="underline-heading" tag="h4">Personas</Heading>
             <button class="btn mb-2" on:click={newPersona}>New persona</button>
             <input
-                class="input input-bordered w-full max-w-xs mb-2"
+                class="input input-bordered w-full mb-2"
                 type="text"
                 placeholder="Search"
                 bind:value={personaSearch}
