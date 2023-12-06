@@ -1,11 +1,12 @@
 <script lang="ts">
     import { Heading, Input, Label, Indicator } from "flowbite-svelte";
     import {
+        AnnotationOutline,
         ArrowRightSolid,
         EditOutline,
         SunOutline,
         SunSolid,
-        TrashBinSolid,
+        TrashBinSolid, UserEditOutline, UserEditSolid,
         UserSettingsSolid,
     } from "flowbite-svelte-icons";
     import { onMount } from "svelte";
@@ -64,7 +65,7 @@
         return models;
     }
 
-    let chatId = 0;
+    let chatUuid: string;
     let currentConversation = writable(null);
 
     function persistConversations(value: any[]) {
@@ -75,12 +76,14 @@
 
     conversations.subscribe(persistConversations);
 
-    function newChat() {
+    function newChat(): string {
+        chatUuid = crypto.randomUUID();
         conversations.update((n) => [
             ...n,
-            { id: chatId++, name: "New conversation", messages: [] },
+            { id: chatUuid, name: "New conversation", messages: [] },
         ]);
-        currentConversation.set(chatId - 1);
+        currentConversation.set(chatUuid);
+        return chatUuid;
     }
 
     function clearConversations() {
@@ -204,8 +207,7 @@
         if ($currentMessage.trim() !== "") {
             // If there's no current conversation, create a new one
             if ($currentConversation === null) {
-                newChat();
-                currentConversation.set(chatId - 1); // Set the current conversation to the newly created one
+                currentConversation.set(newChat()); // Set the current conversation to the newly created one
             }
 
             conversations.update((n) => {
@@ -351,6 +353,14 @@
         clearNewPersona();
     }
 
+    function editConversation(conversationId: number) {
+        if (editingConversationIndex === conversationId) {
+            editConversationName(tempConversationName);
+        } else {
+            startEditingConversationName(conversationId)
+        }
+    }
+
     function cancelPersona() {
         showPersonaDetails = false;
     }
@@ -383,7 +393,7 @@
 
     function startEditingConversationName(index) {
         editingConversationIndex = index;
-        tempConversationName = $conversations[index].name;
+        tempConversationName = $conversations.filter((p) => p.id === index)[0].name;
     }
 
     function handleConversationKeyDown(event) {
@@ -394,7 +404,7 @@
 
     function editConversationName(newName) {
         conversations.update((conversations) => {
-            conversations[editingConversationIndex].name = newName;
+            $conversations.filter((p) => p.id === editingConversationIndex)[0].name = newName;
             return conversations;
         });
         editingConversationIndex = -1;
@@ -422,25 +432,25 @@
     </div>
     <div class="flex flex-grow">
         <!-- Side Panel 1 -->
-        <div class="w-1/5 bg-blue-800 p-4 flex flex-col text-white">
+        <div class="w-1/6 bg-blue-800 p-4 flex flex-col text-white">
             <Heading class="underline-heading" tag="h4">Conversations</Heading>
             <button class="btn mb-2" on:click={newChat}>New chat</button>
             <input
-                class="input input-bordered w-full max-w-xs mb-2"
+                class="input input-bordered w-full mb-2"
                 type="text"
                 placeholder="Search"
                 bind:value={conversationSearch}
             />
             {#if $conversations.length > 0}
-                <div class="menu bg-base-200 w-full rounded-box">
+                <div class="menu mb-2 w-full">
                     {#each $conversations as conversation}
                         {#if conversationSearch == "" || conversation.name
                                 .toLowerCase()
                                 .includes(conversationSearch.toLowerCase())}
-                            <div class="flex">
+                            <div class="my-1 bg-base-200 flex flex-row w-full rounded-box whitespace-nowrap">
                                 {#if editingConversationIndex === conversation.id}
                                     <input
-                                        class="input input-bordered w-full max-w-xs mb-2"
+                                        class="input input-bordered w-4/6 flex-nowrap"
                                         type="text"
                                         bind:value={tempConversationName}
                                         on:keydown={handleConversationKeyDown}
@@ -448,22 +458,22 @@
                                     />
                                 {:else}
                                     <button
-                                        class="btn"
-                                        on:click={() =>
-                                            currentConversation.set(
-                                                conversation.id,
-                                            )}>{conversation.name}</button
-                                    >
-                                    <button
-                                        class="btn"
-                                        on:click={() =>
-                                            startEditingConversationName(
-                                                conversation.id,
-                                            )}><EditOutline /></button
-                                    >
+                                            class="btn justify-start w-4/6 flex-nowrap"
+                                            on:click={() => currentConversation.set(conversation.id)}>
+                                        <AnnotationOutline/><span class="overflow-hidden truncate ml-2">{conversation.name}</span>
+                                    </button>
                                 {/if}
                                 <button
-                                    class="btn"
+                                        class="btn w-1/6"
+                                        on:click={() => editConversation(conversation.id)}>
+                                    {#if editingConversationIndex === conversation.id}
+                                        <UserEditSolid />
+                                    {:else}
+                                        <UserEditOutline />
+                                    {/if}
+                                </button>
+                                <button
+                                    class="btn w-1/6"
                                     on:click={() =>
                                         removeConversation(conversation.id)}
                                     ><TrashBinSolid /></button
@@ -510,7 +520,7 @@
         </div>
 
         <!-- Center Panel -->
-        <div class="w-3/5 bg-blue-600 p-4 flex flex-col text-white">
+        <div class="w-4/6 bg-blue-600 p-4 flex flex-col text-white">
             <div
                 bind:this={chatContainer}
                 class="chat-container mb-2 overflow-auto flex-grow"
@@ -564,11 +574,11 @@
         </div>
 
         <!-- Side Panel 2 -->
-        <div class="w-1/5 bg-blue-800 p-4 flex flex-col text-white">
+        <div class="w-1/6 bg-blue-800 p-4 flex flex-col text-white">
             <Heading class="underline-heading" tag="h4">Personas</Heading>
             <button class="btn mb-2" on:click={newPersona}>New persona</button>
             <input
-                class="input input-bordered w-full max-w-xs mb-2"
+                class="input input-bordered w-full mb-2"
                 type="text"
                 placeholder="Search"
                 bind:value={personaSearch}
