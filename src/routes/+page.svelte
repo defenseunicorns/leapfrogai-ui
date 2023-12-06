@@ -65,7 +65,7 @@
         return models;
     }
 
-    let chatId = 0;
+    let chatUuid: string;
     let currentConversation = writable(null);
 
     function persistConversations(value: any[]) {
@@ -76,12 +76,14 @@
 
     conversations.subscribe(persistConversations);
 
-    function newChat() {
+    function newChat(): string {
+        chatUuid = crypto.randomUUID();
         conversations.update((n) => [
             ...n,
-            { id: chatId++, name: "New conversation", messages: [] },
+            { id: chatUuid, name: "New conversation", messages: [] },
         ]);
-        currentConversation.set(chatId - 1);
+        currentConversation.set(chatUuid);
+        return chatUuid;
     }
 
     function clearConversations() {
@@ -205,8 +207,7 @@
         if ($currentMessage.trim() !== "") {
             // If there's no current conversation, create a new one
             if ($currentConversation === null) {
-                newChat();
-                currentConversation.set(chatId - 1); // Set the current conversation to the newly created one
+                currentConversation.set(newChat()); // Set the current conversation to the newly created one
             }
 
             conversations.update((n) => {
@@ -352,6 +353,14 @@
         clearNewPersona();
     }
 
+    function editConversation(conversationId: number) {
+        if (editingConversationIndex === conversationId) {
+            editConversationName(tempConversationName);
+        } else {
+            startEditingConversationName(conversationId)
+        }
+    }
+
     function cancelPersona() {
         showPersonaDetails = false;
     }
@@ -384,7 +393,7 @@
 
     function startEditingConversationName(index) {
         editingConversationIndex = index;
-        tempConversationName = $conversations[index].name;
+        tempConversationName = $conversations.filter((p) => p.id === index)[0].name;
     }
 
     function handleConversationKeyDown(event) {
@@ -395,7 +404,7 @@
 
     function editConversationName(newName) {
         conversations.update((conversations) => {
-            conversations[editingConversationIndex].name = newName;
+            $conversations.filter((p) => p.id === editingConversationIndex)[0].name = newName;
             return conversations;
         });
         editingConversationIndex = -1;
@@ -438,40 +447,33 @@
                         {#if conversationSearch == "" || conversation.name
                                 .toLowerCase()
                                 .includes(conversationSearch.toLowerCase())}
-                            <div class="grid grid-cols-7 my-1 bg-base-200 rounded-box">
+                            <div class="my-1 bg-base-200 flex flex-row w-full rounded-box whitespace-nowrap">
                                 {#if editingConversationIndex === conversation.id}
                                     <input
-                                        class="input input-bordered col-start-1 col-end-6"
+                                        class="input input-bordered w-4/6 flex-nowrap"
                                         type="text"
                                         bind:value={tempConversationName}
                                         on:keydown={handleConversationKeyDown}
                                         autofocus
                                     />
-                                    <button
-                                            class="btn"
-                                            on:click={() => editConversationName(tempConversationName)}>
-                                        <UserEditOutline />
-                                    </button>
                                 {:else}
                                     <button
-                                        class="btn justify-start col-start-1 col-end-6"
-                                        on:click={() =>
-                                            currentConversation.set(
-                                                conversation.id,
-                                            )}>
-                                        <AnnotationOutline></AnnotationOutline>
-                                        {conversation.name}</button
-                                    >
-                                    <button
-                                        class="btn"
-                                        on:click={() =>
-                                            startEditingConversationName(
-                                                conversation.id,
-                                            )}><UserEditSolid /></button
-                                    >
+                                            class="btn justify-start w-4/6 flex-nowrap"
+                                            on:click={() => currentConversation.set(conversation.id)}>
+                                        <AnnotationOutline/><span class="overflow-hidden truncate ml-2">{conversation.name}</span>
+                                    </button>
                                 {/if}
                                 <button
-                                    class="btn"
+                                        class="btn w-1/6"
+                                        on:click={() => editConversation(conversation.id)}>
+                                    {#if editingConversationIndex === conversation.id}
+                                        <UserEditSolid />
+                                    {:else}
+                                        <UserEditOutline />
+                                    {/if}
+                                </button>
+                                <button
+                                    class="btn w-1/6"
                                     on:click={() =>
                                         removeConversation(conversation.id)}
                                     ><TrashBinSolid /></button
