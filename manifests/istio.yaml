@@ -24,3 +24,8 @@ spec:
            prefix: "###ZARF_VAR_PREFIX###"
      rewrite:
        uri: "###ZARF_VAR_PREFIX###/"
+     route:
+       - destination:
+           host: leapfrog-ui.leapfrogai.svc.cluster.local
+           port:
+             number: 3000
