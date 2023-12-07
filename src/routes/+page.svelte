@@ -13,6 +13,12 @@
     import {writable} from "svelte/store";
     import {env} from "$env/dynamic/public";
     import {urlConcat} from "$lib/helper";
+    import SvelteMarkdown from 'svelte-markdown'
+    import codeblock from "$lib/components/codeblock.svelte";
+    import codespan from "$lib/components/codespan.svelte";
+
+    /** @type {import('./$types').LayoutData} */
+    export let data;
 
     let localStorage;
     let conversations = writable([]);
@@ -410,15 +416,13 @@
         editingConversationIndex = -1;
     }
 
-    let theme = writable("dark");
-
     function toggleTheme() {
         console.log("We toggled it");
-        $theme === "dark" ? theme.set("light") : theme.set("dark");
+        data.theme === "dark" ? data.theme = "light" : data.theme = "dark";
     }
 </script>
 
-<div class="flex flex-col h-screen bg-dark-blue {$theme}">
+<div class="flex flex-col h-screen bg-dark-blue {data.theme}">
     <!-- Title Bar -->
     <div class="flex items-center justify-between p-4 border-b border-white">
         <img src="leapfrogai.png" alt="LeapfrogAI" class="w-40" />
@@ -533,7 +537,10 @@
                                 ? 'user-message'
                                 : 'assistant-message'} text-black"
                         >
-                            {message.content}
+                            <SvelteMarkdown source="{message.content}" renderers={{
+                                code: codeblock,
+                                codespan: codespan
+                            }}  />
                         </div>
                     {/each}
                 {/if}
