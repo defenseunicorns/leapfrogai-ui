@@ -21,9 +21,9 @@ spec:
           number: 3000
    - match:
        - uri:
-           prefix: "###ZARF_VAR_PREFIX###"
+           prefix: "###ZARF_VAR_PREFIX###/"
      rewrite:
-       uri: "###ZARF_VAR_PREFIX###/"
+       uri: "/"
      route:
        - destination:
            host: leapfrog-ui.leapfrogai.svc.cluster.local

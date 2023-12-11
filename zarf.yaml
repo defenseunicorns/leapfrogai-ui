@@ -29,7 +29,7 @@ variables:
     sensitive: true
   - name: DOMAIN
     description: The domain to use for the application (istio-ingress shenanigans)
-    default: https://localhost:3000
+    default: https://localhost:8080
     prompt: true
     sensitive: true
   - name: MODEL
@@ -48,7 +48,7 @@ variables:
     prompt: true
     sensitive: false
   - name: PREFIX
-    description: Prefix for requests to the backend api
+    description: Prefix for requests to the application
     default: "/chat"
     prompt: true
     sensitive: false
