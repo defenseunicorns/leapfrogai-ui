@@ -19,13 +19,9 @@ spec:
         host: leapfrog-ui.leapfrogai.svc.cluster.local
         port:
           number: 3000
+  # see https://github.com/istio/istio/issues/8076#issuecomment-427057691 for redirect setup and rationale
    - match:
        - uri:
            prefix: "###ZARF_VAR_PREFIX###"
-     rewrite:
+     redirect:
        uri: "###ZARF_VAR_PREFIX###/"
-     route:
-       - destination:
-           host: leapfrog-ui.leapfrogai.svc.cluster.local
-           port:
-             number: 3000
