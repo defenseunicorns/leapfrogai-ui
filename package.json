@@ -31,6 +31,7 @@
 		"openai": "^4.20.1",
 		"openai-fetch": "^1.6.3",
 		"svelte-highlight": "^7.4.2",
-		"svelte-markdown": "^0.4.0"
+		"svelte-markdown": "^0.4.0",
+		"uuid": "^9.0.1"
 	}
 }

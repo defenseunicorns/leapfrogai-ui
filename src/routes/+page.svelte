@@ -16,6 +16,8 @@
     import SvelteMarkdown from 'svelte-markdown'
     import codeblock from "$lib/components/codeblock.svelte";
     import codespan from "$lib/components/codespan.svelte";
+    import { v4 as uuidv4 } from 'uuid';
+
 
     /** @type {import('./$types').LayoutData} */
     export let data;
@@ -83,7 +85,7 @@
     conversations.subscribe(persistConversations);
 
     function newChat(): string {
-        chatUuid = crypto.randomUUID();
+        chatUuid = uuidv4();
         conversations.update((n) => [
             ...n,
             { id: chatUuid, name: "New conversation", messages: [] },
