@@ -424,10 +424,15 @@
     }
 </script>
 
-<div class="flex flex-col h-screen bg-dark-blue {data.theme}">
+<div class="flex flex-col h-screen {data.theme}">
     <!-- Title Bar -->
     <div class="flex items-center justify-between p-4 border-b border-white">
-        <img src="leapfrogai.png" alt="LeapfrogAI" class="w-40" />
+        <div class="flex items-center">
+            <img src="DU_unicorn_rgb.png" alt="LeapfrogAI" width="32px"/>
+            <div style="margin-left: 8px;">
+                <h1 class="text-xl font-bold">AI for National Security</h1>
+            </div>
+        </div>
         <label class="swap swap-rotate" on:change={toggleTheme}>
             <!-- this hidden checkbox controls the state -->
             <input type="checkbox" class="invisible" />
@@ -438,8 +443,7 @@
     </div>
     <div class="flex flex-grow">
         <!-- Side Panel 1 -->
-        <div class="w-1/6 bg-blue-800 p-4 flex flex-col text-white">
-            <Heading class="underline-heading" tag="h4">Conversations</Heading>
+        <div class="w-1/6 p-4 flex flex-col">
             <button class="btn mb-2" on:click={newChat}>New chat</button>
             <input
                 class="input input-bordered w-full mb-2"
@@ -466,7 +470,7 @@
                                     <button
                                             class="btn justify-start w-4/6 flex-nowrap"
                                             on:click={() => currentConversation.set(conversation.id)}>
-                                        <AnnotationOutline/><span class="overflow-hidden truncate ml-2">{conversation.name}</span>
+                                        <span class="overflow-hidden">{conversation.name}</span>
                                     </button>
                                 {/if}
                                 <button
@@ -491,8 +495,6 @@
             {/if}
             <button class="btn mb-2" on:click={clearConversations}
                 >Clear conversations</button
-            >
-            <Heading class="underline-heading" tag="h4">Data Management</Heading
             >
             {#if ragEndpointActive}
                 <input
@@ -526,7 +528,7 @@
         </div>
 
         <!-- Center Panel -->
-        <div class="w-4/6 bg-blue-600 p-4 flex flex-col text-white">
+        <div class="w-4/6 p-4 flex flex-col">
             <div
                 bind:this={chatContainer}
                 class="chat-container mb-2 overflow-auto flex-grow"
@@ -537,7 +539,7 @@
                         <div
                             class="p-2 m-2 rounded {message.role === 'user'
                                 ? 'user-message'
-                                : 'assistant-message'} text-black"
+                                : 'assistant-message'}"
                         >
                             <SvelteMarkdown source="{message.content}" renderers={{
                                 code: codeblock,
@@ -553,15 +555,20 @@
             <div class="mb-2 flex items-center">
                 <form
                     on:submit|preventDefault={sendMessage}
-                    class="mb-2 flex-grow items-center"
+                    class="flex-grow items-center"
                 >
-                    <Input
+                    <!-- <Input
                         id="small-input"
                         size="sm"
                         placeholder="Type your message here..."
                         bind:value={$currentMessage}
                         class="flex p-2"
-                    />
+                    /> -->
+                    <input 
+                        type="text" 
+                        placeholder="Type your message here..."
+                        bind:value={$currentMessage}
+                        class="input input-bordered w-full" />
                 </form>
                 <button on:click={sendMessage} class="btn ml-2 p-2">
                     <ArrowRightSolid />
@@ -583,8 +590,7 @@
         </div>
 
         <!-- Side Panel 2 -->
-        <div class="w-1/6 bg-blue-800 p-4 flex flex-col text-white">
-            <Heading class="underline-heading" tag="h4">Personas</Heading>
+        <div class="w-1/6 p-4 flex flex-col">
             <button class="btn mb-2" on:click={newPersona}>New persona</button>
             <input
                 class="input input-bordered w-full mb-2"
@@ -806,3 +812,7 @@
         </div>
     </dialog>
 {/if}
+
+<style>
+
+</style>
