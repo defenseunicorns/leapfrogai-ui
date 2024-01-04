@@ -1,3 +1,24 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.code-span {
+    background-color: rgb(40, 40, 40);
+    border-radius: 5px;
+    overflow-x: auto;
+    display: inline-flex;
+    font-family: 'Fira Code', monospace;
+    font-size: small;
+}
+
+.code-span > pre code.hljs {
+    padding: 0 4px !important;
+}
+
+.code-block {
+    background-color: rgb(40, 40, 40);
+    border-radius: 5px;
+    overflow-x: auto;
+    font-family: 'Fira Code', monospace;
+    font-size: small;
+}
