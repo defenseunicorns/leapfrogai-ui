@@ -777,10 +777,17 @@
                 {/if}
             </div>
         </div>
-        <div class="fixed right-72 left-72 bottom-0 flex items-center p-4 border-b border-white bg-base-100">
+        <div
+            class="fixed right-72 left-72 bottom-0 flex items-center p-4 border-b border-white bg-base-100"
+        >
             <div class="mb-2 flex w-full items-center">
-                <button on:click={regenerateResponse} class="btn mr-2 p-2"><RotateOutline /></button>
-                <form on:submit|preventDefault={sendMessage} class="flex-grow items-center">
+                <button on:click={regenerateResponse} class="btn mr-2 p-2"
+                    ><RotateOutline /></button
+                >
+                <form
+                    on:submit|preventDefault={sendMessage}
+                    class="flex-grow items-center"
+                >
                     <input
                         type="text"
                         placeholder="Type your message here..."
@@ -788,7 +795,9 @@
                         class="input input-bordered w-full"
                     />
                 </form>
-                <button on:click={sendMessage} class="btn ml-2 p-2"><ArrowRightSolid /></button>
+                <button on:click={sendMessage} class="btn ml-2 p-2"
+                    ><ArrowRightSolid /></button
+                >
                 <span class="flex items-center ml-2">
                     {#if !$loading}
                         <Indicator color="green" size="sm" />
@@ -802,8 +811,8 @@
 </div>
 
 {#if showSettingsModal}
-    <div class="fixed inset-0 flex items-center justify-center z-10">
-        <div class="modal-box p-4 rounded shadow-lg">
+    <dialog class="fixed inset-0 flex items-center justify-center z-10">
+        <div class="modal-box">
             <div class="mb-2">
                 <label for="model">Model:</label>
                 <select
@@ -848,11 +857,9 @@
                     </div>
                 </div>
             {/if}
-            <button class="btn" on:click={() => (showSettingsModal = false)}
-                >Close</button
-            >
+            <button class="btn" on:click={() => (showSettingsModal = false)}>Close</button>
         </div>
-    </div>
+    </dialog>
 {/if}
 
 {#if $personas.length > 0}
