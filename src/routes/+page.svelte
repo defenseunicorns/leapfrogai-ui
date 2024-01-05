@@ -3,16 +3,18 @@
     import {
         AnnotationOutline,
         ArrowRightSolid,
+        CogOutline,
         EditOutline,
+        FileImportOutline,
+        FileExportOutline,
+        PlusOutline,
         RotateOutline,
         SunOutline,
         SunSolid,
-        TrashBinSolid,
         TrashBinOutline,
         UserEditOutline,
         UserEditSolid,
         UserSettingsSolid,
-        FileImportOutline,
     } from "flowbite-svelte-icons";
     import { onMount } from "svelte";
     import { writable } from "svelte/store";
@@ -448,7 +450,6 @@
         </label>
     </div>
     <div class="flex flex-grow">
-
         <!-- Side Panel 1 -->
         <div class="flex flex-col">
             <div class="w-72 p-4 pb-60 h-full fixed top-20 left-0">
@@ -457,20 +458,7 @@
                     on:click={newChat}
                 >
                     New chat
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="w-6 h-6"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M10 5.757v8.486M5.757 10h8.486M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                        />
-                    </svg>
+                    <PlusOutline />
                 </button>
                 <input
                     class="input input-bordered w-full mb-2"
@@ -519,12 +507,7 @@
                                                 editConversation(
                                                     conversation.id,
                                                 )}
-                                        >
-                                            {#if editingConversationIndex === conversation.id}
-                                                <UserEditSolid />
-                                            {:else}
-                                                <UserEditOutline />
-                                            {/if}
+                                            ><EditOutline />
                                         </button>
                                         <button
                                             class="btn-ghost w-1/6 px-2"
@@ -564,20 +547,7 @@
                         on:click={() => fileInput.click()}
                     >
                         Import data
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="w-6 h-6"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M3 8V5.828a2 2 0 0 1 .586-1.414l2.828-2.828A2 2 0 0 1 7.828 1h8.239A.969.969 0 0 1 17 2v16a.969.969 0 0 1-.933 1H3.933A.97.97 0 0 1 3 18v-2M8 1v4a1 1 0 0 1-1 1H3m-2 6h10M9.061 9.232 11.828 12l-2.767 2.768"
-                            />
-                        </svg>
+                        <FileImportOutline />
                     </button>
                 </div>
                 <div>
@@ -586,20 +556,7 @@
                         on:click={exportData}
                     >
                         Export data
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="w-6 h-6"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M15 6V2a.97.97 0 0 0-.933-1H5.828a2 2 0 0 0-1.414.586L1.586 4.414A2 2 0 0 0 1 5.828V18a.969.969 0 0 0 .933 1H14a1 1 0 0 0 1-1M6 1v4a1 1 0 0 1-1 1H1m6 6h9m-1.939-2.768L16.828 12l-2.767 2.768"
-                            />
-                        </svg>
+                        <FileExportOutline />
                     </button>
                 </div>
                 <div>
@@ -609,24 +566,7 @@
                             (showSettingsModal = !showSettingsModal)}
                     >
                         Settings
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="w-6 h-6"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                        >
-                            <g
-                                stroke="currentColor"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                            >
-                                <path
-                                    d="M19 11V9a1 1 0 0 0-1-1h-.757l-.707-1.707.535-.536a1 1 0 0 0 0-1.414l-1.414-1.414a1 1 0 0 0-1.414 0l-.536.535L12 2.757V2a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v.757l-1.707.707-.536-.535a1 1 0 0 0-1.414 0L2.929 4.343a1 1 0 0 0 0 1.414l.536.536L2.757 8H2a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h.757l.707 1.707-.535.536a1 1 0 0 0 0 1.414l1.414 1.414a1 1 0 0 0 1.414 0l.536-.535L8 17.243V18a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-.757l1.707-.708.536.536a1 1 0 0 0 1.414 0l1.414-1.414a1 1 0 0 0 0-1.414l-.535-.536.707-1.707H18a1 1 0 0 0 1-1Z"
-                                />
-                                <path d="M10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
-                            </g>
-                        </svg>
+                        <CogOutline />
                     </button>
                 </div>
             </div>
@@ -657,7 +597,9 @@
                     {/each}
                 {/if}
             </div>
-            <div class="fixed right-72 left-72 bottom-0 flex items-center p-4 bg-base-100">
+            <div
+                class="fixed right-72 left-72 bottom-0 flex items-center p-4 bg-base-100"
+            >
                 <div class="mb-2 flex w-full items-center">
                     <button on:click={regenerateResponse} class="btn mr-2 p-2"
                         ><RotateOutline /></button
@@ -694,20 +636,7 @@
                 on:click={newPersona}
             >
                 New persona
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="w-6 h-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M13 8h6m-3 3V5m-6-.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0ZM5 11h3a4 4 0 0 1 4 4v2H1v-2a4 4 0 0 1 4-4Z"
-                    />
-                </svg>
+                <PlusOutline />
             </button>
             <input
                 class="input input-bordered w-full mb-2"
@@ -719,16 +648,18 @@
                 {#if personaSearch == "" || persona.name
                         .toLowerCase()
                         .includes(personaSearch.toLowerCase())}
-                    <div class="menu bg-base-200 w-full rounded-box">
+                    <div class="menu bg-base-100 w-full rounded-box">
                         <div class="flex">
+                            <li class="w-4/6 flex-nowrap">
+                                <button
+                                    class="whitespace-nowrap"
+                                    on:click={() => {
+                                        applyPersona(persona);
+                                    }}>{persona.name}</button
+                                >
+                            </li>
                             <button
-                                class="btn"
-                                on:click={() => {
-                                    applyPersona(persona);
-                                }}>{persona.name}</button
-                            >
-                            <button
-                                class="btn"
+                                class="btn-ghost w-1/6 px-2"
                                 on:click={() => {
                                     document
                                         .getElementById("persona_modal")
@@ -737,9 +668,9 @@
                                 }}><EditOutline /></button
                             >
                             <button
-                                class="btn"
+                                class="btn-ghost w-1/6 px-2"
                                 on:click={() => removePersona(persona.id)}
-                                ><TrashBinSolid /></button
+                                ><TrashBinOutline /></button
                             >
                         </div>
                     </div>
@@ -799,10 +730,8 @@
                         {/each}
                     </select>
                 </div>
-                <button class="btn mb-2" on:click={savePersona}>Save</button
-                >
-                <button class="btn mb-2" on:click={cancelPersona}
-                    >Cancel</button
+                <button class="btn mb-2" on:click={savePersona}>Save</button>
+                <button class="btn mb-2" on:click={cancelPersona}>Cancel</button
                 >
             {/if}
         </div>
@@ -856,7 +785,9 @@
                     </div>
                 </div>
             {/if}
-            <button class="btn" on:click={() => (showSettingsModal = false)}>Close</button>
+            <button class="btn" on:click={() => (showSettingsModal = false)}
+                >Close</button
+            >
         </div>
     </dialog>
 {/if}
