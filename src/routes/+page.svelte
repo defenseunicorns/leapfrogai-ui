@@ -448,6 +448,7 @@
         </label>
     </div>
     <div class="flex flex-grow">
+
         <!-- Side Panel 1 -->
         <div class="flex flex-col">
             <div class="w-72 p-4 pb-60 h-full fixed top-20 left-0">
@@ -656,156 +657,154 @@
                     {/each}
                 {/if}
             </div>
-
-            <!-- Side Panel 2 -->
-            <div class="w-72 p-4 h-full fixed top-20 right-0 overflow-y-auto">
-                <button
-                    class="btn w-full mb-2 justify-between"
-                    on:click={newPersona}
-                >
-                    New persona
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="w-6 h-6"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
+            <div class="fixed right-72 left-72 bottom-0 flex items-center p-4 bg-base-100">
+                <div class="mb-2 flex w-full items-center">
+                    <button on:click={regenerateResponse} class="btn mr-2 p-2"
+                        ><RotateOutline /></button
                     >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M13 8h6m-3 3V5m-6-.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0ZM5 11h3a4 4 0 0 1 4 4v2H1v-2a4 4 0 0 1 4-4Z"
-                        />
-                    </svg>
-                </button>
-                <input
-                    class="input input-bordered w-full mb-2"
-                    type="text"
-                    placeholder="Search"
-                    bind:value={personaSearch}
-                />
-                {#each $personas as persona}
-                    {#if personaSearch == "" || persona.name
-                            .toLowerCase()
-                            .includes(personaSearch.toLowerCase())}
-                        <div class="menu bg-base-200 w-full rounded-box">
-                            <div class="flex">
-                                <button
-                                    class="btn"
-                                    on:click={() => {
-                                        applyPersona(persona);
-                                    }}>{persona.name}</button
-                                >
-                                <button
-                                    class="btn"
-                                    on:click={() => {
-                                        document
-                                            .getElementById("persona_modal")
-                                            ["showModal"]();
-                                        currentPersonaId = persona.id;
-                                    }}><EditOutline /></button
-                                >
-                                <button
-                                    class="btn"
-                                    on:click={() => removePersona(persona.id)}
-                                    ><TrashBinSolid /></button
-                                >
-                            </div>
-                        </div>
-                    {/if}
-                {/each}
-                {#if showPersonaDetails}
-                    <Heading class="underline-heading" tag="h5"
-                        >Persona Details</Heading
+                    <form
+                        on:submit|preventDefault={sendMessage}
+                        class="flex-grow items-center"
                     >
-                    <div class="mb-2">
                         <input
-                            id="persona-name"
                             type="text"
-                            placeholder="Persona Name..."
-                            bind:value={newPersonaName}
-                            class="input input-bordered w-full max-w-xs mb-2"
+                            placeholder="Type your message here..."
+                            bind:value={$currentMessage}
+                            class="input input-bordered w-full"
                         />
-                    </div>
-                    <div class="mb-2">
-                        <input
-                            id="persona-description"
-                            type="text"
-                            placeholder="Persona Description..."
-                            bind:value={newPersonaDescription}
-                            class="input input-bordered w-full max-w-xs mb-2"
-                        />
-                    </div>
-                    <div class="mb-2">
-                        <input
-                            id="persona-system-prompt"
-                            type="text"
-                            placeholder="System Prompt..."
-                            bind:value={newPersonaSystemPrompt}
-                            class="input input-bordered w-full max-w-xs mb-2"
-                        />
-                    </div>
-                    <div class="mb-2">
-                        <label for="temperature">Temperature:</label>
-                        <input
-                            id="temperature"
-                            type="range"
-                            min="0"
-                            max="1"
-                            step="0.01"
-                            bind:value={newPersonaTemperature}
-                        />
-                    </div>
-                    <div class="mb-2">
-                        <label for="model">Model:</label>
-                        <select
-                            id="model"
-                            bind:value={newPersonaModel}
-                            class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52"
-                        >
-                            {#each $models as model}
-                                <option value={model}>{model}</option>
-                            {/each}
-                        </select>
-                    </div>
-                    <button class="btn mb-2" on:click={savePersona}>Save</button
+                    </form>
+                    <button on:click={sendMessage} class="btn ml-2 p-2"
+                        ><ArrowRightSolid /></button
                     >
-                    <button class="btn mb-2" on:click={cancelPersona}
-                        >Cancel</button
-                    >
-                {/if}
+                    <span class="flex items-center ml-2">
+                        {#if !$loading}
+                            <Indicator color="green" size="sm" />
+                        {:else}
+                            <Indicator color="red" size="sm" />
+                        {/if}
+                    </span>
+                </div>
             </div>
         </div>
-        <div
-            class="fixed right-72 left-72 bottom-0 flex items-center p-4 border-b border-white bg-base-100"
-        >
-            <div class="mb-2 flex w-full items-center">
-                <button on:click={regenerateResponse} class="btn mr-2 p-2"
-                    ><RotateOutline /></button
+
+        <!-- Side Panel 2 -->
+        <div class="w-72 p-4 h-full fixed top-20 right-0 overflow-y-auto">
+            <button
+                class="btn w-full mb-2 justify-between"
+                on:click={newPersona}
+            >
+                New persona
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-6 h-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
                 >
-                <form
-                    on:submit|preventDefault={sendMessage}
-                    class="flex-grow items-center"
-                >
-                    <input
-                        type="text"
-                        placeholder="Type your message here..."
-                        bind:value={$currentMessage}
-                        class="input input-bordered w-full"
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13 8h6m-3 3V5m-6-.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0ZM5 11h3a4 4 0 0 1 4 4v2H1v-2a4 4 0 0 1 4-4Z"
                     />
-                </form>
-                <button on:click={sendMessage} class="btn ml-2 p-2"
-                    ><ArrowRightSolid /></button
+                </svg>
+            </button>
+            <input
+                class="input input-bordered w-full mb-2"
+                type="text"
+                placeholder="Search"
+                bind:value={personaSearch}
+            />
+            {#each $personas as persona}
+                {#if personaSearch == "" || persona.name
+                        .toLowerCase()
+                        .includes(personaSearch.toLowerCase())}
+                    <div class="menu bg-base-200 w-full rounded-box">
+                        <div class="flex">
+                            <button
+                                class="btn"
+                                on:click={() => {
+                                    applyPersona(persona);
+                                }}>{persona.name}</button
+                            >
+                            <button
+                                class="btn"
+                                on:click={() => {
+                                    document
+                                        .getElementById("persona_modal")
+                                        ["showModal"]();
+                                    currentPersonaId = persona.id;
+                                }}><EditOutline /></button
+                            >
+                            <button
+                                class="btn"
+                                on:click={() => removePersona(persona.id)}
+                                ><TrashBinSolid /></button
+                            >
+                        </div>
+                    </div>
+                {/if}
+            {/each}
+            {#if showPersonaDetails}
+                <Heading class="underline-heading" tag="h5"
+                    >Persona Details</Heading
                 >
-                <span class="flex items-center ml-2">
-                    {#if !$loading}
-                        <Indicator color="green" size="sm" />
-                    {:else}
-                        <Indicator color="red" size="sm" />
-                    {/if}
-                </span>
-            </div>
+                <div class="mb-2">
+                    <input
+                        id="persona-name"
+                        type="text"
+                        placeholder="Persona Name..."
+                        bind:value={newPersonaName}
+                        class="input input-bordered w-full max-w-xs mb-2"
+                    />
+                </div>
+                <div class="mb-2">
+                    <input
+                        id="persona-description"
+                        type="text"
+                        placeholder="Persona Description..."
+                        bind:value={newPersonaDescription}
+                        class="input input-bordered w-full max-w-xs mb-2"
+                    />
+                </div>
+                <div class="mb-2">
+                    <input
+                        id="persona-system-prompt"
+                        type="text"
+                        placeholder="System Prompt..."
+                        bind:value={newPersonaSystemPrompt}
+                        class="input input-bordered w-full max-w-xs mb-2"
+                    />
+                </div>
+                <div class="mb-2">
+                    <label for="temperature">Temperature:</label>
+                    <input
+                        id="temperature"
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.01"
+                        bind:value={newPersonaTemperature}
+                    />
+                </div>
+                <div class="mb-2">
+                    <label for="model">Model:</label>
+                    <select
+                        id="model"
+                        bind:value={newPersonaModel}
+                        class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52"
+                    >
+                        {#each $models as model}
+                            <option value={model}>{model}</option>
+                        {/each}
+                    </select>
+                </div>
+                <button class="btn mb-2" on:click={savePersona}>Save</button
+                >
+                <button class="btn mb-2" on:click={cancelPersona}
+                    >Cancel</button
+                >
+            {/if}
         </div>
     </div>
 </div>
