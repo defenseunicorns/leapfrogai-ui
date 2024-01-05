@@ -6,8 +6,9 @@
         EditOutline,
         SunOutline,
         SunSolid,
-        TrashBinSolid, UserEditOutline, UserEditSolid,
+        TrashBinSolid, TrashBinOutline, UserEditOutline, UserEditSolid,
         UserSettingsSolid,
+        FileImportOutline,
     } from "flowbite-svelte-icons";
     import { onMount } from "svelte";
     import {writable} from "svelte/store";
@@ -426,7 +427,7 @@
 
 <div class="flex flex-col h-screen {data.theme}">
     <!-- Title Bar -->
-    <div class="flex items-center justify-between p-4 border-b border-white">
+    <div class="fixed top-0 w-full flex items-center justify-between p-4 border-b border-white">
         <div class="flex items-center">
             <img src="leapfrogai.png" alt="LeapfrogAI" class="w-40"/>
         </div>
@@ -440,92 +441,113 @@
     </div>
     <div class="flex flex-grow">
         <!-- Side Panel 1 -->
-        <div class="w-1/6 p-4 flex flex-col">
-            <button class="btn mb-2" on:click={newChat}>New chat</button>
-            <input
-                class="input input-bordered w-full mb-2"
-                type="text"
-                placeholder="Search"
-                bind:value={conversationSearch}
-            />
-            {#if $conversations.length > 0}
-                <div class="menu mb-2 w-full">
-                    {#each $conversations as conversation}
-                        {#if conversationSearch == "" || conversation.name
-                                .toLowerCase()
-                                .includes(conversationSearch.toLowerCase())}
-                            <div class="my-1 bg-base-200 flex flex-row w-full rounded-box whitespace-nowrap">
-                                {#if editingConversationIndex === conversation.id}
-                                    <input
-                                        class="input input-bordered w-4/6 flex-nowrap"
-                                        type="text"
-                                        bind:value={tempConversationName}
-                                        on:keydown={handleConversationKeyDown}
-                                        autofocus
-                                    />
-                                {:else}
-                                    <button
-                                            class="btn justify-start w-4/6 flex-nowrap"
-                                            on:click={() => currentConversation.set(conversation.id)}>
-                                        <span class="overflow-hidden">{conversation.name}</span>
-                                    </button>
+        <div class="flex flex-col">
+            <div class="w-72 p-4 pb-60 h-full fixed top-20 left-0">
+                <button class="btn mb-2 w-full justify-between" on:click={newChat}>
+                    New chat
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 5.757v8.486M5.757 10h8.486M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                    </svg>
+                </button>
+                <input
+                    class="input input-bordered w-full mb-2"
+                    type="text"
+                    placeholder="Search"
+                    bind:value={conversationSearch}
+                />
+                <div class="w-[268px] pb-96 h-full fixed top-52 left-0 overflow-y-auto">
+                    {#if $conversations.length > 0}
+                        <div class="menu">
+                            {#each $conversations as conversation}
+                                {#if conversationSearch == "" || conversation.name
+                                        .toLowerCase()
+                                        .includes(conversationSearch.toLowerCase())}
+                                    <div class="my-1 flex ml-1 flex-row w-full content-center">
+                                        {#if editingConversationIndex === conversation.id}
+                                            <input
+                                                class="input input-sm h-[36px] input-bordered w-4/6 flex-nowrap"
+                                                type="text"
+                                                bind:value={tempConversationName}
+                                                on:keydown={handleConversationKeyDown}
+                                            />
+                                        {:else}
+                                            <li class="w-4/6 flex-nowrap">
+                                                <button class="whitespace-nowrap" on:click={() => currentConversation.set(conversation.id)}>
+                                                    <span class="overflow-hidden">{conversation.name}</span>
+                                                </button>
+                                            </li>
+                                        {/if}
+                                        <button
+                                                class="btn-ghost w-1/6 px-2.5"
+                                                on:click={() => editConversation(conversation.id)}>
+                                            {#if editingConversationIndex === conversation.id}
+                                                <UserEditSolid />
+                                            {:else}
+                                                <UserEditOutline />
+                                            {/if}
+                                        </button>
+                                        <button
+                                            class="btn-ghost w-1/6 px-2"
+                                            on:click={() =>
+                                                removeConversation(conversation.id)}
+                                            ><TrashBinOutline /></button>
+                                    </div>
                                 {/if}
-                                <button
-                                        class="btn w-1/6"
-                                        on:click={() => editConversation(conversation.id)}>
-                                    {#if editingConversationIndex === conversation.id}
-                                        <UserEditSolid />
-                                    {:else}
-                                        <UserEditOutline />
-                                    {/if}
-                                </button>
-                                <button
-                                    class="btn w-1/6"
-                                    on:click={() =>
-                                        removeConversation(conversation.id)}
-                                    ><TrashBinSolid /></button
-                                >
-                            </div>
-                        {/if}
-                    {/each}
+                            {/each}
+                        </div>
+                    {/if}
                 </div>
-            {/if}
-            <button class="btn mb-2" on:click={clearConversations}
-                >Clear conversations</button
-            >
-            {#if ragEndpointActive}
+                {#if ragEndpointActive}
+                    <input
+                        type="file"
+                        accept=".txt,.pdf"
+                        on:change={importFiles}
+                        bind:this={fileInputRag}
+                        multiple={true}
+                        class="hidden"
+                    />
+                {/if}
                 <input
                     type="file"
-                    accept=".txt,.pdf"
-                    on:change={importFiles}
-                    bind:this={fileInputRag}
-                    multiple={true}
+                    accept=".json"
+                    on:change={importData}
+                    bind:this={fileInput}
                     class="hidden"
                 />
-                <button class="btn mb-2" on:click={() => fileInputRag.click()}
-                    >Import files</button
-                >
-            {/if}
-            <input
-                type="file"
-                accept=".json"
-                on:change={importData}
-                bind:this={fileInput}
-                class="hidden"
-            />
-            <button class="btn mb-2" on:click={() => fileInput.click()}
-                >Import data</button
-            >
-            <button class="btn mb-2" on:click={exportData}>Export data</button>
-            <button
-                class="btn mb-2"
-                on:click={() => (showSettingsModal = !showSettingsModal)}
-                >Settings</button
-            >
+            </div>
+            <div class="bg-base-100 w-72 p-4 pt-0 fixed bottom-0 left-0">
+                <div class="border-t-2 border-neutral-700">
+                    <button class="btn btn-ghost w-full flex justify-between" on:click={() => fileInput.click()}>
+                        Import data
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8V5.828a2 2 0 0 1 .586-1.414l2.828-2.828A2 2 0 0 1 7.828 1h8.239A.969.969 0 0 1 17 2v16a.969.969 0 0 1-.933 1H3.933A.97.97 0 0 1 3 18v-2M8 1v4a1 1 0 0 1-1 1H3m-2 6h10M9.061 9.232 11.828 12l-2.767 2.768"/>
+                        </svg>
+                    </button>
+                </div>
+                <div>
+                    <button class="btn btn-ghost w-full flex justify-between" on:click={exportData}>
+                        Export data
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round"stroke-linejoin="round" stroke-width="2" d="M15 6V2a.97.97 0 0 0-.933-1H5.828a2 2 0 0 0-1.414.586L1.586 4.414A2 2 0 0 0 1 5.828V18a.969.969 0 0 0 .933 1H14a1 1 0 0 0 1-1M6 1v4a1 1 0 0 1-1 1H1m6 6h9m-1.939-2.768L16.828 12l-2.767 2.768"/>
+                        </svg>
+                    </button>
+                </div>
+                <div>
+                    <button class="btn btn-ghost w-full flex justify-between" on:click={() => (showSettingsModal = !showSettingsModal)}>
+                        Settings
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24">
+                            <g stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                              <path d="M19 11V9a1 1 0 0 0-1-1h-.757l-.707-1.707.535-.536a1 1 0 0 0 0-1.414l-1.414-1.414a1 1 0 0 0-1.414 0l-.536.535L12 2.757V2a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v.757l-1.707.707-.536-.535a1 1 0 0 0-1.414 0L2.929 4.343a1 1 0 0 0 0 1.414l.536.536L2.757 8H2a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h.757l.707 1.707-.535.536a1 1 0 0 0 0 1.414l1.414 1.414a1 1 0 0 0 1.414 0l.536-.535L8 17.243V18a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-.757l1.707-.708.536.536a1 1 0 0 0 1.414 0l1.414-1.414a1 1 0 0 0 0-1.414l-.535-.536.707-1.707H18a1 1 0 0 0 1-1Z"/>
+                              <path d="M10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+                            </g>
+                          </svg>
+                    </button>
+                </div>
+            </div>
         </div>
 
         <!-- Center Panel -->
-        <div class="w-4/6 p-4 flex flex-col">
+        <div class="w-full pb-4 pt-4 flex flex-col ml-72 mr-72 mt-20">
             <div
                 bind:this={chatContainer}
                 class="chat-container mb-2 overflow-auto flex-grow"
@@ -554,13 +576,6 @@
                     on:submit|preventDefault={sendMessage}
                     class="flex-grow items-center"
                 >
-                    <!-- <Input
-                        id="small-input"
-                        size="sm"
-                        placeholder="Type your message here..."
-                        bind:value={$currentMessage}
-                        class="flex p-2"
-                    /> -->
                     <input 
                         type="text" 
                         placeholder="Type your message here..."
@@ -587,8 +602,13 @@
         </div>
 
         <!-- Side Panel 2 -->
-        <div class="w-1/6 p-4 flex flex-col">
-            <button class="btn mb-2" on:click={newPersona}>New persona</button>
+        <div class="w-72 p-4 h-full fixed top-20 right-0 overflow-y-auto">
+            <button class="btn w-full mb-2 justify-between" on:click={newPersona}>
+                New persona
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 8h6m-3 3V5m-6-.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0ZM5 11h3a4 4 0 0 1 4 4v2H1v-2a4 4 0 0 1 4-4Z"/>
+                </svg>
+            </button>
             <input
                 class="input input-bordered w-full mb-2"
                 type="text"
