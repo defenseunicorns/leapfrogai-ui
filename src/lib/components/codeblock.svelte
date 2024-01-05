@@ -1,6 +1,6 @@
 <script lang="ts">
     import {HighlightAuto} from "svelte-highlight";
-    import github from "svelte-highlight/styles/github";
+    import github from "svelte-highlight/styles/github-dark";
     import {FileCopyOutline} from "flowbite-svelte-icons";
 
     export let lang: string, text: string;
