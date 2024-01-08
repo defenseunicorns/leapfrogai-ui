@@ -19,7 +19,7 @@
     import codeblock from "$lib/components/codeblock.svelte";
     import codespan from "$lib/components/codespan.svelte";
     import { v4 as uuidv4 } from "uuid";
-    import Themetoggle from "$lib/components/themetoggle.svelte";
+    import ThemeSwitcher from "$lib/components/theme-switcher.svelte";
     import Indicator from "$lib/components/indicator.svelte";
 
 
@@ -432,7 +432,7 @@
         <div class="flex items-center">
             <img src="leapfrogai.png" alt="LeapfrogAI" class="w-40" />
         </div>
-        <Themetoggle />
+        <ThemeSwitcher />
     </div>
     <div class="flex flex-grow">
         <!-- Side Panel 1 -->
