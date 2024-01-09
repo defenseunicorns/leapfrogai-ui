@@ -5,7 +5,7 @@ module.exports = {
   plugins: [require("daisyui"), require('flowbite/plugin')],
 
   daisyui: {
-    themes: ["business", "wireframe"], // false: only light + dark | true: all themes | array: specific themes like this ["light", "dark", "cupcake"]
+    themes: true, // false: only light + dark | true: all themes | array: specific themes like this ["light", "dark", "cupcake"]
     lightTheme: "wireframe", // default light theme
     darkTheme: "black", // name of one of the included themes for dark mode
     base: true, // applies background color and foreground color for root element by default
