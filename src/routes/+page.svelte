@@ -661,8 +661,8 @@
                 {/if}
             {/each}
             {#if showPersonaDetails}
-                <Heading class="underline-heading" tag="h5"
-                    >Persona Details</Heading
+                <div class="text=large"
+                    >Persona Details</div
                 >
                 <div class="mb-2">
                     <input

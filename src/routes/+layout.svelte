@@ -1,6 +1,6 @@
 <script lang="ts">
 	import "../app.css";
-	import ThemeSwitcher from "$lib/components/theme-switcher.svelte";
+	import ThemeSwitcher from "$lib/components/themeSwitcher.svelte";
 </script>
 
 <!-- Title Bar -->
