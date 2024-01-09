@@ -19,12 +19,7 @@
     import codeblock from "$lib/components/codeblock.svelte";
     import codespan from "$lib/components/codespan.svelte";
     import { v4 as uuidv4 } from "uuid";
-    import ThemeSwitcher from "$lib/components/theme-switcher.svelte";
     import Indicator from "$lib/components/indicator.svelte";
-
-
-    /** @type {import('./$types').LayoutData} */
-    export let data;
 
     let localStorage;
     let conversations = writable([]);
@@ -366,9 +361,7 @@
 
     function getLocalPersonas() {
         if (localStorage) {
-            const storedPersonas = JSON.parse(
-                localStorage.getItem("personas"),
-            );
+            const storedPersonas = JSON.parse(localStorage.getItem("personas"));
             if (storedPersonas?.length > 0) {
                 personas.set(storedPersonas);
             }
@@ -570,13 +563,13 @@
 
         <!-- Center Panel -->
         <div class="w-full pb-4 pt-4 flex flex-col ml-72 mr-72 mt-20 mb-20">
-            <div
-                bind:this={chatContainer}
-                class="chat-container overflow-auto flex-grow"
-            >
-                {#if $currentConversation !== null && $conversations.find((c) => c.id === $currentConversation)}
+            {#if $currentConversation !== null && $conversations.find((c) => c.id === $currentConversation)}
+                <div
+                    bind:this={chatContainer}
+                    class="chat-container overflow-auto flex-grow"
+                >
                     {#each $conversations.find((c) => c.id === $currentConversation).messages as message}
-                        <Label class="message-label">{message.role}</Label>
+                        <div class="chat-header">{message.role}</div>
                         <div
                             class="p-2 m-2 rounded {message.role === 'user'
                                 ? 'user-message'
@@ -591,8 +584,9 @@
                             />
                         </div>
                     {/each}
-                {/if}
-            </div>
+                </div>
+            {/if}
+
             <div
                 class="fixed right-72 left-72 bottom-0 flex items-center p-4 bg-base-100"
             >
@@ -614,7 +608,7 @@
                     <button on:click={sendMessage} class="btn ml-2 p-2"
                         ><ArrowRightSolid /></button
                     >
-                    <Indicator active={modelready}/>
+                    <Indicator active={modelready} />
                 </div>
             </div>
         </div>

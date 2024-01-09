@@ -17,8 +17,8 @@
 </svelte:head>
 
 <div class="code-block">
-    <div class="flex justify-between">
-        <span class="language-label">{lang}</span>
+    <div class="flex justify-between bg-accent text-accent-content">
+        <span class="language-label ml-2">{lang}</span>
         <button class="copy-button align-middle" on:click={copyToClipboard}>
             <FileCopyOutline ariaLabel="Copy Code" class="align-middle justify-center" size="sm"/>
         </button>

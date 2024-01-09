@@ -3,7 +3,6 @@
 @tailwind utilities;
 
 .code-span {
-    background-color: rgb(40, 40, 40);
     border-radius: 5px;
     overflow-x: auto;
     display: inline-flex;
@@ -16,7 +15,6 @@
 }
 
 .code-block {
-    background-color: rgb(40, 40, 40);
     border-radius: 5px;
     overflow-x: auto;
     font-family: 'Fira Code', monospace;
