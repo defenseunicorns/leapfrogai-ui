@@ -53,6 +53,7 @@
         // required to access localStorage after mount
         localStorage = window.localStorage;
         getLocalConversations();
+        getLocalPersonas();
         models.set(await getModels());
         await updateRagEndpointState();
     });
@@ -164,7 +165,7 @@
         const a = document.createElement("a");
 
         a.href = URL.createObjectURL(blob);
-        a.download = "ask_frogs_history_" + Date.now();
+        a.download = "leapfrogai_history_" + Date.now();
         a.click();
 
         URL.revokeObjectURL(a.href);
@@ -363,6 +364,25 @@
         clearNewPersona();
     }
 
+    function getLocalPersonas() {
+        if (localStorage) {
+            const storedPersonas = JSON.parse(
+                localStorage.getItem("personas"),
+            );
+            if (storedPersonas?.length > 0) {
+                personas.set(storedPersonas);
+            }
+        }
+    }
+
+    function persistPersonas(value: any[]) {
+        if (localStorage) {
+            localStorage.setItem("personas", JSON.stringify(value));
+        }
+    }
+
+    personas.subscribe(persistPersonas);
+
     function editConversation(conversationId: number) {
         if (editingConversationIndex === conversationId) {
             editConversationName(tempConversationName);
@@ -424,16 +444,7 @@
     }
 </script>
 
-<div class="flex flex-col h-screen {data.theme}">
-    <!-- Title Bar -->
-    <div
-        class="fixed top-0 w-full flex items-center justify-between p-4 border-b border-white bg-base-100"
-    >
-        <div class="flex items-center">
-            <img src="leapfrogai.png" alt="LeapfrogAI" class="w-40" />
-        </div>
-        <ThemeSwitcher />
-    </div>
+<div class="flex flex-col h-screen">
     <div class="flex flex-grow">
         <!-- Side Panel 1 -->
         <div class="flex flex-col">
@@ -531,7 +542,7 @@
                         class="btn btn-ghost w-full flex justify-between"
                         on:click={() => fileInput.click()}
                     >
-                        Import data
+                        Import Chats
                         <FileImportOutline />
                     </button>
                 </div>
@@ -540,7 +551,7 @@
                         class="btn btn-ghost w-full flex justify-between"
                         on:click={exportData}
                     >
-                        Export data
+                        Export Chats
                         <FileExportOutline />
                     </button>
                 </div>
