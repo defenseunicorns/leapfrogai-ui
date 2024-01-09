@@ -1,3 +1,7 @@
+<svelte:head>
+  <title>Help</title>
+</svelte:head>
+
 <div class="flex flex-col h-screen">
     <div class="flex flex-grow">
         <div class="w-full pb-4 pt-4 flex flex-col ml-72 mr-72 mt-20 mb-20">
