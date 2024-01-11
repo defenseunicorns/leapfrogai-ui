@@ -82,7 +82,7 @@
 </script>
 
 <svelte:head>
-  <title>Transcribe / Summary </title>
+  <title>Transcribe / Summary</title>
 </svelte:head>
 
 <div class="flex flex-col h-screen">
