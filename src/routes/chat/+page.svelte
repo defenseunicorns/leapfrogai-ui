@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { Heading, Input, Label } from "flowbite-svelte";
     import {
         AnnotationOutline,
         ArrowRightSolid,
