@@ -18,13 +18,11 @@
     import codeblock from "$lib/components/codeblock.svelte";
     import codespan from "$lib/components/codespan.svelte";
     import { v4 as uuidv4 } from "uuid";
-    import Indicator from "$lib/components/indicator.svelte";
 
     let localStorage;
     let conversations = writable([]);
     let personas = writable([]);
     let models = writable([null]);
-    let modelready = false;
     let showSettings = false;
     let fileInput;
     let fileInputRag;
@@ -66,7 +64,6 @@
     async function getModels() {
         const response = await fetch(urlConcat("/api/models"));
         const models = await response.json();
-        modelready = models.length > 0;
         return models;
     }
 
@@ -611,7 +608,6 @@
                     <button on:click={sendMessage} class="btn ml-2 p-2"
                         ><ArrowRightSolid /></button
                     >
-                    <Indicator active={modelready} />
                 </div>
             </div>
         </div>
