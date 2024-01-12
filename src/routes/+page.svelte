@@ -1,3 +1,6 @@
+
+<title>LeapfrogAI</title>
+
 <div class="flex flex-col h-screen">
     <div class="flex flex-grow">
         <div
@@ -7,12 +10,12 @@
                 <p>Welcome to LeapfrogAI</p>
             </div>
             <div class="justify-center items-center">
-                <img src="big-leapfrog.svg" />
+                <img src="big-leapfrog.svg" alt=""/>
             </div>
             <div class="text-2xl font-bold text-center">
                 <p>Created and Maintained by:</p>
             </div>
-            <img src="defense-unicorns.svg" class="h-11" />
+            <img src="defense-unicorns.svg" class="h-11" alt="Defense Unicorns"/>
         </div>
     </div>
 </div>

@@ -12,22 +12,25 @@
     let localStorage;
     let personas = writable([]);
     let models = writable([null]);
-    let showPersonaDetails = false;
-    let newPersonaName = "";
-    let newPersonaDescription = "";
+
     let personaSearch = "";
     let currentPersonaId = 0;
     let personaId = 0;
     let selectedModel = env.PUBLIC_DEFAULT_MODEL;
     let systemPrompt = env.PUBLIC_DEFAULT_SYSTEM_PROMPT;
     let temperature = env.PUBLIC_DEFAULT_TEMPERATURE;
-    let newPersonaSystemPrompt = systemPrompt;
-    let newPersonaTemperature = temperature;
-    let newPersonaModel = selectedModel;
+
+    // Default persona values
+    let defaultPersonaName = "New Persona";
+    let defaultPersonaDescription = "Describe this persona here.";
+    let defaultPersonaModel = selectedModel;
+    let defaultPersonaTemperature = temperature;
+    let defaultPersonaSystemPrompt = systemPrompt;
 
     onMount(async () => {
         localStorage = window.localStorage;
         models.set(await getModels());
+        defaultPersonaModel = models[0];
         getLocalPersonas();
     });
 
@@ -38,7 +41,32 @@
     }
 
     function newPersona() {
-        showPersonaDetails = !showPersonaDetails;
+        personas.update((n) => [
+            ...n,
+            {
+                id: personaId++,
+                name: defaultPersonaName,
+                description: defaultPersonaDescription,
+                temperature: defaultPersonaTemperature,
+                model: defaultPersonaModel,
+                systemPrompt: defaultPersonaSystemPrompt,
+            },
+        ]);
+    }
+
+    function updatePersona() {
+        personas.update((n) => {
+            const persona = n.find((p) => p.id === currentPersonaId);
+            if (persona) {
+                persona.name = $personas[currentPersonaId].name;
+                persona.description = $personas[currentPersonaId].description;
+                persona.systemPrompt = $personas[currentPersonaId].systemPrompt;
+                persona.temperature = $personas[currentPersonaId].temperature;
+                persona.model = $personas[currentPersonaId].model;
+            }
+            return n;
+        });
+        document.getElementById("persona_modal")["close"]();
     }
 
     function getLocalPersonas() {
@@ -66,34 +94,6 @@
 
     function removePersona(id) {
         personas.update((n) => n.filter((p) => p.id !== id));
-    }
-
-    function savePersona() {
-        personas.update((n) => [
-            ...n,
-            {
-                id: personaId++,
-                name: newPersonaName,
-                description: newPersonaDescription,
-                temperature: newPersonaTemperature,
-                model: newPersonaModel,
-                systemPrompt: newPersonaSystemPrompt,
-            },
-        ]);
-        showPersonaDetails = false;
-        clearNewPersona();
-    }
-
-    function clearNewPersona() {
-        newPersonaName = "";
-        newPersonaDescription = "";
-        newPersonaSystemPrompt = systemPrompt;
-        newPersonaTemperature = temperature;
-        newPersonaModel = selectedModel;
-    }
-
-    function cancelPersona() {
-        showPersonaDetails = false;
     }
 </script>
 
@@ -141,62 +141,77 @@
                 </div>
             {/if}
         {/each}
-        {#if showPersonaDetails}
-            <div class="text=large">Persona Details</div>
-            <div class="mb-2">
-                <input
-                    id="persona-name"
-                    type="text"
-                    placeholder="Persona Name..."
-                    bind:value={newPersonaName}
-                    class="input input-bordered w-full max-w-xs mb-2"
-                />
-            </div>
-            <div class="mb-2">
-                <input
-                    id="persona-description"
-                    type="text"
-                    placeholder="Persona Description..."
-                    bind:value={newPersonaDescription}
-                    class="input input-bordered w-full max-w-xs mb-2"
-                />
-            </div>
-            <div class="mb-2">
-                <label for="model">Model:</label>
-                <select
-                    id="model"
-                    bind:value={newPersonaModel}
-                    class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52"
-                >
-                    {#each $models as model}
-                        <option value={model}>{model}</option>
-                    {/each}
-                </select>
-            </div>
-            <div class="mb-2">
-                <label for="temperature">Temperature:</label>
-                <input
-                    id="temperature"
-                    type="range"
-                    min="0"
-                    max="1"
-                    step="0.01"
-                    bind:value={newPersonaTemperature}
-                />
-            </div>
-
-
-            <div class="mb-2">
-                <input
-                    id="persona-system-prompt"
-                    type="text"
-                    placeholder="System Prompt..."
-                    bind:value={newPersonaSystemPrompt}
-                    class="input input-bordered w-full max-w-xs mb-2"
-                />
-            </div>
-            <button class="btn mb-2" on:click={savePersona}>Save</button>
-            <button class="btn mb-2" on:click={cancelPersona}>Cancel</button>
-        {/if}
     </div>
 </div>
+
+{#if $personas.length > 0}
+    <dialog id="persona_modal" class="modal">
+        <div class="modal-box">
+            <h3 class="font-bold text-lg">
+                {$personas[currentPersonaId].name}
+            </h3>
+            <form on:submit|preventDefault={updatePersona}>
+                <div class="py-2">
+                    <label for="persona-name">Name:</label>
+                    <input
+                        id="persona-name"
+                        type="text"
+                        bind:value={$personas[currentPersonaId].name}
+                        class="input input-bordered w-full max-w-xs mb-2"
+                    />
+                </div>
+                <div class="py-2">
+                    <label for="persona-description">Description:</label>
+                    <input
+                        id="persona-description"
+                        type="text"
+                        bind:value={$personas[currentPersonaId].description}
+                        class="input input-bordered w-full max-w-xs mb-2"
+                    />
+                </div>
+                <div class="py-2">
+                    <label for="persona-model">Model:</label>
+                    <select
+                        id="persona-model"
+                        bind:value={$personas[currentPersonaId].model}
+                        class="shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52"
+                    >
+                        {#each $models as model}
+                            <option value={model}>{model}</option>
+                        {/each}
+                    </select>
+                </div>
+                <div class="py-4">
+                    <label for="persona-temperature">Temperature:</label>
+                    <input
+                        id="persona-temperature"
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.01"
+                        bind:value={$personas[currentPersonaId].temperature}
+                    />
+                </div>
+                <div class="py-4">
+                    <label for="persona-system-prompt">System Prompt:</label>
+                    <input
+                        id="persona-system-prompt"
+                        type="textarea"
+                        bind:value={$personas[currentPersonaId].systemPrompt}
+                        class="input input-bordered w-full max-w-xs mb-2"
+                    />
+                </div>
+                <div class="modal-action">
+                    <button type="submit" class="btn">Save</button>
+                    <button
+                        type="button"
+                        class="btn"
+                        on:click={() =>
+                            document.getElementById("persona_modal")["close"]()}
+                        >Close</button
+                    >
+                </div>
+            </form>
+        </div>
+    </dialog>
+{/if}
