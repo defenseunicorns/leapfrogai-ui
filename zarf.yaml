@@ -39,7 +39,7 @@ variables:
     sensitive: false
   - name: TRANSCRIPTION_MODEL
     description: The default model to use for transcription 
-    default: ctransformers
+    default: whisper
     prompt: true
     sensitive: false
   - name: SYSTEM_PROMPT
