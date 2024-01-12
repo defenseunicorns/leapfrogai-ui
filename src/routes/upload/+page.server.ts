@@ -5,17 +5,41 @@ import { toFile } from "openai";
 import { writeFile, readFile, unlink } from "fs/promises";
 import { v4 as uuidv4 } from "uuid";
 import path from "node:path";
+import OpenAI from "openai";
 
-import { completion, openai } from "$lib/openai";
 import { env } from "$env/dynamic/private";
 import { batchTranscript, tokenize } from "$lib/tokenizer";
 import { generateSummarizationPrompt } from "$lib/prompt";
 import { clearTmp } from "$lib/cleanup";
 
 const TEMPORARY_DIRECTORY = tmpdir();
+const REQUEST_TIMEOUT = 36000 * 1000 // 10 hours
+
+const createCompletion = async (
+  openaiClient: OpenAI,
+  model: string,
+  prompt: string,
+  maxTokens: number
+) => {
+  const completion = await openaiClient.completions.create({
+    model: model,
+    max_tokens: maxTokens,
+    temperature: 0.1,
+    frequency_penalty: 0.5,
+    presence_penalty: 0.0,
+    prompt,
+  });
+  return completion.choices[0].text.trim();
+};
 
 export const actions = {
   upload: async ({ request }: RequestEvent) => {
+    const openaiClient = new OpenAI({
+      apiKey: env.OPENAI_API_KEY,
+      baseURL: env.OPENAI_API_HOST,
+      timeout: REQUEST_TIMEOUT,
+    });
+
     clearTmp(TEMPORARY_DIRECTORY);
 
     const formData = await request.formData();
@@ -25,7 +49,7 @@ export const actions = {
     if (!audioFile) {
       return fail(400, {
         error: true,
-        message: "You must provide a file to upload"
+        message: "You must provide a file to upload",
       });
     }
 
@@ -41,21 +65,24 @@ export const actions = {
     const audioBuffer = Buffer.from(await audioFile.arrayBuffer());
     const audioStream = await toFile(audioBuffer);
 
-    openai.audio.transcriptions
-      .create({ model: "leapfrogai-transcribe", file: audioStream })
+    openaiClient.audio.transcriptions
+      .create({ model: env.TRANSCRIPTION_MODEL, file: audioStream })
       .then(async (res) => {
         console.log(`\tSuccessfully transcribed ${filename}`);
 
         const transcriptionResult = res.text;
 
-        await writeFile(`${TEMPORARY_DIRECTORY}/${uid}.txt`, transcriptionResult);
+        await writeFile(
+          `${TEMPORARY_DIRECTORY}/${uid}.txt`,
+          transcriptionResult
+        );
 
         return transcriptionResult;
       })
       .catch((error) => {
         return fail(400, {
           error: true,
-          message: error.message.toString()
+          message: error.message.toString(),
         });
       });
 
@@ -64,12 +91,18 @@ export const actions = {
         filename: filename,
         name: path.parse(audioFile.name).name,
         uid: uid,
-        success: true
-      }
+        success: true,
+      },
     };
   },
 
   summarize: async ({ request }: RequestEvent) => {
+    const openaiClient = new OpenAI({
+      apiKey: env.OPENAI_API_KEY,
+      baseURL: env.OPENAI_API_HOST,
+      timeout: REQUEST_TIMEOUT,
+    });
+
     const formData = await request.formData();
 
     const uid = formData.get("uid") as File;
@@ -79,7 +112,7 @@ export const actions = {
 
     const tokenizedTranscript = tokenize(transcription as string);
 
-    const model = env.SUMMARIZATION_MODEL || "leapfrogai-language";
+    const model = env.SUMMARIZATION_MODEL;
 
     // batching method only occurs at high token counts
     let intermediateSummary = "";
@@ -90,7 +123,7 @@ export const actions = {
       for (let i = 0; i < transcriptBatches.length; i++) {
         const chunk = transcriptBatches[i];
         const prompt = generateSummarizationPrompt(model, chunk);
-        const text = await completion(model, prompt, 500);
+        const text = createCompletion(openaiClient, model, prompt, 500);
         intermediateSummary += text;
       }
     } else {
@@ -102,7 +135,8 @@ export const actions = {
       intermediateSummary,
       true // finalSummary
     );
-    const summary = await completion(model, prompt, 7500);
+
+    const summary = await createCompletion(openaiClient, model, prompt, 8192);;
 
     await unlink(transcriptionFile);
     console.log(`\tSuccessfully summarized ${filename}`);
@@ -112,12 +146,12 @@ export const actions = {
         transcription: transcription,
         filename: filename,
         uid: uid,
-        success: true
+        success: true,
       },
       summarize: {
         summary,
-        success: true
-      }
+        success: true,
+      },
     };
-  }
+  },
 } satisfies Actions;
