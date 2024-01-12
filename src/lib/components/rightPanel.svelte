@@ -113,16 +113,18 @@
             {#if personaSearch == "" || persona.name
                     .toLowerCase()
                     .includes(personaSearch.toLowerCase())}
-                <div class="menu bg-base-100 w-full rounded-box">
-                    <div class="flex">
-                        <li class="w-4/6 flex-nowrap">
-                            <button
-                                class="whitespace-nowrap"
-                                on:click={() => {
-                                    applyPersona(persona);
-                                }}>{persona.name}</button
-                            >
-                        </li>
+                <div class="form-control bg-base-100 flex-row w-full">
+                    <div class="flex justify-between">
+                        <label class="cursor-pointer label">
+                        <input
+                            type="radio"
+                            name="persona-selector"
+                            class="whitespace-nowrap radio-secondary bg-base-100"
+                            on:click={() => {
+                                applyPersona(persona);
+                            }}
+                        /><span class="label-text ml-2">{persona.name}</span></label>
+
                         <button
                             class="btn-ghost w-1/6 px-2"
                             on:click={() => {
