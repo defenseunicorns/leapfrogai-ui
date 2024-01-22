@@ -19,7 +19,7 @@
 /.npmrc @gerred @YrrepNoj @gphorvath
 /.pre-commit-config.yaml @gerred @gphorvath
 /*.config.js @gerred @YrrepNoj @gphorvath
-/*.json@gerred @YrrepNoj @gphorvath
+/*.json @gerred @YrrepNoj @gphorvath
 
 
 # Additional privileged files
