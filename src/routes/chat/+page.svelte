@@ -94,7 +94,7 @@
         chatUuid = uuidv4();
         conversations.update((n) => [
             ...n,
-            { id: uuidv4(), name: "New conversation", messages: [] },
+            { id: chatUuid, name: "New conversation", messages: [] },
         ]);
         currentConversation.set(chatUuid);
         return chatUuid;
@@ -461,7 +461,7 @@
         </div>
 
         <!-- Center Panel -->
-        <div class="w-full pb-4 pt-4 flex flex-col ml-72 mr-72 mt-20 mb-10 overflow-x-scroll">
+        <div class="w-full pb-4 pt-4 flex flex-col ml-72 mr-72 mt-20 mb-20 overflow-x-scroll">
             {#if $currentConversation !== null && $conversations.find((c) => c.id === $currentConversation)}
                 <div
                     bind:this={chatContainer}
