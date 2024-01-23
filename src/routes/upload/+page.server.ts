@@ -8,6 +8,7 @@ import path from "node:path";
 import OpenAI from "openai";
 
 import { env } from "$env/dynamic/private";
+import { PUBLIC_TRANSCRIPTION_MODEL } from "$env/static/public";
 import { batchTranscript, tokenize } from "$lib/tokenizer";
 import { generateSummarizationPrompt } from "$lib/prompt";
 import { clearTmp } from "$lib/cleanup";
@@ -66,7 +67,7 @@ export const actions = {
     const audioStream = await toFile(audioBuffer);
 
     openaiClient.audio.transcriptions
-      .create({ model: env.TRANSCRIPTION_MODEL, file: audioStream })
+      .create({ model: PUBLIC_TRANSCRIPTION_MODEL, file: audioStream })
       .then(async (res) => {
         console.log(`\tSuccessfully transcribed ${filename}`);
 

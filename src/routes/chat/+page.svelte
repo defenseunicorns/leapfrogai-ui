@@ -1,8 +1,6 @@
 <script lang="ts">
     import {
-        AnnotationOutline,
         ArrowRightSolid,
-        CogOutline,
         EditOutline,
         FileImportOutline,
         FileExportOutline,
@@ -12,23 +10,46 @@
     } from "flowbite-svelte-icons";
     import { onMount } from "svelte";
     import { writable } from "svelte/store";
-    import { env } from "$env/dynamic/public";
     import { urlConcat } from "$lib/helper";
     import SvelteMarkdown from "svelte-markdown";
     import codeblock from "$lib/components/codeblock.svelte";
     import codespan from "$lib/components/codespan.svelte";
     import { v4 as uuidv4 } from "uuid";
+    import PersonaPicker from "$lib/components/personaPicker.svelte";
+    import settings from '$lib/settings';
+    import type {ModelSettings} from '$lib/settings'
+    import { PUBLIC_TRANSCRIPTION_MODEL } from "$env/static/public";
 
     let localStorage;
     let conversations = writable([]);
-    let personas = writable([]);
     let models = writable([null]);
-    let showSettings = false;
     let fileInput;
     let fileInputRag;
-
     let ragEndpointActive = false;
     let ragEnabled = false;
+
+    let currentSettings: Agent;
+
+    function updateModelIndicators(value: Agent) {
+        if (currentSettings) {
+            const modelSettings: ModelSettings = {
+                chatModel: value.model,
+                transcriptionModel: PUBLIC_TRANSCRIPTION_MODEL
+            }
+
+            settings.set(modelSettings)
+        }
+    }
+
+    $: updateModelIndicators(currentSettings)
+
+    onMount(async () => {
+        // required to access localStorage after mount
+        localStorage = window.localStorage;
+        getLocalConversations();
+        models.set(await getModels());
+        await updateRagEndpointState();
+    });
 
     async function updateRagEndpointState() {
         fetch(urlConcat("/api/rag/health"))
@@ -40,15 +61,6 @@
                 console.log(e);
             });
     }
-
-    onMount(async () => {
-        // required to access localStorage after mount
-        localStorage = window.localStorage;
-        getLocalConversations();
-        getLocalPersonas();
-        models.set(await getModels());
-        await updateRagEndpointState();
-    });
 
     function getLocalConversations() {
         if (localStorage) {
@@ -82,14 +94,10 @@
         chatUuid = uuidv4();
         conversations.update((n) => [
             ...n,
-            { id: chatUuid, name: "New conversation", messages: [] },
+            { id: uuidv4(), name: "New conversation", messages: [] },
         ]);
         currentConversation.set(chatUuid);
         return chatUuid;
-    }
-
-    function clearConversations() {
-        conversations.set([]);
     }
 
     async function queryRag(query) {
@@ -162,41 +170,15 @@
         URL.revokeObjectURL(a.href);
     }
 
-    function settings() {
-        showSettings = !showSettings;
-    }
-
-    function pluginKeys() {
-        // dummy function
-    }
-
-    function newPersona() {
-        showPersonaDetails = !showPersonaDetails;
-    }
-
-    function applyPersona(persona) {
-        systemPrompt = persona.systemPrompt;
-        temperature = persona.temperature;
-        selectedModel = persona.model;
-    }
-
     // @ts-ignore
     let chatContainer;
 
     function scrollToBottom() {
-        // @ts-ignore
-        chatContainer.scrollTop = chatContainer.scrollHeight;
+        window.scrollTo(0, document.body.scrollHeight);
     }
 
-    let selectedModel = env.PUBLIC_DEFAULT_MODEL;
-    let systemPrompt = env.PUBLIC_DEFAULT_SYSTEM_PROMPT;
-    let temperature = env.PUBLIC_DEFAULT_TEMPERATURE;
     let currentMessage = writable("");
-    let showPersonaDetails = false;
-    let showSettingsModal = false;
     let conversationSearch = "";
-    let personaSearch = "";
-    let currentPersonaId = 0;
 
     // @ts-ignore
     function getMessage(source, text) {
@@ -253,13 +235,13 @@
             messages: [
                 {
                     role: "system",
-                    content: systemPrompt,
+                    content: currentSettings.systemPrompt,
                 },
                 ...conversationMessages,
             ],
-            model: selectedModel,
+            model: currentSettings.model,
             max_tokens: 1000,
-            temperature: temperature,
+            temperature: currentSettings.temperature,
         };
 
         // Create a new assistant message with empty content
@@ -302,14 +284,13 @@
                                 );
                                 newMessage.content += textValue;
                                 conversations.set($conversations);
+                                scrollToBottom()
                                 return pump();
                             });
                         }
                     },
                 });
-            });
-
-        scrollToBottom();
+            })
     }
 
     async function regenerateResponse() {
@@ -324,54 +305,6 @@
         await sendMessage();
     }
 
-    let newPersonaName = "";
-    let newPersonaDescription = "";
-    let personaId = 0;
-    let newPersonaSystemPrompt = systemPrompt;
-    let newPersonaTemperature = temperature;
-    let newPersonaModel = selectedModel;
-
-    function clearNewPersona() {
-        newPersonaName = "";
-        newPersonaDescription = "";
-        newPersonaSystemPrompt = systemPrompt;
-        newPersonaTemperature = temperature;
-        newPersonaModel = selectedModel;
-    }
-
-    function savePersona() {
-        personas.update((n) => [
-            ...n,
-            {
-                id: personaId++,
-                name: newPersonaName,
-                description: newPersonaDescription,
-                systemPrompt: newPersonaSystemPrompt,
-                temperature: newPersonaTemperature,
-                model: newPersonaModel,
-            },
-        ]);
-        showPersonaDetails = false;
-        clearNewPersona();
-    }
-
-    function getLocalPersonas() {
-        if (localStorage) {
-            const storedPersonas = JSON.parse(localStorage.getItem("personas"));
-            if (storedPersonas?.length > 0) {
-                personas.set(storedPersonas);
-            }
-        }
-    }
-
-    function persistPersonas(value: any[]) {
-        if (localStorage) {
-            localStorage.setItem("personas", JSON.stringify(value));
-        }
-    }
-
-    personas.subscribe(persistPersonas);
-
     function editConversation(conversationId: number) {
         if (editingConversationIndex === conversationId) {
             editConversationName(tempConversationName);
@@ -380,31 +313,8 @@
         }
     }
 
-    function cancelPersona() {
-        showPersonaDetails = false;
-    }
-
-    function updatePersona() {
-        personas.update((n) => {
-            const persona = n.find((p) => p.id === currentPersonaId);
-            if (persona) {
-                persona.name = $personas[currentPersonaId].name;
-                persona.description = $personas[currentPersonaId].description;
-                persona.systemPrompt = $personas[currentPersonaId].systemPrompt;
-                persona.temperature = $personas[currentPersonaId].temperature;
-                persona.model = $personas[currentPersonaId].model;
-            }
-            return n;
-        });
-        document.getElementById("persona_modal")["close"]();
-    }
-
     function removeConversation(id) {
         conversations.update((n) => n.filter((c) => c.id !== id));
-    }
-
-    function removePersona(id) {
-        personas.update((n) => n.filter((p) => p.id !== id));
     }
 
     let editingConversationIndex = -1;
@@ -434,7 +344,7 @@
 </script>
 
 <svelte:head>
-  <title>Chat</title>
+    <title>Chat</title>
 </svelte:head>
 
 <div class="flex flex-col h-screen">
@@ -478,10 +388,9 @@
                                             <li class="w-4/6 flex-nowrap">
                                                 <button
                                                     class="whitespace-nowrap"
-                                                    on:click={() =>
-                                                        currentConversation.set(
-                                                            conversation.id,
-                                                        )}
+                                                    on:click={async () =>
+                                                            currentConversation.set(conversation.id)
+                                                    }
                                                 >
                                                     <span
                                                         class="overflow-hidden"
@@ -548,21 +457,11 @@
                         <FileExportOutline />
                     </button>
                 </div>
-                <div>
-                    <button
-                        class="btn btn-ghost w-full flex justify-between"
-                        on:click={() =>
-                            (showSettingsModal = !showSettingsModal)}
-                    >
-                        Settings
-                        <CogOutline />
-                    </button>
-                </div>
             </div>
         </div>
 
         <!-- Center Panel -->
-        <div class="w-full pb-4 pt-4 flex flex-col ml-72 mr-72 mt-20 mb-20">
+        <div class="w-full pb-4 pt-4 flex flex-col ml-72 mr-72 mt-20 mb-10 overflow-x-scroll">
             {#if $currentConversation !== null && $conversations.find((c) => c.id === $currentConversation)}
                 <div
                     bind:this={chatContainer}
@@ -575,7 +474,7 @@
                                 ? 'user-message'
                                 : 'assistant-message'}"
                         >
-                            <SvelteMarkdown
+                            <SvelteMarkdown on:parsed={() => scrollToBottom()}
                                 source={message.content}
                                 renderers={{
                                     code: codeblock,
@@ -613,239 +512,6 @@
         </div>
 
         <!-- Side Panel 2 -->
-        <div class="w-72 p-4 h-full fixed top-20 right-0 overflow-y-auto">
-            <button
-                class="btn w-full mb-2 justify-between"
-                on:click={newPersona}
-            >
-                New persona
-                <PlusOutline />
-            </button>
-            <input
-                class="input input-bordered w-full mb-2"
-                type="text"
-                placeholder="Search"
-                bind:value={personaSearch}
-            />
-            {#each $personas as persona}
-                {#if personaSearch == "" || persona.name
-                        .toLowerCase()
-                        .includes(personaSearch.toLowerCase())}
-                    <div class="menu bg-base-100 w-full rounded-box">
-                        <div class="flex">
-                            <li class="w-4/6 flex-nowrap">
-                                <button
-                                    class="whitespace-nowrap"
-                                    on:click={() => {
-                                        applyPersona(persona);
-                                    }}>{persona.name}</button
-                                >
-                            </li>
-                            <button
-                                class="btn-ghost w-1/6 px-2"
-                                on:click={() => {
-                                    document
-                                        .getElementById("persona_modal")
-                                        ["showModal"]();
-                                    currentPersonaId = persona.id;
-                                }}><EditOutline /></button
-                            >
-                            <button
-                                class="btn-ghost w-1/6 px-2"
-                                on:click={() => removePersona(persona.id)}
-                                ><TrashBinOutline /></button
-                            >
-                        </div>
-                    </div>
-                {/if}
-            {/each}
-            {#if showPersonaDetails}
-                <div class="text=large"
-                    >Persona Details</div
-                >
-                <div class="mb-2">
-                    <input
-                        id="persona-name"
-                        type="text"
-                        placeholder="Persona Name..."
-                        bind:value={newPersonaName}
-                        class="input input-bordered w-full max-w-xs mb-2"
-                    />
-                </div>
-                <div class="mb-2">
-                    <input
-                        id="persona-description"
-                        type="text"
-                        placeholder="Persona Description..."
-                        bind:value={newPersonaDescription}
-                        class="input input-bordered w-full max-w-xs mb-2"
-                    />
-                </div>
-                <div class="mb-2">
-                    <input
-                        id="persona-system-prompt"
-                        type="text"
-                        placeholder="System Prompt..."
-                        bind:value={newPersonaSystemPrompt}
-                        class="input input-bordered w-full max-w-xs mb-2"
-                    />
-                </div>
-                <div class="mb-2">
-                    <label for="temperature">Temperature:</label>
-                    <input
-                        id="temperature"
-                        type="range"
-                        min="0"
-                        max="1"
-                        step="0.01"
-                        bind:value={newPersonaTemperature}
-                    />
-                </div>
-                <div class="mb-2">
-                    <label for="model">Model:</label>
-                    <select
-                        id="model"
-                        bind:value={newPersonaModel}
-                        class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52"
-                    >
-                        {#each $models as model}
-                            <option value={model}>{model}</option>
-                        {/each}
-                    </select>
-                </div>
-                <button class="btn mb-2" on:click={savePersona}>Save</button>
-                <button class="btn mb-2" on:click={cancelPersona}>Cancel</button
-                >
-            {/if}
-        </div>
+        <PersonaPicker bind:pickedPersona={currentSettings}/>
     </div>
 </div>
-
-{#if showSettingsModal}
-    <dialog class="fixed inset-0 flex items-center justify-center z-10">
-        <div class="modal-box">
-            <div class="mb-2">
-                <label for="model">Model:</label>
-                <select
-                    id="model"
-                    bind:value={selectedModel}
-                    class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52"
-                >
-                    {#each $models as model}
-                        <option value={model}>{model}</option>
-                    {/each}
-                </select>
-            </div>
-            <div class="mb-2">
-                <label for="system-prompt">System Prompt:</label>
-                <input
-                    class="input input-bordered w-full max-w-xs mb-2"
-                    id="system-prompt"
-                    type="text"
-                    bind:value={systemPrompt}
-                />
-            </div>
-            <div class="mb-2">
-                <label for="temperature">Temperature:</label>
-                <input
-                    id="temperature"
-                    type="range"
-                    min="0"
-                    max="1"
-                    step="0.01"
-                    bind:value={temperature}
-                />
-            </div>
-            {#if ragEndpointActive}
-                <div class="mb-2">
-                    <div>
-                        <span>Retrieval Augmented Generation</span>
-                        <input
-                            type="checkbox"
-                            class="checkbox"
-                            bind:checked={ragEnabled}
-                        />
-                    </div>
-                </div>
-            {/if}
-            <button class="btn" on:click={() => (showSettingsModal = false)}
-                >Close</button
-            >
-        </div>
-    </dialog>
-{/if}
-
-{#if $personas.length > 0}
-    <dialog id="persona_modal" class="modal">
-        <div class="modal-box">
-            <h3 class="font-bold text-lg">
-                {$personas[currentPersonaId].name}
-            </h3>
-            <form on:submit|preventDefault={updatePersona}>
-                <div class="py-4">
-                    <label for="persona-name">Name:</label>
-                    <input
-                        id="persona-name"
-                        type="text"
-                        bind:value={$personas[currentPersonaId].name}
-                        class="input input-bordered w-full max-w-xs mb-2"
-                    />
-                </div>
-                <div class="py-4">
-                    <label for="persona-description">Description:</label>
-                    <input
-                        id="persona-description"
-                        type="text"
-                        bind:value={$personas[currentPersonaId].description}
-                        class="input input-bordered w-full max-w-xs mb-2"
-                    />
-                </div>
-                <div class="py-4">
-                    <label for="persona-system-prompt">System Prompt:</label>
-                    <input
-                        id="persona-system-prompt"
-                        type="text"
-                        bind:value={$personas[currentPersonaId].systemPrompt}
-                        class="input input-bordered w-full max-w-xs mb-2"
-                    />
-                </div>
-                <div class="py-4">
-                    <label for="persona-temperature">Temperature:</label>
-                    <input
-                        id="persona-temperature"
-                        type="range"
-                        min="0"
-                        max="1"
-                        step="0.01"
-                        bind:value={$personas[currentPersonaId].temperature}
-                    />
-                </div>
-                <div class="py-4">
-                    <label for="persona-model">Model:</label>
-                    <select
-                        id="persona-model"
-                        bind:value={$personas[currentPersonaId].model}
-                        class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52"
-                    >
-                        {#each $models as model}
-                            <option value={model}>{model}</option>
-                        {/each}
-                    </select>
-                </div>
-                <div class="modal-action">
-                    <button type="submit" class="btn">Save</button>
-                    <button
-                        type="button"
-                        class="btn"
-                        on:click={() =>
-                            document.getElementById("persona_modal")["close"]()}
-                        >Close</button
-                    >
-                </div>
-            </form>
-        </div>
-    </dialog>
-{/if}
-
-<style>
-</style>

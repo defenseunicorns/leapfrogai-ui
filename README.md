@@ -32,11 +32,3 @@ docker build -t ask-frogs .
 docker run -i -p 5173:5173 ask-frogs (interactive)
 docker run -it -d --rm -p 5173:5173 ask-frogs (non-interactive)
 ```
-
-## Dark Mode UI
-
-![screenshot](./static/leapfrogui-dark.png "Screenshot")
-
-## Light Mode UI
-
-![screenshot](./static/leapfrogui-light.png "Screenshot")

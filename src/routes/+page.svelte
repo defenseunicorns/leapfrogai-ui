@@ -1,4 +1,3 @@
-
 <title>LeapfrogAI</title>
 
 <div class="flex flex-col h-screen">
