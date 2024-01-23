@@ -313,8 +313,17 @@
         }
     }
 
+    function switchToLastConversation() {
+        $currentConversation = $conversations[$conversations.length - 1].id
+    }
+
     function removeConversation(id) {
         conversations.update((n) => n.filter((c) => c.id !== id));
+
+        let isCurrentConversationDeleted = $conversations.length > 0 && id == $currentConversation;
+        if (isCurrentConversationDeleted) {
+            switchToLastConversation();
+        }
     }
 
     let editingConversationIndex = -1;
