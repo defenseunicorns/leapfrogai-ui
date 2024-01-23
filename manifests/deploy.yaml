@@ -29,7 +29,7 @@ spec:
               value: "###ZARF_VAR_MODEL###"
             - name: SUMMARIZATION_MODEL
               value: "###ZARF_VAR_MODEL###"
-            - name: TRANSCRIPTION_MODEL
+            - name: PUBLIC_TRANSCRIPTION_MODEL
               value: "###ZARF_VAR_TRANSCRIPTION_MODEL###"
             - name: PUBLIC_DEFAULT_SYSTEM_PROMPT
               value: "###ZARF_VAR_SYSTEM_PROMPT###"

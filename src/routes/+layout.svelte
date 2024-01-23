@@ -1,7 +1,8 @@
 <script lang="ts">
 	import "../app.css";
 	import ThemeSwitcher from "$lib/components/themeSwitcher.svelte";
-    import ApiIndiciator from "$lib/components/apiIndiciator.svelte";
+    import ApiIndicator from "$lib/components/apiIndicator.svelte";
+	import settings from '$lib/settings';
 </script>
 
 <!-- Title Bar -->
@@ -13,18 +14,19 @@
 			><img src="leapfrogai.png" alt="LeapfrogAI" class="h-11" /></a
 		>
 	</div>
-	<div>
+	<div class="flex items-center">
 		<a href="/chat">Chat</a>
+		<ApiIndicator type={$settings.chatModel}/>
 	</div>
-	<div>
+	<div class="flex items-center">
 		<a href="/upload">Transcribe</a>
+		<ApiIndicator type={$settings.transcriptionModel}/>
 	</div>
 	<div>
 		<a href="/help">Help</a>
 	</div>
 	<div class="flex items-center">
 		<ThemeSwitcher />
-		<ApiIndiciator />
 	</div>
 </div>
 
