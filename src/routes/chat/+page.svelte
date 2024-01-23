@@ -190,7 +190,7 @@
 
         if ($currentMessage.trim() !== "") {
             // If there's no current conversation, create a new one
-            if ($currentConversation === null) {
+            if ($currentConversation === null || $conversations.length == 0) {
                 currentConversation.set(newChat()); // Set the current conversation to the newly created one
             }
 
