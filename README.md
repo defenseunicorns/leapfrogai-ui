@@ -1,3 +1,5 @@
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/defenseunicorns/leapfrog-ui/badge)](https://securityscorecards.dev/viewer/?uri=github.com/defenseunicorns/leapfrog-ui)
+
 UI Built with SvelteKit, Tailwind CSS with Daisy UI and [Flowbite Svelte](https://flowbite-svelte.com/docs/) for icons.
 
 ## Developing
