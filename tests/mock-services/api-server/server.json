@@ -1,0 +1,67 @@
+{
+  "models": {
+    "object": "list",
+    "data": [
+      {
+        "id": "llamacpp",
+        "object": "model",
+        "created": 0,
+        "owned_by": "leapfrogai"
+      },
+      {
+        "id": "whisper",
+        "object": "model",
+        "created": 0,
+        "owned_by": "leapfrogai"
+      }
+    ]
+  },
+  "chatCompletions": [
+    {
+      "data": {
+        "id": "foo",
+        "object": "chat.completion.chunk",
+        "created": 1,
+        "model": "mpt-7b-8k-chat",
+        "choices": [
+          {
+            "index": 0,
+            "delta": {
+              "role": "assistant",
+              "content": " president"
+            },
+            "finish_reason": null
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 0,
+          "completion_tokens": 0,
+          "total_tokens": 0
+        }
+      }
+    },
+    {
+      "data": "[DONE]"
+    }
+  ],
+  "completions": {
+    "id": "cmpl-uqkvlQyYK7bGYrRHQ0eXlWi7",
+    "object": "text_completion",
+    "created": 1589478378,
+    "model": "gpt-3.5-turbo-instruct",
+    "system_fingerprint": "fp_44709d6fcb",
+    "choices": [
+      {
+        "text": "\n\nThis is indeed a test",
+        "index": 0,
+        "logprobs": null,
+        "finish_reason": "length"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 5,
+      "completion_tokens": 7,
+      "total_tokens": 12
+    }
+  }
+}

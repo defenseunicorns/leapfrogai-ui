@@ -1,0 +1,5 @@
+{
+  "/v1/chat/completions": "/chatCompletions",
+  "/v1/completions": "/completions",
+  "/v1/models": "/models"
+}
