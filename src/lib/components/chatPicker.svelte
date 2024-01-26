@@ -148,7 +148,8 @@
                             {:else}
                                 <li class="w-4/6 flex-nowrap">
                                     <button
-                                        class="whitespace-nowrap"
+                                        class="whitespace-nowrap
+                                        {conversation.id === $curConversationId ? 'outline outline-2 outline-offset-2 outline-secondary' : ''}"
                                         on:click={async () => {
                                             curConversationId.set(
                                                 conversation.id,
