@@ -69,6 +69,8 @@
         return { role: source, content: text };
     }
 
+    let isStreaming = false;
+
     async function sendMessage() {
         let lastMessage = getMessage("user", $currentMessage);
 
@@ -131,6 +133,8 @@
             },
         });
 
+        isStreaming = true;
+
         fetch(myRequest)
             .then((response) => response.body)
             .then((body) => {
@@ -143,6 +147,7 @@
                                 // When no more data needs to be consumed, close the stream
                                 if (done) {
                                     controller.close();
+                                    isStreaming = false;
                                     return;
                                 }
                                 // Enqueue the next data chunk into our target stream
@@ -230,10 +235,11 @@
                     placeholder="Type your message here..."
                     bind:value={$currentMessage}
                     class="input input-bordered w-full"
+                    disabled={isStreaming}
                 />
             </form>
-            <button on:click={sendMessage} class="btn ml-2 p-2"
-                ><ArrowRightSolid /></button
+            <button on:click={sendMessage} class="btn ml-2 p-2" disabled={isStreaming}>
+                <ArrowRightSolid /></button
             >
         </div>
     </div>
