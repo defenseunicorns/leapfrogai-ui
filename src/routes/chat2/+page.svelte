@@ -46,7 +46,7 @@
             });
     }
 
-    let currentConversation = writable(null);
+    let currentConversationId = writable(null);
 
     async function queryRag(query) {
         try {
@@ -114,7 +114,7 @@
 <div class="flex flex-col h-screen">
     <div class="flex flex-grow">
         <!-- Side Panel 1 -->
-        <ChatPicker bind:pickedConversation={currentConversation}/>
+        <ChatPicker bind:curConversationId={currentConversationId} bind:conversations={conversations}/>
                 {#if ragEndpointActive}
                     <input
                         type="file"
@@ -134,7 +134,7 @@
                 />
 
         <!-- Center Panel -->
-        <ChatPanel bind:settings={currentSettings} bind:conversation={currentConversation}/>
+        <ChatPanel settings={currentSettings} bind:curConversationId={currentConversationId} bind:conversations={conversations}/>
 
         <!-- Side Panel 2 -->
         <PersonaPicker bind:pickedPersona={currentSettings}/>

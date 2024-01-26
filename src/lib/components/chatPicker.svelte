@@ -8,14 +8,14 @@
     } from "flowbite-svelte-icons";
     import { onMount } from "svelte";
     import { writable } from "svelte/store";
-    import { v4 as uuidv4 } from "uuid";
+    import {newChat} from "$lib/helper";
 
-    export let pickedConversation = writable(null);
+    export let curConversationId = writable(null);
+    export let conversations = writable([]);
 
     let editingConversationIndex = -1;
     let tempConversationName = "";
     let conversationSearch = "";
-    let conversations = writable([]);
     let chatUuid: string;
     let fileInput;
 
@@ -45,16 +45,6 @@
     }
 
     conversations.subscribe(persistConversations);
-
-    function newChat(): string {
-        chatUuid = uuidv4();
-        conversations.update((n) => [
-            ...n,
-            { id: chatUuid, name: "New conversation", messages: [] },
-        ]);
-        pickedConversation.set(chatUuid);
-        return chatUuid;
-    }
 
     function startEditingConversationName(index) {
         editingConversationIndex = index;
@@ -86,18 +76,17 @@
         }
     }
 
-    function removeConversation(id) {
+    function removeConversation(id: string) {
         conversations.update((n) => n.filter((c) => c.id !== id));
-
         let isCurrentConversationDeleted =
-            $conversations.length > 0 && id == $pickedConversation;
+            $conversations.length > 0 && id == $curConversationId;
         if (isCurrentConversationDeleted) {
             switchToLastConversation();
         }
     }
 
     function switchToLastConversation() {
-        $pickedConversation = $conversations[$conversations.length - 1].id;
+        $curConversationId = $conversations[$conversations.length - 1].id;
     }
 
     async function importData(event) {
@@ -129,7 +118,7 @@
 </script>
 
 <div class="w-72 p-4 pb-60 h-full fixed top-20 left-0">
-    <button class="btn mb-2 w-full justify-between" on:click={newChat}>
+    <button class="btn mb-2 w-full justify-between" on:click={() => newChat(curConversationId, conversations)}>
         New chat
         <PlusOutline />
     </button>
@@ -161,12 +150,8 @@
                                     <button
                                         class="whitespace-nowrap"
                                         on:click={async () => {
-                                            pickedConversation.set(
+                                            curConversationId.set(
                                                 conversation.id,
-                                            )
-                                            console.log(
-                                                "pickedConversation",
-                                                $pickedConversation,
                                             )}}
                                     >
                                         <span class="overflow-hidden"

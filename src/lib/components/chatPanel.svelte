@@ -4,16 +4,56 @@
     import codeblock from "$lib/components/codeblock.svelte";
     import codespan from "$lib/components/codespan.svelte";
     import { writable } from "svelte/store";
-    import { urlConcat } from "$lib/helper";
+    import {newChat, urlConcat} from "$lib/helper";
     import { onMount } from "svelte";
 
-    export let conversation = writable(null);
+    export let curConversationId = writable(null);
+    export let conversations = writable([]);
+
+    let curConversation = writable<Conversation>();
+
+    $: curConversation.set(getUpdatedConversation($conversations, $curConversationId))
+    conversations.subscribe((v) => {
+        curConversation.set(getUpdatedConversation($conversations, $curConversationId))
+    })
+    curConversationId.subscribe((v) => {
+        curConversation.set(getUpdatedConversation($conversations, $curConversationId))
+    })
+
+    function getUpdatedConversation(conversations: Conversation[], curConversationId: string) {
+        return conversations.find(
+            (c) => c.id === curConversationId,
+        );
+    }
+
+    function addNewMessageToConversation(newMessage: Message) {
+        conversations.update((conversations) => {
+            const conversation = conversations.find(
+                (c) => c.id === $curConversationId,
+            );
+            if (conversation) {
+                conversation.messages.push(newMessage);
+            }
+            return conversations;
+        })
+    }
+
+    function updateLastConversationMessage(newMessage: Message) {
+        conversations.update((conversations) => {
+            const conversation = conversations.find(
+                (c) => c.id === $curConversationId,
+            );
+            if (conversation) {
+                conversation.messages.last = newMessage;
+            }
+            return conversations;
+        })
+    }
+
     export let settings: Agent;
 
     let ragEndpointActive = false;
     let ragEnabled = false;
-
-    let chatContainer;
 
     onMount(async () => {
         await updateRagEndpointState();
@@ -25,7 +65,7 @@
 
     let currentMessage = writable("");
 
-    function getMessage(source, text) {
+    function getMessage(source: string, text: string): Message {
         return { role: source, content: text };
     }
 
@@ -33,13 +73,19 @@
         let lastMessage = getMessage("user", $currentMessage);
 
         if ($currentMessage.trim() !== "") {
-            $conversation.messages.push(lastMessage);
-            currentMessage.set("");
+            // If there's no current conversation, create a new one
+            if ($curConversation == null || $conversations.length == 0) {
+                curConversationId.set(newChat(curConversationId, conversations)); // Set the current conversation to the newly created one
+            }
+
+            addNewMessageToConversation(lastMessage)
+
+            $currentMessage = "";
         }
 
         /* Copy the current messages into a new array so that the RAG results can be
             inserted without changing what the user sees. */
-        let conversationMessages = $conversation.messages;
+        let conversationMessages = [...$curConversation.messages,];
 
         // Only use RAG if the server is available and if the user has it enabled
         if (ragEndpointActive && ragEnabled) {
@@ -74,7 +120,7 @@
 
         // Create a new assistant message with empty content
         let newMessage = getMessage("assistant", "");
-        $conversation.messages.push(newMessage);
+        addNewMessageToConversation(newMessage)
 
         // Request is sent to the local-chat completion server, then routed to the real endpoint
         const myRequest = new Request(urlConcat("/api/chat-completion"), {
@@ -105,6 +151,7 @@
                                     value,
                                 );
                                 newMessage.content += textValue;
+                                updateLastConversationMessage(newMessage)
                                 scrollToBottom();
                                 return pump();
                             });
@@ -146,13 +193,11 @@
 </script>
 
 <div class="w-full pb-4 pt-4 flex flex-col ml-72 mr-72 mt-20 mb-20 overflow-x-scroll">
-    {#if $conversation !== null}
+    {#if $curConversation}
         <div
-            bind:this={chatContainer}
             class="chat-container overflow-auto flex-grow"
         >
-        
-                {#each $conversation.messages as message}
+                {#each $curConversation.messages as message}
                     <div class="chat-header">{message.role}</div>
                     <div
                         class="p-2 m-2 rounded {message.role === 'user'
