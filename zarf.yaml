@@ -1,15 +1,15 @@
 kind: ZarfPackageConfig
 metadata:
-  name: "###ZARF_PKG_TMPL_NAME###"
-  version: "###ZARF_PKG_TMPL_IMAGE_VERSION###"
+  name: '###ZARF_PKG_TMPL_NAME###'
+  version: '###ZARF_PKG_TMPL_IMAGE_VERSION###'
   description: >
     A UI for LeapFrog AI
 
 constants:
   - name: IMAGE_VERSION
-    value: "###ZARF_PKG_TMPL_IMAGE_VERSION###"
+    value: '###ZARF_PKG_TMPL_IMAGE_VERSION###'
   - name: NAME
-    value: "###ZARF_PKG_TMPL_NAME###"
+    value: '###ZARF_PKG_TMPL_NAME###'
 
 variables:
   - name: LEAPFROGAI_BASE_URL
@@ -38,13 +38,13 @@ variables:
     prompt: true
     sensitive: false
   - name: TRANSCRIPTION_MODEL
-    description: The default model to use for transcription 
+    description: The default model to use for transcription
     default: whisper
     prompt: true
     sensitive: false
   - name: SYSTEM_PROMPT
     description: The default system prompt to use for the LLM
-    default: "You are a helpful AI assistant created by Defense Unicorns."
+    default: 'You are a helpful AI assistant created by Defense Unicorns.'
     prompt: true
     sensitive: false
   - name: FINAL_SUMMARIZATION_PROMPT
@@ -54,17 +54,17 @@ variables:
     sensitive: false
   - name: INTERMEDIATE_SUMMARY_PROMPT
     description: The default system summarization prompt to use for the LLM when summary batching activates
-    default: "You are a summarizer tasked with creating summaries. Your key activities include identifying the main points and key details in the given text, and condensing the information into a concise summary that accurately reflects the original text. It is important to avoid any risks such as misinterpreting the text, omitting crucial information, or distorting the original meaning. Use clear and specific language, ensuring that the summary is coherent, well-organized, and effectively communicates the main ideas of the original text."
+    default: 'You are a summarizer tasked with creating summaries. Your key activities include identifying the main points and key details in the given text, and condensing the information into a concise summary that accurately reflects the original text. It is important to avoid any risks such as misinterpreting the text, omitting crucial information, or distorting the original meaning. Use clear and specific language, ensuring that the summary is coherent, well-organized, and effectively communicates the main ideas of the original text.'
     prompt: true
     sensitive: false
   - name: TEMPERATURE
     description: The default temperature for the LLM
-    default: "0.1"
+    default: '0.1'
     prompt: true
     sensitive: false
   - name: PREFIX
     description: Prefix for requests to the application
-    default: ""
+    default: ''
     prompt: true
     sensitive: false
 

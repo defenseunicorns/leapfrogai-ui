@@ -1,10 +1,10 @@
 package:
   create:
     set:
-      image_repository: "ghcr.io/defenseunicorns/leapfrogai/leapfrog-ui"
+      image_repository: 'ghcr.io/defenseunicorns/leapfrogai/leapfrog-ui'
       image_version: 0.0.1
       name: leapfrog-ui
-    max_package_size: "1000000000"
+    max_package_size: '1000000000'
   deploy:
     set:
       limits_cpu: 0
@@ -14,5 +14,5 @@ package:
       requests_memory: 0
       requests_gpu: 0
       name: leapfrog-ui
-      image_repository: "ghcr.io/defenseunicorns/leapfrogai/leapfrog-ui"
+      image_repository: 'ghcr.io/defenseunicorns/leapfrogai/leapfrog-ui'
       image_version: 0.0.1
