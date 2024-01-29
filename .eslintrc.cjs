@@ -4,7 +4,8 @@ module.exports = {
 	parserOptions: {
 		sourceType: 'module',
 		ecmaVersion: 2020,
-		extraFileExtensions: ['.svelte']
+		extraFileExtensions: ['.svelte'],
+		parser: '@typescript-eslint/parser'
 	},
 	env: {
 		browser: true,
