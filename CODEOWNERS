@@ -3,23 +3,23 @@
 *.md @defenseunicorns/leapfrogai 
 
 # Core Code
-/src/ @gerred @YrrepNoj @gphorvath
-/static/ @gerred @YrrepNoj @gphorvath
+/src/ @gerred @YrrepNoj @gphorvath @collectiveunicorn
+/static/ @gerred @YrrepNoj @gphorvath @collectiveunicorn
 
 # Packaging
-/manifests/ @gerred @YrrepNoj @gphorvath
-/zarf-config.yaml @gerred @YrrepNoj @gphorvath
-/zarf.yaml @gerred @YrrepNoj @gphorvath
-/Dockerfile @gerred @YrrepNoj @gphorvath
+/manifests/ @gerred @YrrepNoj @gphorvath @collectiveunicorn
+/zarf-config.yaml @gerred @YrrepNoj @gphorvath @collectiveunicorn
+/zarf.yaml @gerred @YrrepNoj @gphorvath @collectiveunicorn
+/Dockerfile @gerred @YrrepNoj @gphorvath @collectiveunicorn
 
 # Pipeline and Project Files
-/.github/ @gerred @YrrepNoj @gphorvath
-/.env.example @gerred @YrrepNoj @gphorvath
-/.gitignore @gerred @YrrepNoj @gphorvath
-/.npmrc @gerred @YrrepNoj @gphorvath
-/.pre-commit-config.yaml @gerred @gphorvath
-/*.config.js @gerred @YrrepNoj @gphorvath
-/*.json @gerred @YrrepNoj @gphorvath
+/.github/ @gerred @YrrepNoj @gphorvath @collectiveunicorn
+/.env.example @gerred @YrrepNoj @gphorvath @collectiveunicorn
+/.gitignore @gerred @YrrepNoj @gphorvath @collectiveunicorn
+/.npmrc @gerred @YrrepNoj @gphorvath @collectiveunicorn
+/.pre-commit-config.yaml @gerred @gphorvath @collectiveunicorn
+/*.config.js @gerred @YrrepNoj @gphorvath @collectiveunicorn
+/*.json @gerred @YrrepNoj @gphorvath @collectiveunicorn
 
 
 # Additional privileged files
