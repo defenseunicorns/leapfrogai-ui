@@ -6,6 +6,6 @@ export type ModelSettings = {
 }
 
 export default writable({
-    chatModel: "",
-    transcriptionModel: ""
+    chatModel: " ",
+    transcriptionModel: " "
 } as ModelSettings);
