@@ -126,7 +126,8 @@
                 <div class="flex">
                     <li class="w-4/6 flex-nowrap">
                         <button
-                            class="whitespace-nowrap"
+                            class="whitespace-nowrap
+                            {persona.uuid === pickedPersona.uuid ? 'outline outline-2 outline-offset-2 outline-secondary' : ''}"
                             on:click={() => {
                                 applyPersona(persona);
                             }}>{persona.name}</button
