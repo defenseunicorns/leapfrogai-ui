@@ -23,13 +23,8 @@
   let err: Error | null = null;
 
   const authorizedExtensions = [
-    ".mp3",
-    ".mp4",
-    ".mpeg",
-    ".mpga",
-    ".m4a",
-    ".wav",
-    ".webm",
+    "txt",
+    "pdf",
   ];
   let filename = "";
   const upload = (event: Event) => {
