@@ -6,7 +6,6 @@ import {FileLock} from "$lib/interfaces/file_lock";
 /** @type {import('./$types').RequestHandler} */
 export async function POST(event: RequestEvent) {
     const mutex: FileLock = new FileLock(env.CONCURRENT_REQUESTS);
-    console.log(env.MAX_CONCURRENT_REQUESTS)
 
     const openai = new OpenAI({
         apiKey: env.OPENAI_API_KEY,
