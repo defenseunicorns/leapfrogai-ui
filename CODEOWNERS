@@ -3,25 +3,25 @@
 *.md @defenseunicorns/leapfrogai 
 
 # Core Code
-/src/ @gerred @YrrepNoj @gphorvath @collectiveunicorn
-/static/ @gerred @YrrepNoj @gphorvath @collectiveunicorn
+/src/ @defenseunicorns/leapfrogai
+/static/ @defenseunicorns/leapfrogai
 
 # Packaging
-/manifests/ @gerred @YrrepNoj @gphorvath @collectiveunicorn
-/zarf-config.yaml @gerred @YrrepNoj @gphorvath @collectiveunicorn
-/zarf.yaml @gerred @YrrepNoj @gphorvath @collectiveunicorn
-/Dockerfile @gerred @YrrepNoj @gphorvath @collectiveunicorn
+/manifests/ @defenseunicorns/leapfrogai
+/zarf-config.yaml @defenseunicorns/leapfrogai
+/zarf.yaml @defenseunicorns/leapfrogai
+/Dockerfile @defenseunicorns/leapfrogai
 
 # Pipeline and Project Files
-/.github/ @gerred @YrrepNoj @gphorvath @collectiveunicorn
-/.env.example @gerred @YrrepNoj @gphorvath @collectiveunicorn
-/.gitignore @gerred @YrrepNoj @gphorvath @collectiveunicorn
-/.npmrc @gerred @YrrepNoj @gphorvath @collectiveunicorn
-/.pre-commit-config.yaml @gerred @gphorvath @collectiveunicorn
-/*.config.js @gerred @YrrepNoj @gphorvath @collectiveunicorn
-/*.json @gerred @YrrepNoj @gphorvath @collectiveunicorn
+/.github/ @defenseunicorns/leapfrogai
+/.env.example @defenseunicorns/leapfrogai
+/.gitignore @defenseunicorns/leapfrogai
+/.npmrc @defenseunicorns/leapfrogai
+/.pre-commit-config.yaml @defenseunicorns/leapfrogai
+/*.config.js @defenseunicorns/leapfrogai
+/*.json @defenseunicorns/leapfrogai
 
 
 # Additional privileged files
-/CODEOWNERS @jeff-mccoy @mikevanhemert @austenbryan @gerred
+/CODEOWNERS @jeff-mccoy @austenbryan @gerred
 /LICENSE @jeff-mccoy @austenbryan @gerred
