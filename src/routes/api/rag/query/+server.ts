@@ -6,7 +6,7 @@ export async function POST(event: RequestEvent) {
     try {
         const data = await event.request.json();
 
-        const result = await fetch(`${env.RAG_API_HOST}/query/`, {
+        const result = await fetch(`${env.RAG_API_HOST}/query/raw`, {
             method: "POST",
             body: JSON.stringify(data),
             headers: {
