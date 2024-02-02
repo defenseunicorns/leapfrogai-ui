@@ -31,7 +31,7 @@
 
     $: updateModelIndicators(currentSettings)
 
-    onMount(async () => {  
+    onMount(async () => {
         await updateRagEndpointState();
     });
 
