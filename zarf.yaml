@@ -76,8 +76,6 @@ components:
         namespace: leapfrogai
         localPath: chart
         version: "###ZARF_PKG_TMPL_IMAGE_VERSION###"
-        valuesFiles:
-          - "lfai-values.yaml"
     images:
       - ghcr.io/defenseunicorns/leapfrogai/leapfrogai-ui:###ZARF_PKG_TMPL_IMAGE_VERSION###
     actions:
