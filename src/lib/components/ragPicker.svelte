@@ -1,16 +1,27 @@
 <script lang="ts">
-    import { TrashBinOutline } from "flowbite-svelte-icons";
-    import { onMount } from "svelte";
-    import { writable } from "svelte/store";
+    import {TrashBinOutline} from "flowbite-svelte-icons";
+    import {onMount} from "svelte";
+    import {writable} from "svelte/store";
     import {newChat, urlConcat} from "$lib/helper";
 
-    export let currentDocumentId = writable(null);
-    export let documents = writable([]);
+    const REFRESH_INTERVAL_MS = 2000;
+    export let currentDocumentId = writable<string>("");
+    export let documents = writable<DocumentMetadata[]>([]);
 
-    let conversationSearch = "";
+    let documentSearch = "";
 
-    function removeConversation(id: string) {
-        documents.update((n) => n.filter((c) => c.id !== id));
+    function removeDocument(id: string) {
+        try {
+            fetch(urlConcat("/api/rag/delete/"), {
+                method: "POST",
+                body: JSON.stringify({
+                    input: id
+                }),
+            });
+        } catch
+            (error) {
+            console.error(error);
+        }
     }
 
     async function loadDocuments() {
@@ -29,50 +40,47 @@
         }
     }
 
+    async function updateDocuments() {
+        documents.set(await loadDocuments())
+    }
+
     onMount(async () => {
-        let documents = await loadDocuments()
-        let documentMap = documents as Map<string, string>
-        console.log(documentMap)
+        await updateDocuments()
+        setInterval(() => {updateDocuments()}, REFRESH_INTERVAL_MS)
     })
 </script>
 
 <input
-    class="input input-bordered w-full mb-2"
-    type="text"
-    placeholder="Search"
-    bind:value={conversationSearch}
+        class="input input-bordered w-full mb-2 mt-2"
+        type="text"
+        placeholder="Search"
+        bind:value={documentSearch}
 />
 {#if $documents.length > 0}
     <div class="menu">
-        {#each $documents as conversation}
-            {#if conversationSearch == "" || conversation.name
-                    .toLowerCase()
-                    .includes(conversationSearch.toLowerCase())}
+        {#each $documents as document}
+            {#if documentSearch === "" || document.source
+                .toLowerCase()
+                .includes(documentSearch.toLowerCase())}
                 <div
-                    class="my-1 flex ml-1 flex-row w-full content-center"
+                        class="my-1 flex ml-1 flex-row w-full content-center"
                 >
                     <li class="w-11/12 flex-nowrap">
-                        <button
-                            class="whitespace-nowrap
-                            {conversation.id === $currentDocumentId
-                                ? 'outline outline-2 outline-offset-2 outline-secondary'
-                                : ''}"
-                            on:click={async () => {
-                                currentDocumentId.set(
-                                    conversation.id,
-                                );
-                            }}
-                        >
-                            <span class="overflow-hidden"
-                                >{conversation.name}</span
-                            >
-                        </button>
+                        <span class="overflow-hidden">{document.source}</span>
                     </li>
                     <button
-                        class="btn-ghost px-2"
-                        on:click={() =>
-                            removeConversation(conversation.id)}
-                        ><TrashBinOutline /></button
+                            class="btn-ghost px-2"
+                            on:mouseover={() => {
+                                currentDocumentId.set(
+                                    document.uuid,
+                                );
+                            }}
+                            on:focus={onfocus}
+                            on:click={() =>
+                            removeDocument($currentDocumentId)}
+                    >
+                        <TrashBinOutline/>
+                    </button
                     >
                 </div>
             {/if}

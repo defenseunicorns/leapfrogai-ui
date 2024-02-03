@@ -4,7 +4,7 @@ import {env} from "$env/dynamic/private";
 /** @type {import('./$types').RequestEvent} */
 export async function GET(event: RequestEvent) {
     try {
-        const result = await fetch(`${env.RAG_API_HOST}/rag/list/`, {
+        const result = await fetch(`${env.RAG_API_HOST}/list/`, {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',

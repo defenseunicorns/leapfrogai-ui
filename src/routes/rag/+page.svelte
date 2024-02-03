@@ -1,29 +1,25 @@
 <script lang="ts">
     import RagPicker from "$lib/components/ragPicker.svelte";
     import UploadFile from "$lib/components/uploadFile.svelte";
-    import { urlConcat } from "$lib/helper";
-    import { UploadOutline } from "flowbite-svelte-icons";
-    import { onMount } from "svelte";
+    import {urlConcat} from "$lib/helper";
+    import {CompressOutline} from "flowbite-svelte-icons";
+    import {onMount} from "svelte";
 
-    let file;
-    let message = "";
     let queryInput = ""; // To store the user input for querying
     let queryResult = ""; // To store the result of the query
 
-    const authorizedExtensions = [".txt", ".pdf"];
-
     async function handleQuery() {
-        if (!queryInput.trim()) {
-            message = "Please enter a query.";
-            return;
-        }
-
         try {
-            const queryResponse = await queryRag(queryInput);
-            queryResult = queryResponse; // Set the query result to be displayed
-            console.log("Query Response" + queryResult);
+            queryResult = await queryRag(queryInput); // Set the query result to be displayed
+            queryInput = ""
         } catch (error) {
-            message = error.message;
+            queryResult = error.message;
+        }
+    }
+
+    async function handleSubmitQuery(event: KeyboardEvent) {
+        if (event.key === "Enter") {
+            await handleQuery()
         }
     }
 
@@ -54,17 +50,24 @@
 <div class="flex flex-col h-screen">
     <div class="flex flex-grow">
         <div class="w-full pb-4 pt-4 flex flex-col ml-72 mr-72 mt-24 mb-20">
-            <UploadFile />
-            <RagPicker />
-            <div>
+            <UploadFile/>
+            <RagPicker/>
+            <span class="whitespace-nowrap">
                 <input
-                    type="text"
-                    bind:value={queryInput}
-                    placeholder="Enter your query here"
+                        class="input input-bordered mb-2 w-10/12"
+                        type="text"
+                        bind:value={queryInput}
+                        on:keypress={handleSubmitQuery}
+                        placeholder="Enter your query here"
                 />
-                <button on:click={handleQuery}>Query</button>
-                <p class="message">Query Result: {queryResult}</p>
-            </div>
+                <button
+                        disabled={!queryInput}
+                        on:click={handleQuery}
+                        class="btn btn-primary btn-outline h-auto w-2/12"
+                >Query <CompressOutline/>
+                </button>
+            </span>
+            <p class="message">Query Result: {queryResult}</p>
         </div>
     </div>
 </div>
