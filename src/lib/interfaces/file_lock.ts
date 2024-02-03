@@ -10,7 +10,7 @@ export class FileLock {
 
     constructor(concurrentRequests: string, folderName: string = 'lock_files') {
         this.deleteOldLockFile()
-        this.concurrentRequests = concurrentRequests.toLowerCase() == "true";
+        this.concurrentRequests = concurrentRequests !== undefined && concurrentRequests.toLowerCase() == "true";
         this.basePath = path.join(os.tmpdir(), folderName);
         if (!fs.existsSync(this.basePath)) {
             fs.mkdirSync(this.basePath);
