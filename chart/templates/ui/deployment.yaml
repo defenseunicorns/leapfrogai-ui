@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: leapfrog-ui
-          image: "ghcr.io/defenseunicorns/leapfrogai/leapfrogai-ui:###ZARF_VAR_IMAGE_VERSION###"
+          image: "ghcr.io/defenseunicorns/leapfrogai/leapfrogai-ui:###ZARF_CONST_IMAGE_VERSION###"
           ports:
             - containerPort: 3000
           env:

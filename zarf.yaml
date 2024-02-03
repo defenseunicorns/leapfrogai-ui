@@ -71,13 +71,13 @@ variables:
 components:
   - name: leapfrog-ui
     required: true
-    manifests:
-      - name: leapfrog-ui
+    charts:
+      - name: leapfrogai-ui
         namespace: leapfrogai
-        files:
-          - manifests/deploy.yaml
-          - manifests/svc.yaml
-          - manifests/istio.yaml
+        localPath: chart
+        version: "###ZARF_PKG_TMPL_IMAGE_VERSION###"
+        valuesFiles:
+          - "lfai-values.yaml"
     images:
       - ghcr.io/defenseunicorns/leapfrogai/leapfrogai-ui:###ZARF_PKG_TMPL_IMAGE_VERSION###
     actions:

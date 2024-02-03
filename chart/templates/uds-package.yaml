@@ -1,0 +1,26 @@
+apiVersion: uds.dev/v1alpha1
+kind: Package
+metadata:
+  name: leapfrogai-ui
+  namespace: {{ .Release.Namespace }}
+spec:
+  network:
+    expose:
+      - service: leapfrog-ui
+        podLabels:
+          app: leapfrog-ui
+        host: leapfrogai-ui
+        gateway: tenant 
+        port: 3000
+
+    allow:
+      - direction: Ingress
+        remoteGenerated: Anywhere
+
+      - direction: Egress
+        remoteGenerated: Anywhere
+      
+      - direction: Egress
+        podLabels:
+          app: leapfrog-ui
+        remoteGenerated: Anywhere
