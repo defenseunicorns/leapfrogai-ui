@@ -9,7 +9,7 @@ spec:
       - service: leapfrog-ui
         podLabels:
           app: leapfrog-ui
-        host: leapfrogai-ui
+        host: leapfrogai
         gateway: tenant 
         port: 3000
 
