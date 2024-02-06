@@ -197,10 +197,10 @@
     }
 </script>
 
-<div class="w-full pb-4 pt-4 flex flex-col ml-72 mr-72 mt-20 mb-20 overflow-x-scroll">
+<div class="w-full pb-4 pt-4 flex flex-col ml-72 mr-72 mt-20 mb-20 overflow-x-auto">
     {#if $curConversation}
         <div
-            class="chat-container overflow-auto flex-grow"
+            class="chat-container flex-grow"
         >
                 {#each $curConversation.messages as message}
                     <div class="chat-header">{message.role}</div>

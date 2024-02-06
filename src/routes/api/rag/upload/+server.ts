@@ -4,16 +4,26 @@ import {env} from "$env/dynamic/private";
 /** @type {import('./$types').RequestEvent} */
 export async function POST(event: RequestEvent) {
     try {
-        const data = await event.request.formData()
+        const data = await event.request.formData();
 
-        await fetch(`${env.RAG_API_HOST}/upload/`, {
+        const response = await fetch(`${env.RAG_API_HOST}/upload/`, {
             method: "POST",
             body: data,
-        })
-
-        return new Response(null, {
-            status: 200,
         });
+
+        if (response.ok) {
+            return new Response(null, {
+                status: 200,
+            });
+        } else if (response.status === 404) {
+            return new Response("Not Found", {
+                status: 404,
+            });
+        } else {
+            return new Response("Internal Server Error!", {
+                status: 500,
+            });
+        }
     } catch (error) {
         return new Response("Internal Server Error!", {
             status: 500,
