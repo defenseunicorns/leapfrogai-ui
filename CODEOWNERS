@@ -2,7 +2,6 @@
 * @defenseunicorns/leapfrogai
 *.md @defenseunicorns/leapfrogai 
 
-# Core Code
 /src/ @defenseunicorns/leapfrogai
 /static/ @defenseunicorns/leapfrogai
 
@@ -20,7 +19,6 @@
 /.pre-commit-config.yaml @defenseunicorns/leapfrogai
 /*.config.js @defenseunicorns/leapfrogai
 /*.json @defenseunicorns/leapfrogai
-
 
 # Additional privileged files
 /CODEOWNERS @jeff-mccoy @austenbryan @gerred
