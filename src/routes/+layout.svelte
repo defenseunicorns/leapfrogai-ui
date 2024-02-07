@@ -5,7 +5,7 @@
 	import settings from "$lib/settings";
 	import { env } from "$env/dynamic/public";
 
-	const branding: Boolean = env.PUBLIC_BRANDING === "true" ? true : false;
+	const branding: Boolean = env.PUBLIC_AI4NS_BRANDING === "true" ? true : false;
 </script>
 
 <!-- Title Bar -->

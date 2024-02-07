@@ -1,11 +1,8 @@
 <script lang="ts">
     import "../app.css";
-    import ThemeSwitcher from "$lib/components/themeSwitcher.svelte";
-    import ApiIndicator from "$lib/components/apiIndicator.svelte";
-    import settings from "$lib/settings";
     import { env } from "$env/dynamic/public";
 
-    const branding: Boolean = env.PUBLIC_BRANDING === "true" ? true : false;
+    const branding: Boolean = env.PUBLIC_AI4NS_BRANDING === "true" ? true : false;
 </script>
 
 {#if branding}

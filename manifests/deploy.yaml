@@ -19,6 +19,8 @@ spec:
           ports:
             - containerPort: 3000
           env:
+            - name: PUBLIC_AI4NS_BRANDING
+              value: "###ZARF_VAR_AI4NS_BRANDING###"
             - name: OPENAI_API_HOST
               value: "###ZARF_VAR_LEAPFROGAI_BASE_URL###"
             - name: RAG_API_HOST
