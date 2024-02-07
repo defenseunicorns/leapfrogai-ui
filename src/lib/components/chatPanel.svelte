@@ -50,10 +50,9 @@
         })
     }
 
-    export let settings: Agent;
+    export let agentSettings: Agent;
 
     let ragEndpointActive = false;
-    let ragEnabled = false;
 
     onMount(async () => {
         await updateRagEndpointState();
@@ -90,12 +89,13 @@
         let conversationMessages = [...$curConversation.messages,];
 
         // Only use RAG if the server is available and if the user has it enabled
-        if (ragEndpointActive && ragEnabled) {
+        if (ragEndpointActive && agentSettings.rag_enabled) {
             // Construct the RAG message that will be inserted before the user's message
             let ragResponse = {
                 role: "system",
                 content: await queryRag(lastMessage.content),
             };
+            console.log(ragResponse.content);
 
             // Insert the RAG message before the user's message
             conversationMessages.splice(
@@ -111,13 +111,13 @@
             messages: [
                 {
                     role: "system",
-                    content: settings.systemPrompt,
+                    content: agentSettings.systemPrompt,
                 },
                 ...conversationMessages,
             ],
-            model: settings.model,
+            model: agentSettings.model,
             max_tokens: 1000,
-            temperature: settings.temperature,
+            temperature: agentSettings.temperature,
         };
 
         // Create a new assistant message with empty content

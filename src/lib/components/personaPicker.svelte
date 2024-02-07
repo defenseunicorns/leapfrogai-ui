@@ -26,6 +26,7 @@
         type: "Chat",
         systemPrompt: env.PUBLIC_DEFAULT_SYSTEM_PROMPT,
         temperature: Number(env.PUBLIC_DEFAULT_TEMPERATURE),
+        rag_enabled: false,
     };
 
     onMount(() => {
@@ -95,6 +96,7 @@
                         type: tmpNewPersona.type,
                         systemPrompt: tmpNewPersona.systemPrompt,
                         temperature: tmpNewPersona.temperature,
+                        rag_enabled: tmpNewPersona.rag_enabled,
                     };
                 }
                 return p; // Return the original object for other personas
@@ -218,6 +220,15 @@
                         max="1"
                         step="0.01"
                         bind:value={tmpNewPersona.temperature}
+                    />
+                </div>
+                <div class="py-2">
+                    <label for="persona-rag-enabled">RAG Enabled:</label>
+                    <input
+                        class="checkbox checkbox-xs"
+                        id="persona-rag-enabled"
+                        type="checkbox"
+                        bind:checked={tmpNewPersona.rag_enabled}
                     />
                 </div>
                 <div class="modal-action">
