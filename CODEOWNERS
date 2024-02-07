@@ -1,0 +1,25 @@
+# Documentation and fallbacks for missed things
+* @defenseunicorns/leapfrogai
+*.md @defenseunicorns/leapfrogai 
+
+/src/ @defenseunicorns/leapfrogai
+/static/ @defenseunicorns/leapfrogai
+
+# Packaging
+/manifests/ @defenseunicorns/leapfrogai
+/zarf-config.yaml @defenseunicorns/leapfrogai
+/zarf.yaml @defenseunicorns/leapfrogai
+/Dockerfile @defenseunicorns/leapfrogai
+
+# Pipeline and Project Files
+/.github/ @defenseunicorns/leapfrogai
+/.env.example @defenseunicorns/leapfrogai
+/.gitignore @defenseunicorns/leapfrogai
+/.npmrc @defenseunicorns/leapfrogai
+/.pre-commit-config.yaml @defenseunicorns/leapfrogai
+/*.config.js @defenseunicorns/leapfrogai
+/*.json @defenseunicorns/leapfrogai
+
+# Additional privileged files
+/CODEOWNERS @jeff-mccoy @austenbryan @gerred
+/LICENSE @jeff-mccoy @austenbryan @gerred
