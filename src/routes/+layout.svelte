@@ -11,21 +11,21 @@
 >
 	<div class="flex items-center">
 		<a href="/">
-			<!--<img src="leapfrogai.png" alt="LeapfrogAI" class="h-11" />!-->
-			<img src="DU_unicorn_rgb.png" alt="AI for National Security" class="h-11" />
+			<img src="leapfrogai.png" alt="LeapfrogAI" class="h-11" />
+			<!-- <img src="DU_unicorn_rgb.png" alt="AI for National Security" class="h-11" /> -->
 		</a>
-		<div style="margin-left: 8px;">
+		<!-- <div style="margin-left: 8px;">
 			<h1 class="text-xl font-bold">AI for National Security</h1>
-		</div>
+		</div> -->
 	</div>
 	<div class="flex items-center">
 		<a href="/chat">Chat</a>
 		<ApiIndicator type={$settings.chatModel}/>
 	</div>
-	<!-- <div class="flex items-center">
+	<div class="flex items-center">
 		<a href="/upload">Transcribe</a>
 		<ApiIndicator type={$settings.transcriptionModel}/>
-	</div> -->
+	</div>
 	<div>
 		<a href="/help">Help</a>
 	</div>

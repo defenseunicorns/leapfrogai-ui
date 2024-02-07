@@ -6,10 +6,10 @@
             class="w-full pb-4 pt-4 flex flex-col ml-72 mr-72 mt-20 mb-20 justify-center items-center"
         >
             <div class="text-5xl font-bold text-center">
-                <p>Welcome to AI for National Security</p>
+                <p>Welcome to LeapfrogAI</p>
             </div>
             <div class="justify-center items-center py-4">
-                <img src="server.svg" alt="" />
+                <img src="big-leapfrog.svg" alt="" />
             </div>
             <div class="text-2xl font-bold text-center">
                 <p>Created and Maintained by:</p>
