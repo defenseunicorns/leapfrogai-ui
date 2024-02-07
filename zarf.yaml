@@ -12,6 +12,11 @@ constants:
     value: "###ZARF_PKG_TMPL_NAME###"
 
 variables:
+  - name: AI4NS_BRANDING
+    description: Toggles between AI4NS (true) branding and LeapfrogAI (false) branding
+    default: true
+    prompt: true
+    sensitive: false
   - name: LEAPFROGAI_BASE_URL
     description: The base URL for the Leapfrog AI API
     default: http://api.leapfrogai.svc.cluster.local:8080/openai/v1
