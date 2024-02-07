@@ -1,49 +1,49 @@
 <script lang="ts">
     import { UploadOutline } from "flowbite-svelte-icons";
 
-    let file;
+    let files = []; // Store multiple files
     let message = "";
     const authorizedExtensions = [".txt", ".pdf"];
 
     async function handleUpload(event) {
         event.preventDefault();
-        if (!file) {
-            message = "Please select a file before submitting.";
+        if (files.length === 0) {
+            message = "Please select one or more files before submitting.";
             return;
         }
 
-        const formData = new FormData();
-        formData.append("file", file);
+        // Loop through the files and upload each one individually
+        for (const file of files) {
+            const formData = new FormData();
+            formData.append("file", file);
 
-        try {
-            const uploadResponse = await fetch("/api/rag/upload", {
-                method: "POST",
-                body: formData,
-            });
+            try {
+                const uploadResponse = await fetch("/api/rag/upload", {
+                    method: "POST",
+                    body: formData,
+                });
 
-            if (!uploadResponse.ok) {
-                throw new Error("File upload failed");
+                if (!uploadResponse.ok) {
+                    throw new Error(`File upload failed for ${file.name}`);
+                }
+
+                message += `File ${file.name} uploaded successfully!\n`;
+            } catch (error) {
+                message += `${error.message}\n`;
             }
-
-            message = "File uploaded successfully!";
-        } catch (error) {
-            message = error.message;
         }
     }
 
     function handleFileChange(event) {
-        const files = event.target.files;
-        if (files.length > 0) {
-            const selectedFile = files[0];
-            if (
-                selectedFile.type === "text/plain" ||
-                selectedFile.type === "application/pdf"
-            ) {
-                message = "";
-                file = selectedFile;
-            } else {
-                message = "Please upload only .txt or .pdf files.";
-            }
+        files = Array.from(event.target.files).filter(
+            (file: File) =>
+                file.type === "text/plain" || file.type === "application/pdf",
+        );
+
+        if (files.length !== event.target.files.length) {
+            message = "Only .txt and .pdf files are allowed.";
+        } else {
+            message = "";
         }
     }
 </script>
@@ -55,18 +55,27 @@
             accept={authorizedExtensions.join(",")}
             required
             type="file"
+            multiple
             class="file-input file-input-primary file-input-lg w-full"
             on:change={handleFileChange}
         />
 
         <button
-            disabled={!file}
+            disabled={files.length === 0}
             type="submit"
             class="btn btn-primary btn-outline h-auto"
-            >Upload <UploadOutline />
+        >
+            Upload <UploadOutline />
         </button>
     </div>
     {#if message}
-        <p class="message">{message}</p>
+        <div>
+            <p class="message">
+                {message
+                    .split("\n")
+                    .map((line) => `${line}\n`)
+                    .join("")}
+            </p>
+        </div>
     {/if}
 </form>
