@@ -10,9 +10,12 @@
 	class="fixed top-0 w-full flex items-center justify-between p-4 border-b border-inherit bg-base-100"
 >
 	<div class="flex items-center">
-		<a href="/"
-			><img src="leapfrogai.png" alt="LeapfrogAI" class="h-11" /></a
-		>
+		<a href="/">
+			<img src="DU_unicorn_rgb.png" alt="AI for National Security" class="h-11" />
+		</a>
+		<div style="margin-left: 8px;">
+			<h1 class="text-xl font-bold">AI for National Security</h1>
+		</div>
 	</div>
 	<div class="flex items-center">
 		<a href="/chat">Chat</a>
