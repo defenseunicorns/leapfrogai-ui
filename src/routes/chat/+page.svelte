@@ -134,7 +134,7 @@
                 />
 
         <!-- Center Panel -->
-        <ChatPanel settings={currentSettings} bind:curConversationId={currentConversationId} bind:conversations={conversations}/>
+        <ChatPanel agentSettings={currentSettings} bind:curConversationId={currentConversationId} bind:conversations={conversations}/>
 
         <!-- Side Panel 2 -->
         <PersonaPicker bind:pickedPersona={currentSettings}/>
