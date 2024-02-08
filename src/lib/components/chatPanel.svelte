@@ -95,7 +95,6 @@
                 role: "system",
                 content: await queryRag(lastMessage.content),
             };
-            console.log(ragResponse.content);
 
             // Insert the RAG message before the user's message
             conversationMessages.splice(
