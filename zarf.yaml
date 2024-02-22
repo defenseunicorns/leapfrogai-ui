@@ -3,7 +3,7 @@ metadata:
   name: "###ZARF_PKG_TMPL_NAME###"
   version: "###ZARF_PKG_TMPL_IMAGE_VERSION###"
   description: >
-    A UI for LeapFrog AI
+    A UI for LeapfrogAI
 
 constants:
   - name: IMAGE_VERSION
@@ -69,7 +69,7 @@ variables:
     sensitive: false
 
 components:
-  - name: leapfrog-ui
+  - name: leapfrogai-ui
     required: true
     charts:
       - name: leapfrogai-ui
@@ -84,6 +84,6 @@ components:
           - wait:
               cluster:
                 kind: Deployment
-                name: leapfrog-ui
+                name: leapfrogai-ui
                 namespace: leapfrogai
                 condition: Available
