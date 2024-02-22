@@ -1,17 +1,21 @@
 {
-	"extends": "./.svelte-kit/tsconfig.json",
-	"compilerOptions": {
-		"allowJs": true,
-		"checkJs": true,
-		"esModuleInterop": true,
-		"forceConsistentCasingInFileNames": true,
-		"resolveJsonModule": true,
-		"skipLibCheck": true,
-		"sourceMap": true,
-		"strict": false
-	}
-	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
-	//
-	// If you want to overwrite includes/excludes, make sure to copy over the relevant includes/excludes
-	// from the referenced tsconfig.json - TypeScript does not merge them in
+    "compilerOptions": {
+        "allowSyntheticDefaultImports": true,
+        "declaration": true,
+        "declarationMap": true,
+        "emitDeclarationOnly": true,
+        "esModuleInterop": true,
+        "lib": ["ES2022", "DOM"],
+        "module": "commonJS",
+        "moduleResolution": "node",
+        "outDir": "dist",
+        "resolveJsonModule": true,
+        "rootDir": ".",
+        "strict": true,
+        "target": "ES2022",
+        "useUnknownInCatchVariables": false,
+        "forceConsistentCasingInFileNames": true
+    },
+    "include": ["src/**/*.ts*", "src/**/*.js*", "src/**/*.svelte", "tests/**/*.ts"],
+    "exclude": ["node_modules", "dist", "fixtures", ".venv"]
 }
