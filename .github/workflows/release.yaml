@@ -20,18 +20,21 @@ jobs:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Set VERSION
+      run: echo "VERSION=$(git describe --abbrev=0 --tags | tail -n 1 | sed -e 's/^v//')" >> $GITHUB_ENV
 
     - name: Build leapfrogai-ui Image
-      run: make docker-build VERSION=$GITHUB_REF_NAME
+      run: make docker-build VERSION=$VERSION
 
     - name: Publish leapfrogai-ui Image
-      run: docker push ghcr.io/defenseunicorns/leapfrogai/leapfrogai-ui:$GITHUB_REF_NAME
+      run: docker push ghcr.io/defenseunicorns/leapfrogai/leapfrogai-ui:$VERSION
 
     - name: Install Zarf
       uses: defenseunicorns/setup-zarf@f95763914e20e493bb5d45d63e30e17138f981d6 # v1.0.0
 
     - name: Build Zarf Package
-      run: zarf package create . --set IMAGE_VERSION=$GITHUB_REF_NAME --confirm
+      run: zarf package create . --set IMAGE_VERSION=$VERSION --confirm
 
     - name: Publish Zarf Package
       run: zarf package publish zarf-package-*.zst oci://ghcr.io/defenseunicorns/packages
