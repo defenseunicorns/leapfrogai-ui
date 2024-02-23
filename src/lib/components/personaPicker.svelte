@@ -107,53 +107,77 @@
 </script>
 
 <div class="w-72 p-4 h-full fixed top-20 right-0 overflow-y-auto">
-    <button
+    <!-- <button
         class="btn w-full mb-2 justify-between"
         on:click={() => {
             newPersona();
         }}
         >New Persona <PlusOutline />
-    </button>
-    <input
+    </button> -->
+    <!-- <input
         class="input input-bordered w-full mb-2"
         type="text"
         placeholder="Search"
         bind:value={personaSearchQuery}
-    />
+    /> -->
     {#each $personas as persona}
         {#if personaSearchQuery == "" || persona.name
                 .toLowerCase()
                 .includes(personaSearchQuery.toLowerCase())}
             <div class="menu bg-base-100 w-full rounded-box">
                 <div class="flex">
-                    <li class="w-4/6 flex-nowrap">
+                    <li class="">
                         <button
-                            class="whitespace-nowrap
-                            {persona.uuid === pickedPersona.uuid ? 'outline outline-2 outline-offset-2 outline-secondary' : ''}"
+                            class= 'button'
                             on:click={() => {
                                 applyPersona(persona);
-                            }}>{persona.name}</button
+                            }}>HR Representative</button
                         >
                     </li>
-                    <button
+                    <li class="">
+                        <button
+                        class= 'button'
+                            on:click={() => {
+                                applyPersona(persona);
+                            }}>LeapfrogAI Dev</button
+                        >
+                    </li>
+                    <li class="">
+                        <button
+                            class='button'
+                            on:click={() => {
+                                applyPersona(persona);
+                            }}>Growth Engineer</button
+                        >
+                    </li>
+                    <li class="">
+                        <button
+                            class='button'
+                            on:click={() => {
+                                applyPersona(persona);
+                            }}>Website Engineer</button
+                        >
+                    </li>
+
+                    <!-- <button
                         class="btn-ghost w-1/6 px-2"
                         on:click={() => {
                             editPersona(persona.uuid);
                         }}><EditOutline /></button
-                    >
-                    <button
+                    > -->
+                    <!-- <button
                         class="btn-ghost w-1/6 px-2"
                         on:click={() => {
                             removePersona(persona.uuid);
                         }}><TrashBinOutline /></button
-                    >
+                    > -->
                 </div>
             </div>
         {/if}
     {/each}
 </div>
 
-{#if $personas.length > 0}
+<!-- {#if $personas.length > 0}
     <dialog id="persona_modal" class="modal">
         <div class="modal-box">
             <h3 class="font-bold text-lg">
@@ -244,4 +268,19 @@
             </form>
         </div>
     </dialog>
-{/if}
+{/if} -->
+
+<style>
+    .flex{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .button{
+        width: 200px;
+        border: 2px lightgrey solid;
+        border-radius: 5px;
+    }
+</style>

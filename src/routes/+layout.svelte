@@ -3,6 +3,7 @@
 	import ThemeSwitcher from "$lib/components/themeSwitcher.svelte";
 	import ApiIndicator from "$lib/components/apiIndicator.svelte";
 	import settings from "$lib/settings";
+	import defenseUnicorns from "../../static/Defense Unicorns - 1 line - Horizontal1.png"
 	import { env } from "$env/dynamic/public";
 
 	const branding: Boolean = env.PUBLIC_AI4NS_BRANDING === "true" ? true : false;
@@ -22,25 +23,44 @@
 		</div>
 		{/if}
 		{#if !branding}
+		<div class="unicornAI">
 			<a href="/">
-				<img src="leapfrogai.png" alt="LeapfrogAI" class="h-11" />
+				<img src="DU_unicorn_rgb.png" alt="LeapfrogAI" class="logo" />
 			</a>
+			<h3>Unicorn AI</h3>
+		</div>
 		{/if}
 	</div>
 	<div class="flex items-center">
 		<a href="/chat">Chat</a>
 		<ApiIndicator type={$settings.chatModel} />
 	</div>
-	<div class="flex items-center">
+	<!-- <div class="flex items-center">
 		<a href="/upload">Transcribe</a>
 		<ApiIndicator type={$settings.transcriptionModel} />
-	</div>
-	<div>
+	</div> -->
+	<!-- <div>
 		<a href="/help">Help</a>
-	</div>
+	</div> -->
 	<div class="flex items-center">
 		<ThemeSwitcher />
 	</div>
 </div>
 
 <slot />
+
+<style>
+	.unicornAI{
+		display: flex;
+		flex-direction: row;
+		align-items: end;
+		gap: 1rem;
+	}
+	h3{
+		font-size: 24px;
+		color: white;
+	}
+	.logo{
+		width: 40px;
+	}
+</style>
