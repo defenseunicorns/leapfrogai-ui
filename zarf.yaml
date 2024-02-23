@@ -82,7 +82,7 @@ components:
         localPath: chart
         version: "###ZARF_PKG_TMPL_IMAGE_VERSION###"
     images:
-      - "###ZARF_PKG_TMPL_IMAGE_REPOSITORY###:v###ZARF_PKG_TMPL_IMAGE_VERSION###"
+      - "###ZARF_PKG_TMPL_IMAGE_REPOSITORY###:###ZARF_PKG_TMPL_IMAGE_VERSION###"
     actions:
       onDeploy:
         after:
