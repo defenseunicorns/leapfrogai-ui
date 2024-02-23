@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: leapfrog-ui
+  name: leapfrogai-ui
   namespace: leapfrogai
 spec:
   selector:
     matchLabels:
-      app: leapfrog-ui
+      app: leapfrogai-ui
   replicas: 1
   template:
     metadata:
       labels:
-        app: leapfrog-ui
+        app: leapfrogai-ui
     spec:
       containers:
-        - name: leapfrog-ui
-          image: "###ZARF_VAR_IMAGE_REPOSITORY###:###ZARF_VAR_IMAGE_VERSION###"
+        - name: leapfrogai-ui
+          image: "ghcr.io/defenseunicorns/leapfrogai/leapfrogai-ui:###ZARF_CONST_IMAGE_VERSION###"
           ports:
             - containerPort: 3000
           env:

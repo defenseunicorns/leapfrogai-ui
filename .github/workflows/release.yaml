@@ -24,7 +24,7 @@ jobs:
     - name: Set VERSION
       run: echo "VERSION=$(git describe --abbrev=0 --tags | tail -n 1 | sed -e 's/^v//')" >> $GITHUB_ENV
 
-    - name: Build leapfrog-ui Image
+    - name: Build leapfrogai-ui Image
       run: make docker-build VERSION=$VERSION
 
     - name: Publish leapfrogai-ui Image
