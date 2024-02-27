@@ -48,7 +48,7 @@
 	</div>
 	<div class="flex items-center">
 		<a href="/upload" use:tooltip={{
-			content: "Upload a video, audio, or text file and get a summarization or translation!",
+			content: "Upload a video or audio file and get a summarization or translation!",
 			position: "bottom",
 			autoPosition: true,
 			align: "center",
