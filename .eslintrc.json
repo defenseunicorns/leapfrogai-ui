@@ -1,0 +1,36 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-type-checked",
+        "plugin:prettier/recommended",
+        "plugin:svelte/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "project": "tsconfig.json",
+        "ecmaVersion": 2022,
+        "extraFileExtensions": [".svelte"]
+    },
+    "rules": {
+        "class-methods-use-this": "warn",
+        "consistent-this": "warn",
+        "no-invalid-this": "warn",
+        "@typescript-eslint/no-floating-promises": "warn"
+    },
+    "plugins": ["@typescript-eslint"],
+    "overrides": [
+        {
+            "files": ["*.svelte"],
+            "parser": "svelte-eslint-parser",
+            "parserOptions": {
+                "parser": "@typescript-eslint/parser"
+            }
+        }
+    ],
+    "root": true
+}

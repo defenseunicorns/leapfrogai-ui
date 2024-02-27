@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-As [INSERT REPO NAME] has not yet reached v1.0.0, only the current latest minor release is supported.
+As LeapfrogAI UI has not yet reached v1.0.0, only the current latest minor release is supported.
 
 ## Reporting a Vulnerability
 

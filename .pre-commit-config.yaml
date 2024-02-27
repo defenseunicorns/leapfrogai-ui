@@ -1,5 +1,143 @@
 repos:
-  - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.18.0
-    hooks:
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v4.0.1
+      hooks:
+          - id: check-added-large-files
+            name: Large Files check
+            args: ['--maxkb=1024']
+
+          - id: check-merge-conflict
+            name: Merge Conflict Resolution Check
+
+          - id: end-of-file-fixer
+            name: Newline EOF Checker
+
+          - id: fix-byte-order-marker
+            name: Fix UTF-8 byte order marker
+
+          - id: trailing-whitespace
+            name: Whitespace Cleaning Check
+            args: [--markdown-linebreak-ext=md]
+
+    - repo: https://github.com/gitleaks/gitleaks
+      rev: v8.18.0
+      hooks:
       - id: gitleaks
+      name: GitLeaks Checks
+
+    - repo: https://github.com/sirosen/fix-smartquotes
+      rev: 0.2.0
+      hooks:
+          - id: fix-smartquotes
+
+    - repo: https://github.com/dnephin/pre-commit-golang
+      rev: v0.4.0
+      hooks:
+          - id: go-fmt
+            name: Golang Formatting
+
+    - repo: https://github.com/astral-sh/ruff-pre-commit
+      rev: v0.2.1
+      hooks:
+          - id: ruff
+            name: Ruff Linting
+            args: [--fix]
+            types_or: [python, pyi, jupyter]
+            pass_filenames: false
+          - id: ruff-format
+            name: Ruff Formatting
+            types_or: [python, pyi, jupyter]
+            pass_filenames: false
+
+    - repo: https://github.com/pre-commit/mirrors-eslint
+      rev: v8.56.0
+      hooks:
+          - id: eslint
+            name: ESLint and Prettier
+            files: \.([jt]sx?|svelte)$ # *.js, *.jsx, *.ts, *.tsx and *.svelte
+            types: [file]
+            additional_dependencies:
+                - eslint@8.44.0
+                - eslint-plugin-prettier@5.0.0
+                - eslint-plugin-svelte@2.35.1
+            args: [--fix]
+
+    - repo: https://github.com/pryorda/dockerfilelint-precommit-hooks
+      rev: v0.1.0
+      hooks:
+          - id: dockerfilelint
+            name: 'Dockerfile Lint'
+            stages: [commit]
+
+    # get latest zarf schema
+    - repo: local
+      hooks:
+          - id: download-schema
+            name: 'Download Zarf Schema'
+            entry: bash -c 'curl -o zarf.schema.json https://raw.githubusercontent.com/defenseunicorns/zarf/main/zarf.schema.json'
+            language: system
+
+    # check against latest zarf schema
+    - repo: https://github.com/python-jsonschema/check-jsonschema
+      rev: 0.14.0
+      hooks:
+          - id: check-jsonschema
+            name: 'Validate Zarf Configs Against Schema'
+            files: 'zarf.yaml'
+            types: [yaml]
+            args: ['--schemafile', 'zarf.schema.json']
+
+    # clean-up latest zarf schema
+    - repo: local
+      hooks:
+          - id: delete-schema
+            name: 'Delete Zarf Schema'
+            entry: bash -c 'rm -f zarf.schema.json'
+            language: system
+
+
+    # get latest uds schema
+    - repo: local
+      hooks:
+          - id: download-schema
+            name: 'Download UDS Schema'
+            entry: bash -c 'curl -o uds.schema.json https://raw.githubusercontent.com/defenseunicorns/uds-cli/main/uds.schema.json'
+            language: system
+
+    # check against latest uds schema
+    - repo: https://github.com/python-jsonschema/check-jsonschema
+      rev: 0.14.0
+      hooks:
+          - id: check-jsonschema
+            name: 'Validate UDS Configs Against Schema'
+            files: 'uds.yaml'
+            types: [yaml]
+            args: ['--schemafile', 'uds.schema.json']
+
+    # clean-up latest uds schema
+    - repo: local
+      hooks:
+          - id: delete-schema
+            name: 'Delete UDS Schema'
+            entry: bash -c 'rm -f uds.schema.json'
+            language: system
+
+    # naive approaches for checking dependencies versus project definitions
+
+    - repo: local
+      hooks:
+          - id: check-paired-files-python
+            name: Check PyProject
+            entry: bash -c '(if git diff --cached --name-only | grep -q -E "^(pyproject\.toml)$"; then git diff --cached --name-only | grep -q -E "^(requirements\.txt)$" || echo "Warning, you may need to check your Python dependencies"; fi; if git diff --cached --name-only | grep -q -E "^(requirements\.txt)$"; then git diff --cached --name-only | grep -q -E "^(pyproject\.toml)$" || echo "Warning, you may need to check your Python dependencies"; fi)' --
+            language: system
+            always_run: true
+            pass_filenames: false
+
+    - repo: local
+      hooks:
+          - id: check-paired-files-node
+            name: Check NPM Packages
+            entry: bash -c '(if git diff --cached --name-only | grep -q -E "^(package\.json)$"; then git diff --cached --name-only | grep -q -E "^(package-lock\.json)$" || echo "Warning, you may need to check your NPM dependencies"; fi; if git diff --cached --name-only | grep -q -E "^(package-lock\.json)$"; then git diff --cached --name-only | grep -q -E "^(package\.json)$" || echo "Warning, you may need to check your NPM dependencies"; fi)' --
+            language: system
+            always_run: true
+            pass_filenames: false
