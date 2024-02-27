@@ -1,2 +1,41 @@
 package:
   host: ai
+
+imageName: "ghcr.io/defenseunicorns/leapfrogai/leapfrogai-ui:###ZARF_CONST_IMAGE_VERSION###"
+
+replicas: 1
+containerPort: 3000
+
+resources:
+  requests:
+    memory: "5Gi"
+    cpu: "500m"
+  limits:
+    memory: "5Gi"
+    cpu: "1000m"
+
+envs:
+  - name: PUBLIC_AI4NS_BRANDING
+    value: "###ZARF_VAR_AI4NS_BRANDING###"
+  - name: OPENAI_API_HOST
+    value: "###ZARF_VAR_LEAPFROGAI_BASE_URL###"
+  - name: RAG_API_HOST
+    value: "###ZARF_VAR_LEAPFROGAI_RAG_URL###"
+  - name: ORIGIN
+    value: "###ZARF_VAR_DOMAIN###"
+  - name: PUBLIC_DEFAULT_MODEL
+    value: "###ZARF_VAR_MODEL###"
+  - name: SUMMARIZATION_MODEL
+    value: "###ZARF_VAR_MODEL###"
+  - name: PUBLIC_TRANSCRIPTION_MODEL
+    value: "###ZARF_VAR_TRANSCRIPTION_MODEL###"
+  - name: PUBLIC_DEFAULT_SYSTEM_PROMPT
+    value: "###ZARF_VAR_SYSTEM_PROMPT###"
+  - name: FINAL_SUMMARIZATION_PROMPT
+    value: "###ZARF_VAR_FINAL_SUMMARIZATION_PROMPT###"
+  - name: INTERMEDIATE_SUMMARY_PROMPT
+    value: "###ZARF_VAR_INTERMEDIATE_SUMMARY_PROMPT###"
+  - name: PUBLIC_DEFAULT_TEMPERATURE
+    value: "###ZARF_VAR_TEMPERATURE###"
+  - name: OPENAI_API_KEY
+    value: "###ZARF_VAR_LEAPFROGAI_API_KEY###"
