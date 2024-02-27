@@ -23,7 +23,7 @@ repos:
       rev: v8.18.0
       hooks:
       - id: gitleaks
-      name: GitLeaks Checks
+        name: GitLeaks Checks
 
     - repo: https://github.com/sirosen/fix-smartquotes
       rev: 0.2.0
