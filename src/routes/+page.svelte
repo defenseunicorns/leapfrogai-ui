@@ -22,7 +22,6 @@
                     <p>Welcome to AI for National Security</p>
                 </div>
                 <div class="justify-center items-center py-4">
-                    F
                     <img src="server.svg" alt="" />
                 </div>
             {/if}
