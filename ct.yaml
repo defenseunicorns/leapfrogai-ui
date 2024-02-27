@@ -1,0 +1,9 @@
+target-branch: main
+
+chart-dirs:
+  - chart
+
+charts:
+ - chart
+
+check-version-increment: false
