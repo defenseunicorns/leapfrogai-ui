@@ -2,20 +2,17 @@ import type { RequestEvent } from '@sveltejs/kit';
 import {env} from "$env/dynamic/private";
 
 /** @type {import('./$types').RequestEvent} */
-export async function POST(event: RequestEvent) {
+export async function GET(event: RequestEvent) {
     try {
-        const data = await event.request.json();
-
-        const result = await fetch(`${env.RAG_API_HOST}/query/raw`, {
-            method: "POST",
-            body: JSON.stringify(data),
+        const result = await fetch(`${env.RAG_API_HOST}/list/`, {
+            method: "GET",
             headers: {
                 'Content-Type': 'application/json',
             },
         })
 
         // Retrieve the query results directly from the json object
-        const context = await result.json().then((json) => json['results']);
+        const context = await result.text();
 
         return new Response(context, {
             status: 200,

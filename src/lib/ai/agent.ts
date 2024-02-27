@@ -7,4 +7,5 @@ type Agent = {
     type: string;
     systemPrompt: string;
     temperature: number;
+    rag_enabled: boolean;
 }

@@ -3,7 +3,7 @@ metadata:
   name: "###ZARF_PKG_TMPL_NAME###"
   version: "###ZARF_PKG_TMPL_IMAGE_VERSION###"
   description: >
-    A UI for LeapFrog AI
+    A UI for LeapfrogAI
 
 constants:
   - name: IMAGE_VERSION
@@ -12,6 +12,11 @@ constants:
     value: "###ZARF_PKG_TMPL_NAME###"
 
 variables:
+  - name: AI4NS_BRANDING
+    description: Toggles between AI4NS (true) branding and LeapfrogAI (false) branding
+    default: true
+    prompt: true
+    sensitive: false
   - name: LEAPFROGAI_BASE_URL
     description: The base URL for the Leapfrog AI API
     default: http://api.leapfrogai.svc.cluster.local:8080/openai/v1
@@ -34,7 +39,7 @@ variables:
     sensitive: true
   - name: MODEL
     description: The default LLM model to use for chat and summarization
-    default: llamacpp
+    default: llama-cpp-python
     prompt: true
     sensitive: false
   - name: TRANSCRIPTION_MODEL
@@ -69,23 +74,21 @@ variables:
     sensitive: false
 
 components:
-  - name: leapfrog-ui
+  - name: leapfrogai-ui
     required: true
-    manifests:
-      - name: leapfrog-ui
+    charts:
+      - name: leapfrogai-ui
         namespace: leapfrogai
-        files:
-          - manifests/deploy.yaml
-          - manifests/svc.yaml
-          - manifests/istio.yaml
+        localPath: chart
+        version: "###ZARF_PKG_TMPL_IMAGE_VERSION###"
     images:
-      - ghcr.io/defenseunicorns/leapfrogai/leapfrog-ui:###ZARF_PKG_TMPL_IMAGE_VERSION###
+      - "###ZARF_PKG_TMPL_IMAGE_REPOSITORY###:###ZARF_PKG_TMPL_IMAGE_VERSION###"
     actions:
       onDeploy:
         after:
           - wait:
               cluster:
                 kind: Deployment
-                name: leapfrog-ui
+                name: leapfrogai-ui
                 namespace: leapfrogai
                 condition: Available

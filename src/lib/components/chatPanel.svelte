@@ -50,10 +50,9 @@
         })
     }
 
-    export let settings: Agent;
+    export let agentSettings: Agent;
 
     let ragEndpointActive = false;
-    let ragEnabled = false;
 
     onMount(async () => {
         await updateRagEndpointState();
@@ -90,7 +89,7 @@
         let conversationMessages = [...$curConversation.messages,];
 
         // Only use RAG if the server is available and if the user has it enabled
-        if (ragEndpointActive && ragEnabled) {
+        if (ragEndpointActive && agentSettings.rag_enabled) {
             // Construct the RAG message that will be inserted before the user's message
             let ragResponse = {
                 role: "system",
@@ -111,13 +110,13 @@
             messages: [
                 {
                     role: "system",
-                    content: settings.systemPrompt,
+                    content: agentSettings.systemPrompt,
                 },
                 ...conversationMessages,
             ],
-            model: settings.model,
+            model: agentSettings.model,
             max_tokens: 1000,
-            temperature: settings.temperature,
+            temperature: agentSettings.temperature,
         };
 
         // Create a new assistant message with empty content
@@ -197,10 +196,10 @@
     }
 </script>
 
-<div class="w-full pb-4 pt-4 flex flex-col ml-72 mr-72 mt-20 mb-20 overflow-x-scroll">
+<div class="w-full pb-4 pt-4 flex flex-col ml-72 mr-72 mt-20 mb-20 overflow-x-auto">
     {#if $curConversation}
         <div
-            class="chat-container overflow-auto flex-grow"
+            class="chat-container flex-grow"
         >
                 {#each $curConversation.messages as message}
                     <div class="chat-header">{message.role}</div>
