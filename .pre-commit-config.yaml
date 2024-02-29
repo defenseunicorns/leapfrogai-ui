@@ -49,12 +49,11 @@ repos:
                 - eslint-plugin-svelte@2.35.1
             args: [--fix]
 
-    - repo: https://github.com/pryorda/dockerfilelint-precommit-hooks
-      rev: v0.1.0
+    - repo: https://github.com/hadolint/hadolint
+      rev: v2.12.0
       hooks:
-          - id: dockerfilelint
-            name: 'Dockerfile Lint'
-            stages: [commit]
+        - id: hadolint-docker
+          name: Dockerfile Lint
 
     - repo: https://github.com/gruntwork-io/pre-commit
       rev: v0.1.23
