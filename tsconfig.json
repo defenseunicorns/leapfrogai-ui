@@ -16,6 +16,6 @@
         "forceConsistentCasingInFileNames": true
     },
     "include": ["src/**/*.ts*", "src/**/*.js*", "src/**/*.svelte", "tests/**/*.ts"],
-    "exclude": ["node_modules", "dist", "fixtures", ".venv"],
+    "exclude": ["node_modules", "dist", "fixtures", ".venv", "commitlint.config.js"],
     "extends": "./.svelte-kit/tsconfig.json"
 }
