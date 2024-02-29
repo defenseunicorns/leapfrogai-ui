@@ -1,4 +1,4 @@
-name: Build and Push Image
+name: Build and Publish
 
 on:
   push:
