@@ -3,10 +3,9 @@
         "allowSyntheticDefaultImports": true,
         "declaration": true,
         "declarationMap": true,
-        "emitDeclarationOnly": true,
         "esModuleInterop": true,
         "lib": ["ES2022", "DOM"],
-        "module": "commonJS",
+        "module": "preserve",
         "moduleResolution": "node",
         "outDir": "dist",
         "resolveJsonModule": true,
@@ -17,5 +16,6 @@
         "forceConsistentCasingInFileNames": true
     },
     "include": ["src/**/*.ts*", "src/**/*.js*", "src/**/*.svelte", "tests/**/*.ts"],
-    "exclude": ["node_modules", "dist", "fixtures", ".venv"]
+    "exclude": ["node_modules", "dist", "fixtures", ".venv"],
+    "extends": "./.svelte-kit/tsconfig.json"
 }

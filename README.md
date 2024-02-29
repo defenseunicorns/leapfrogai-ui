@@ -1,36 +1,49 @@
+# LeapfrogAI UI
+
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/defenseunicorns/leapfrogai-ui/badge)](https://securityscorecards.dev/viewer/?uri=github.com/defenseunicorns/leapfrogai-ui)
 
-UI Built with SvelteKit, Tailwind CSS with Daisy UI and [Flowbite Svelte](https://flowbite-svelte.com/docs/) for icons.
+## Description
 
-## Developing
+A multi-modal Svelte-Kit full-stack application specially built to be compatible with OpenAI and LeapfrogAI Generative AI capabilities.
 
-Once you've created a project and installed dependencies with `npm install` or `pnpm install` or `yarn`:
+## Usage
 
-Copy `.env.example` into `.env` and set all the variables accordingly.
-* [Note] If the UI is running within a docker container and tailscale is being used then `OPENAI_API_HOST` value needs to be the [fully qualified domain name](https://tailscale.com/kb/1081/magicdns/#fully-qualified-domain-names-vs-machine-names) of the server.
+See [instructions](#instructions) to get the UI up and running. Then, go to http://localhost:5173/chat to use the application.
+
+## Instructions
+
+The instructions in this section assume the following:
+
+1. Properly installed and configured Node 21.5.0, to include its development tools
+2. The `.env` is created based on the `.env.example`
+3. You have [LeapfrogAI API](https://github.com/defenseunicorns/leapfrogai-api) up an running.
+3. You have chosen a LeapfrogAI model backend and have that running. Some examples of existing backends:
+
+- https://github.com/defenseunicorns/leapfrogai-backend-llama-cpp-python
+- https://github.com/defenseunicorns/leapfrogai-backend-whisper
+
+### Local Development
+
+For cloning a model locally and running the development backend.
 
 ```bash
-npm run dev
+# Install dependencies
+npm install
 
-# or start the server and open the app in a new browser tab
+# Start application
 npm run dev -- --open
 ```
 
-## Building
+### Docker Container
 
-To create a production version of your app:
+#### Image Build and Run
 
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-## Docker (dev env)
+For local image building and running.
 
 ```bash
-docker pull nginx:alpine
-docker build -t ask-frogs .
-docker run -i -p 5173:5173 ask-frogs (interactive)
-docker run -it -d --rm -p 5173:5173 ask-frogs (non-interactive)
+# Build the docker image
+docker build -t ghcr.io/defenseunicorns/leapfrogai/leapfrogai-ui:latest .
+
+# Run the docker container
+docker run -p 8080:8080 --env-file .env  ghcr.io/defenseunicorns/leapfrogai/leapfrogai-ui:latest
 ```

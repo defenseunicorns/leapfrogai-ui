@@ -32,7 +32,7 @@ export default defineConfig({
     ],
 
     webServer: {
-        command: 'npm start',
+        command: 'npm run dev',
         url: url,
         reuseExistingServer: !process.env.CI
     }
