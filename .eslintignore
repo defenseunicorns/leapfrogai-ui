@@ -1,13 +1,14 @@
 # dependencies
-node_modules
+node_modules/
+.svelte-kit/
 
 # testing
-coverage
+coverage/
 playwright.config.ts
 
 # production
-build
-dist
+build/
+dist/
 
 # configuration
 .eslintrc.*
