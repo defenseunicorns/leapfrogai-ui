@@ -1,11 +1,11 @@
-import { writable } from 'svelte/store';
+import { writable } from 'svelte/store'
 
 export type ModelSettings = {
-    chatModel: string,
+    chatModel: string
     transcriptionModel: string
 }
 
 export default writable({
-    chatModel: " ",
-    transcriptionModel: " "
-} as ModelSettings);
+    chatModel: ' ',
+    transcriptionModel: ' '
+} as ModelSettings)

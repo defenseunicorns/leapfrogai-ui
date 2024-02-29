@@ -14,7 +14,7 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "eslint src/ --ext '.js,.jsx,.ts,.tsx,.svelte'",
-        "lint-fix": "eslint src/ --ext '.js,.jsx,.ts,.tsx,.svelte' --fix",
+        "lint-fix": "eslint src/ --ext '.js,.jsx,.ts,.tsx,.svelte' --fix --debug",
         "format": "prettier -c src/",
         "format-fix": "prettier -w src/",
 		"playwright": "playwright test"

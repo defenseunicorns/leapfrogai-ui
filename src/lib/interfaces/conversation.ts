@@ -1,5 +1,5 @@
 interface Conversation {
-    id: string,
-    name: string,
+    id: string
+    name: string
     messages: Message[]
 }

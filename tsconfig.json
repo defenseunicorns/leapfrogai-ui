@@ -5,7 +5,7 @@
         "declarationMap": true,
         "esModuleInterop": true,
         "lib": ["ES2022", "DOM"],
-        "module": "preserve",
+        "module": "commonJs",
         "moduleResolution": "node",
         "outDir": "dist",
         "resolveJsonModule": true,

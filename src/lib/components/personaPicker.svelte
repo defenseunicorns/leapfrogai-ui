@@ -1,86 +1,82 @@
 <script lang="ts">
-    import {
-        EditOutline,
-        PlusOutline,
-        TrashBinOutline,
-    } from "flowbite-svelte-icons";
-    import { env } from "$env/dynamic/public";
-    import { writable } from "svelte/store";
-    import { onMount } from "svelte";
-    import { v4 as uuidv4 } from "uuid";
-    import ModelPicker from "./modelPicker.svelte";
+    import { EditOutline, PlusOutline, TrashBinOutline } from 'flowbite-svelte-icons'
+    import { env } from '$env/dynamic/public'
+    import { writable } from 'svelte/store'
+    import { onMount } from 'svelte'
+    import { v4 as uuidv4 } from 'uuid'
+    import ModelPicker from './modelPicker.svelte'
 
-    export let pickedPersona: Agent;
+    export let pickedPersona: Agent
 
-    let localStorage: Storage;
-    let personas = writable([]);
+    let localStorage: Storage
+    let personas = writable([])
 
-    let personaSearchQuery = "";
+    let personaSearchQuery = ''
 
     let defaultSettings: Agent = {
         uuid: uuidv4(),
-        name: "New Persona",
-        description: "",
+        name: 'New Persona',
+        description: '',
         model: env.PUBLIC_DEFAULT_MODEL,
         url: env.PUBLIC_OPENAI_API_HOST,
-        type: "Chat",
+        type: 'Chat',
         systemPrompt: env.PUBLIC_DEFAULT_SYSTEM_PROMPT,
         temperature: Number(env.PUBLIC_DEFAULT_TEMPERATURE),
-        rag_enabled: false,
-    };
+        rag_enabled: false
+    }
 
     onMount(() => {
-        localStorage = window.localStorage;
-        getLocalPersonas();
-    });
+        localStorage = window.localStorage
+        getLocalPersonas()
+    })
 
     function getLocalPersonas() {
         if (localStorage) {
-            const storedPersonas = JSON.parse(localStorage.getItem("personas"));
+            const storedPersonas = JSON.parse(localStorage.getItem('personas'))
             if (storedPersonas?.length > 0) {
-                personas.set(storedPersonas);
+                personas.set(storedPersonas)
             }
         }
 
         if ($personas.length === 0) {
-            personas.set([defaultSettings]);
+            personas.set([defaultSettings])
         }
 
-        pickedPersona = $personas[0];
+        pickedPersona = $personas[0]
     }
 
     function persistPersonas(value: any[]) {
         if (localStorage) {
-            localStorage.setItem("personas", JSON.stringify(value));
+            localStorage.setItem('personas', JSON.stringify(value))
         }
     }
 
-    personas.subscribe(persistPersonas);
+    personas.subscribe(persistPersonas)
 
     function newPersona() {
-        defaultSettings.uuid = uuidv4();
+        defaultSettings.uuid = uuidv4()
         personas.update((n: any[]) => [
             ...n,
             {
-                ...defaultSettings,
-            },
-        ]);
-        editPersona(defaultSettings.uuid);
+                ...defaultSettings
+            }
+        ])
+        editPersona(defaultSettings.uuid)
     }
 
     function applyPersona(persona: any) {
-        pickedPersona = persona;
+        pickedPersona = persona
     }
 
     function removePersona(id: any) {
-        personas.update((n: any[]) => n.filter((p) => p.uuid !== id));
+        personas.update((n: any[]) => n.filter((p) => p.uuid !== id))
     }
 
-    let tmpNewPersona = defaultSettings;
+    let tmpNewPersona = defaultSettings
     function editPersona(id: any) {
-        const persona = $personas.find((p) => p.uuid === id);
-        tmpNewPersona = { ...persona };
-        document.getElementById("persona_modal")["showModal"]();
+        const persona = $personas.find((p) => p.uuid === id)
+        tmpNewPersona = { ...persona }
+        document.getElementById('persona_modal')['showModal']()
     }
     function updatePersona(id: any) {
         personas.update((n) => {
@@ -96,13 +92,13 @@
                         type: tmpNewPersona.type,
                         systemPrompt: tmpNewPersona.systemPrompt,
                         temperature: tmpNewPersona.temperature,
-                        rag_enabled: tmpNewPersona.rag_enabled,
-                    };
+                        rag_enabled: tmpNewPersona.rag_enabled
+                    }
                 }
-                return p; // Return the original object for other personas
-            });
-        });
-        document.getElementById("persona_modal")["close"]();
+                return p // Return the original object for other personas
+            })
+        })
+        document.getElementById('persona_modal')['close']()
     }
 </script>
 
@@ -110,41 +106,36 @@
     <button
         class="btn w-full mb-2 justify-between"
         on:click={() => {
-            newPersona();
+            newPersona()
         }}
         >New Persona <PlusOutline />
     </button>
-    <input
-        class="input input-bordered w-full mb-2"
-        type="text"
-        placeholder="Search"
-        bind:value={personaSearchQuery}
-    />
+    <input class="input input-bordered w-full mb-2" type="text" placeholder="Search" bind:value={personaSearchQuery} />
     {#each $personas as persona}
-        {#if personaSearchQuery == "" || persona.name
-                .toLowerCase()
-                .includes(personaSearchQuery.toLowerCase())}
+        {#if personaSearchQuery == '' || persona.name.toLowerCase().includes(personaSearchQuery.toLowerCase())}
             <div class="menu bg-base-100 w-full rounded-box">
                 <div class="flex">
                     <li class="w-4/6 flex-nowrap">
                         <button
                             class="whitespace-nowrap
-                            {persona.uuid === pickedPersona.uuid ? 'outline outline-2 outline-offset-2 outline-secondary' : ''}"
+                            {persona.uuid === pickedPersona.uuid
+                                ? 'outline outline-2 outline-offset-2 outline-secondary'
+                                : ''}"
                             on:click={() => {
-                                applyPersona(persona);
+                                applyPersona(persona)
                             }}>{persona.name}</button
                         >
                     </li>
                     <button
                         class="btn-ghost w-1/6 px-2"
                         on:click={() => {
-                            editPersona(persona.uuid);
+                            editPersona(persona.uuid)
                         }}><EditOutline /></button
                     >
                     <button
                         class="btn-ghost w-1/6 px-2"
                         on:click={() => {
-                            removePersona(persona.uuid);
+                            removePersona(persona.uuid)
                         }}><TrashBinOutline /></button
                     >
                 </div>
@@ -159,10 +150,7 @@
             <h3 class="font-bold text-lg">
                 {tmpNewPersona.name}
             </h3>
-            <form
-                on:submit|preventDefault={() =>
-                    updatePersona(tmpNewPersona.uuid)}
-            >
+            <form on:submit|preventDefault={() => updatePersona(tmpNewPersona.uuid)}>
                 <div class="py-2">
                     <label for="persona-name">Name:</label>
                     <input
@@ -237,7 +225,7 @@
                         type="button"
                         class="btn"
                         on:click={() => {
-                            document.getElementById("persona_modal")["close"]();
+                            document.getElementById('persona_modal')['close']()
                         }}>Cancel</button
                     >
                 </div>

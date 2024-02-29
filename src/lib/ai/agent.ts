@@ -1,11 +1,11 @@
 type Agent = {
-    uuid: string;
-    name: string;
-    description: string;
-    model: string;
-    url: string;
-    type: string;
-    systemPrompt: string;
-    temperature: number;
-    rag_enabled: boolean;
+    uuid: string
+    name: string
+    description: string
+    model: string
+    url: string
+    type: string
+    systemPrompt: string
+    temperature: number
+    rag_enabled: boolean
 }

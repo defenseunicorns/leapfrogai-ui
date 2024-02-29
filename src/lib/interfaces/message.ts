@@ -1,4 +1,4 @@
 interface Message {
-    role: string,
+    role: string
     content: string
 }

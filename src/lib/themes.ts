@@ -1,8 +1,1 @@
-
-export const themes = [
-    'business',
-    'black',
-    'dracula',
-    'light',
-    'synthwave',
-  ]
+export const themes = ['business', 'black', 'dracula', 'light', 'synthwave']

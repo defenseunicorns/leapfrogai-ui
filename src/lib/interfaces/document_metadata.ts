@@ -1,4 +1,4 @@
 interface DocumentMetadata {
-    uuid: string,
+    uuid: string
     source: string
 }
