@@ -1,0 +1,20 @@
+name: Release Please and Publish
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Create Release and Tag
+        id: tag
+        uses: google-github-actions/release-please-action@00911586051618367fa9c19b161a0a146ac51970 # v2.35.0
+        with:
+          release-type: node
+          command: manifest

@@ -1,0 +1,14 @@
+{
+    "packages": {
+      ".": {
+        "release-type": "simple",
+        "draft": false,
+        "changelog-path": "CHANGELOG.md",
+        "versioning": "default",
+        "extra-files": [
+          "chart/Chart.yaml",
+          "zarf.yaml"
+        ]
+      }
+    }
+  }
