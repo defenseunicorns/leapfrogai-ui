@@ -26,6 +26,19 @@ npm run build
 
 You can preview the production build with `npm run preview`.
 
+### Every developer will also need to setup pre-commit:
+
+1. Install [pre-commit](http://pre-commit.com/). E.g.`brew install pre-commit`.
+2. Run pre-commit install in the repo.
+
+To run pre-commit locally in this repo do the following
+
+```bash
+pre-commit run --all-files
+```
+
+![alt text](imgs/precommit_output.png)
+
 ## Docker (dev env)
 
 ```bash

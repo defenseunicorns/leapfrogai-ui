@@ -1,0 +1,2 @@
+# if we need to put default values for linting we can use this file
+# https://github.com/gruntwork-io/pre-commit/blob/master/README.md#helm-lint-caveats
