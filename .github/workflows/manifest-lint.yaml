@@ -2,8 +2,10 @@ name: Lint Manifests
 
 on:
   push:
+    branches:
+      - '!main'
   pull_request:
-      branches: ['main']
+      branches: [main]
 
 jobs:
   lint-helm:

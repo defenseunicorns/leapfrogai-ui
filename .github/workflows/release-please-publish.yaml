@@ -1,0 +1,160 @@
+name: Release Please and Publish
+
+on:
+  push:
+    branches: [main]
+    tags:
+      - "v*.*.*"
+      - "dev"
+
+env:
+  REGISTRY_IMAGE: defenseunicorns/leapfrogai-ui
+  REGISTRY: ghcr.io
+  VERSION: 0.3.0
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    outputs:
+      release_created: ${{ steps.release-flag.outputs.release_created }}
+
+    steps:
+      - name: Create Release Tag
+        id: tag # generates a new tag PR
+        uses: google-github-actions/release-please-action@cc61a07e2da466bebbc19b3a7dd01d6aecb20d1e # v4
+        with:
+          command: manifest # use configs in release-please-config.json
+
+      - name: Create Publish Flag
+        id: release-flag # only triggers when a release tag is actually pushed
+        run: echo "release_created=${{ steps.tag.outputs.release_created || false }}" >> $GITHUB_OUTPUT
+
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: release-please # only triggers if new release tag is pushed
+    if: ${{ needs.release-please.outputs.release_created == 'true'}}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - linux/amd64
+          # can add more platforms as necessary
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Docker Metadata
+        id: meta
+        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81 # v5.5.1
+        with:
+          images: ${{ env.REGISTRY_IMAGE }}
+          tags: |
+            type=semver,pattern={{version}},priority=1000,value=${{ env.VERSION }}
+            type=semver,pattern={{major}}.{{minor}},priority=900,value=${{ env.VERSION }}
+            type=semver,pattern={{major}},priority=800,value=${{ env.VERSION }}
+            type=sha,priority=700
+            type=ref,event=pr,priority=600
+            type=ref,event=branch,priority=500
+            type=schedule,priority=400
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@68827325e0b33c7199eb31dd4e31fbe9023e06e3 # v3.0.0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@0d103c3126aa41d772a8362f6aa67afac040f80c # v3.1.0
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Digest
+        id: build
+        uses: docker/build-push-action@4a13e500e55cf31b7a5d59a38ab2040ab0f42f56 # v5.1.0
+        with:
+          context: .
+          platforms: ${{ matrix.platform }}
+          labels: ${{ steps.meta.outputs.labels }}
+          outputs: type=image,name=${{ env.REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true
+          tags: ${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}
+
+      - name: Export Digest
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+
+      - name: Upload Digest
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
+        with:
+          name: digests
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  docker-merge:
+    runs-on: ubuntu-latest
+    needs: docker-build
+    steps:
+      - name: Download Digests
+        uses: actions/download-artifact@87c55149d96e628cc2ef7e6fc2aab372015aec85 # v4.1.3
+        with:
+          name: digests
+          path: /tmp/digests
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@0d103c3126aa41d772a8362f6aa67afac040f80c # v3.1.0
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker Metadata
+        id: meta
+        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81 # v5.5.1
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}
+          tags: |
+            type=semver,pattern={{version}},priority=1000,value=${{ env.VERSION }}
+            type=semver,pattern={{major}}.{{minor}},priority=900,value=${{ env.VERSION }}
+            type=semver,pattern={{major}},priority=800,value=${{ env.VERSION }}
+            type=sha,priority=700
+            type=ref,event=pr,priority=600
+            type=ref,event=branch,priority=500
+            type=schedule,priority=400
+
+      - name: Create Manifest and Push Image
+        working-directory: /tmp/digests
+        run: |
+          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+            $(printf '${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}@sha256:%s ' *)
+
+      - name: Inspect image
+        run: |
+          docker buildx imagetools inspect ${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}:${{ steps.meta.outputs.version }}
+
+  zarf-publish:
+    runs-on: ubuntu-latest
+    needs: docker-merge
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+    - name: Install Zarf
+      uses: defenseunicorns/setup-zarf@f95763914e20e493bb5d45d63e30e17138f981d6 # v1.0.0
+
+    - name: Build Zarf Package
+      run: make zarf-create
+
+    - name: Publish Zarf Package
+      run: make zarf-publish

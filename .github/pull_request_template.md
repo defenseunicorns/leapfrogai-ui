@@ -17,4 +17,4 @@ Relates to #
 ## Checklist before merging
 
 - [ ] Test, docs, adr added or updated as needed
-- [ ] [Contributor Guide Steps](https://github.com/justinthelaw/repository-template/blob/main/.github/CONTRIBUTING.md) followed
+- [ ] [Contributor Guide Steps](https://github.com/defenseunicorns/leapfrogai-ui/blob/main/.github/CONTRIBUTING.md) followed

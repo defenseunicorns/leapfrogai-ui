@@ -1,7 +1,7 @@
 {
   "packages": {
     ".": {
-      "release-type": "node",
+      "release-type": "simple",
       "draft": false,
       "changelog-path": "CHANGELOG.md",
       "versioning": "default",
@@ -12,6 +12,26 @@
           "type": "yaml",
           "path": "chart/Chart.yaml",
           "jsonpath": "$.appVersion"
+        },
+        {
+          "type": "yaml",
+          "path": ".github/workflows/release-please-publish.yaml",
+          "jsonpath": "$.env.VERSION"
+        },
+        {
+          "type": "json",
+          "path": "package.json",
+          "jsonpath": "$.version"
+        },
+        {
+          "type": "json",
+          "path": "package-lock.json",
+          "jsonpath": "$.version"
+        },
+        {
+          "type": "json",
+          "path": "package-lock.json",
+          "jsonpath": "$.packages.version"
         }
       ]
     }
