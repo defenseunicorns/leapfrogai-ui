@@ -1,3 +1,4 @@
+{{- if .Capabilities.APIVersions.Has "uds.dev/v1alpha1" }}
 apiVersion: uds.dev/v1alpha1
 kind: Package
 metadata:
@@ -11,7 +12,7 @@ spec:
           app: leapfrogai-ui
         host: {{ .Values.package.host }}
         gateway: tenant 
-        port: 3000
+        port: {{ .Values.containerPort }}
 
     allow:
       - direction: Ingress
@@ -24,3 +25,4 @@ spec:
         podLabels:
           app: leapfrogai-ui
         remoteGenerated: Anywhere
+{{- end }}
