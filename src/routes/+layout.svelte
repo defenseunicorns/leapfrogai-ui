@@ -21,7 +21,7 @@
 >
 	<div class="flex items-center">
 		{#if branding}
-			<a href="/">				
+			<a href="/">
 				<img src="DU_unicorn_rgb.png" alt="AI for National Security" class="h-11" />
 			</a>
 					<div style="margin-left: 8px;">

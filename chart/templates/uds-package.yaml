@@ -11,7 +11,7 @@ spec:
         podLabels:
           app: leapfrogai-ui
         host: {{ .Values.package.host }}
-        gateway: tenant 
+        gateway: tenant
         port: {{ .Values.containerPort }}
 
     allow:
@@ -20,7 +20,7 @@ spec:
 
       - direction: Egress
         remoteGenerated: Anywhere
-      
+
       - direction: Egress
         podLabels:
           app: leapfrogai-ui

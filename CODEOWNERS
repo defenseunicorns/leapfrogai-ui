@@ -1,6 +1,6 @@
 # Documentation and fallbacks for missed things
 * @defenseunicorns/leapfrogai
-*.md @defenseunicorns/leapfrogai 
+*.md @defenseunicorns/leapfrogai
 
 /src/ @defenseunicorns/leapfrogai
 /static/ @defenseunicorns/leapfrogai

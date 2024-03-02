@@ -20,7 +20,7 @@ jobs:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-    
+
     - name: Set VERSION
       run: echo "VERSION=$(git describe --abbrev=0 --tags | tail -n 1 | sed -e 's/^v//')" >> $GITHUB_ENV
 

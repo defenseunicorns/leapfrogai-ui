@@ -43,7 +43,7 @@ variables:
     prompt: true
     sensitive: false
   - name: TRANSCRIPTION_MODEL
-    description: The default model to use for transcription 
+    description: The default model to use for transcription
     default: whisper
     prompt: true
     sensitive: false
@@ -70,6 +70,26 @@ variables:
   - name: PREFIX
     description: Prefix for requests to the application
     default: ""
+    prompt: true
+    sensitive: false
+  - name: REQUEST_MEMORY
+    description: The requested memory size for the deployment
+    default: "5Gi"
+    prompt: true
+    sensitive: false
+  - name: REQUEST_CPU
+    description: The requested cpu size for the deployment
+    default: "500m"
+    prompt: true
+    sensitive: false
+  - name: LIMITS_MEMORY
+    description: The limit meomory size for the deployment
+    default: "5Gi"
+    prompt: true
+    sensitive: false
+  - name: LIMITS_CPU
+    description: The limit cpu size for the deployment
+    default: "1000m"
     prompt: true
     sensitive: false
 

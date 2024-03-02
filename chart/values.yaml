@@ -8,11 +8,11 @@ containerPort: 3000
 
 resources:
   requests:
-    memory: "5Gi"
-    cpu: "500m"
+    memory: "###ZARF_VAR_REQUEST_MEMORY###" #"5Gi"
+    cpu: "###ZARF_VAR_REQUEST_CPU###" # "500m"
   limits:
-    memory: "5Gi"
-    cpu: "1000m"
+    memory: "###ZARF_VAR_LIMITS_MEMORY###" # "5Gi"
+    cpu: "###ZARF_VAR_LIMITS_CPU###" # "1000m"
 
 envs:
   - name: PUBLIC_AI4NS_BRANDING

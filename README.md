@@ -7,6 +7,7 @@ UI Built with SvelteKit, Tailwind CSS with Daisy UI and [Flowbite Svelte](https:
 Once you've created a project and installed dependencies with `npm install` or `pnpm install` or `yarn`:
 
 Copy `.env.example` into `.env` and set all the variables accordingly.
+
 * [Note] If the UI is running within a docker container and tailscale is being used then `OPENAI_API_HOST` value needs to be the [fully qualified domain name](https://tailscale.com/kb/1081/magicdns/#fully-qualified-domain-names-vs-machine-names) of the server.
 
 ```bash
@@ -26,18 +27,16 @@ npm run build
 
 You can preview the production build with `npm run preview`.
 
-### Every developer will also need to setup pre-commit:
+### Every developer will also need to setup pre-commit
 
 1. Install [pre-commit](http://pre-commit.com/). E.g.`brew install pre-commit`.
-2. Run pre-commit install in the repo.
+2. Run `pre-commit install` in the repo.
 
 To run pre-commit locally in this repo do the following
 
 ```bash
 pre-commit run --all-files
 ```
-
-![alt text](imgs/precommit_output.png)
 
 ## Docker (dev env)
 
