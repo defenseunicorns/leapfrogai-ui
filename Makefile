@@ -24,4 +24,4 @@ zarf-deploy:
 	zarf package deploy --confirm zarf-package-*.tar.zst
 
 zarf-publish:
-	zarf package publish zarf-*.tar.zst oci://ghcr.io/defenseunicorns/packages/
+	zarf package publish zarf-*.tar.zst oci://ghcr.io/defenseunicorns/packages/leapfrogai
