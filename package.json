@@ -29,7 +29,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"flowbite": "^2.2.1",
+		"flowbite": "^2.3.0",
 		"natural": "^6.10.4",
 		"openai": "^4.20.1",
 		"openai-fetch": "^1.6.5",
