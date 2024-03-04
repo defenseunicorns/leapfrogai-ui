@@ -31,7 +31,7 @@
 	"dependencies": {
 		"flowbite": "^2.2.1",
 		"natural": "^6.10.4",
-		"openai": "^4.20.1",
+		"openai": "^4.28.4",
 		"openai-fetch": "^1.6.5",
 		"svelte-highlight": "^7.4.2",
 		"svelte-markdown": "^0.4.0",
