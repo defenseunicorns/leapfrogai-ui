@@ -1,3 +1,44 @@
 {
-    ".": "0.3.0"
-}
+    "packages": {
+      ".": {
+        "release-type": "simple",
+        "versioning": "default",
+        "draft": true,
+        "changelog-path": "CHANGELOG.md",
+        "include-v-in-tag": false,
+        "extra-files": [
+          "zarf-config.yaml",
+          {
+            "type": "yaml",
+            "path": "chart/Chart.yaml",
+            "jsonpath": "$.appVersion"
+          },
+          {
+            "type": "yaml",
+            "path": ".github/workflows/release-please-publish.yaml",
+            "jsonpath": "$.env.VERSION"
+          },
+          {
+            "type": "json",
+            "path": "package.json",
+            "jsonpath": "$.version"
+          },
+          {
+            "type": "json",
+            "path": "package-lock.json",
+            "jsonpath": "$.version"
+          },
+          {
+            "type": "json",
+            "path": "package-lock.json",
+            "jsonpath": "$.packages.version"
+          },
+          {
+            "type": "toml",
+            "path": "pyproject.toml",
+            "jsonpath": "$.project.version"
+          }
+        ]
+      }
+    }
+  }

@@ -23,7 +23,7 @@ on:
         required: false
 
 concurrency:
-  group: "workflow-clean"
+  group: cleanup-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:

@@ -8,6 +8,10 @@ on:
     branches: [main]
     types: [labeled, unlabeled, opened, edited, synchronize]
 
+concurrency:
+  group: labelslint-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 

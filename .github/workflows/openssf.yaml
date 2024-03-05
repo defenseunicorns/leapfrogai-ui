@@ -7,6 +7,10 @@ on:
 
 permissions: read-all
 
+concurrency:
+  group: openssf-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   analysis:
     name: Scorecard Analysis

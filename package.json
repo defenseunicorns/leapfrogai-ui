@@ -4,7 +4,7 @@
 	"author": "Defense Unicorns",
     "license": "Apache-2.0",
     "engines": {
-        "node": "21.5.0"
+        "node": "20.11.1"
     },
 	"private": true,
 	"scripts": {
