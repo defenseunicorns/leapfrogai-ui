@@ -4,8 +4,16 @@ on:
   push:
     branches:
       - '!main'
+    paths:
+      - '**/*.js'
+      - '**/*.ts'
+      - '**/*.svelte'
   pull_request:
     branches: [main]
+    paths:
+      - '**/*.js'
+      - '**/*.ts'
+      - '**/*.svelte'
 
 concurrency:
   group: playwright-${{ github.ref }}
@@ -14,8 +22,14 @@ concurrency:
 jobs:
   playwright:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      actions: write
+
     container:
       image: mcr.microsoft.com/playwright:v1.41.1-jammy
+
     steps:
       - name: Checkout Repo
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1

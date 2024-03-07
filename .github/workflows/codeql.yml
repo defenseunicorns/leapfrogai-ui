@@ -4,8 +4,16 @@ on:
   push:
     branches:
       - '!main'
+    paths:
+      - '**/*.js'
+      - '**/*.ts'
+      - '**/*.svelte'
   pull_request:
     branches: [main]
+    paths:
+      - '**/*.js'
+      - '**/*.ts'
+      - '**/*.svelte'
   schedule:
     - cron: '28 15 * * 6'
 

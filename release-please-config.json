@@ -1,37 +1,17 @@
 {
   "packages": {
     ".": {
-      "release-type": "simple",
-      "draft": false,
-      "changelog-path": "CHANGELOG.md",
+      "release-type": "node",
       "versioning": "default",
+      "draft": true,
+      "changelog-path": "CHANGELOG.md",
+      "include-v-in-tag": false,
       "extra-files": [
-        "zarf.yaml",
         "zarf-config.yaml",
         {
           "type": "yaml",
           "path": "chart/Chart.yaml",
           "jsonpath": "$.appVersion"
-        },
-        {
-          "type": "yaml",
-          "path": ".github/workflows/release-please-publish.yaml",
-          "jsonpath": "$.env.VERSION"
-        },
-        {
-          "type": "json",
-          "path": "package.json",
-          "jsonpath": "$.version"
-        },
-        {
-          "type": "json",
-          "path": "package-lock.json",
-          "jsonpath": "$.version"
-        },
-        {
-          "type": "json",
-          "path": "package-lock.json",
-          "jsonpath": "$.packages.version"
         }
       ]
     }

@@ -1,6 +1,9 @@
 name: Cleanup Workflows
 
 on:
+  # cronjob trigger At 00:00 on day-of-month 1. https://crontab.guru/every-month
+  schedule:
+    - cron: "0 0 1 * *"
   pull_request:
     types:
       - closed
@@ -29,8 +32,10 @@ concurrency:
 jobs:
   workflows:
     runs-on: ubuntu-latest
+
     permissions:
       actions: write
+
     steps:
       - name: Delete Stale Workflows
         uses: Mattraks/delete-workflow-runs@39f0bbed25d76b34de5594dceab824811479e5de # v2.0.6
