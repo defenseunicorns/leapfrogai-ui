@@ -29,12 +29,12 @@ variables:
     sensitive: true
   - name: LEAPFROGAI_RAG_URL
     description: The URL for the Leapfrog AI rag api
-    default: http://rag.leapfrogai.svc.cluster.local:8080
+    default: http://rag.leapfrogai.svc.cluster.local:8000
     prompt: true
     sensitive: true
   - name: DOMAIN
     description: The domain to use for the application, Istio-ingress configuration
-    default: https://localhost:8080
+    default: https://ai.uds.dev
     prompt: true
     sensitive: true
   - name: MODEL
