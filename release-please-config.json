@@ -1,0 +1,19 @@
+{
+  "packages": {
+    ".": {
+      "release-type": "node",
+      "versioning": "default",
+      "draft": true,
+      "changelog-path": "CHANGELOG.md",
+      "include-v-in-tag": false,
+      "extra-files": [
+        "zarf-config.yaml",
+        {
+          "type": "yaml",
+          "path": "chart/Chart.yaml",
+          "jsonpath": "$.appVersion"
+        }
+      ]
+    }
+  }
+}

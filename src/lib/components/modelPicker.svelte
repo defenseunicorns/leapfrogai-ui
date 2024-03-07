@@ -1,19 +1,19 @@
 <script lang="ts">
-    import { urlConcat } from "$lib/helper";
-    import { onMount } from "svelte";
-    import { writable } from "svelte/store";
+    import { urlConcat } from '$lib/helper'
+    import { onMount } from 'svelte'
+    import { writable } from 'svelte/store'
 
-    export let selectedModel = "";
-    let models = writable([]);
+    export let selectedModel = ''
+    let models = writable([])
 
     onMount(async () => {
-        models.set(await getModels());
-    });
+        models.set(await getModels())
+    })
 
     async function getModels() {
-        const response = await fetch(urlConcat("/api/models"));
-        const models = await response.json();
-        return models;
+        const response = await fetch(urlConcat('/api/models'))
+        const models = await response.json()
+        return models
     }
 </script>
 
