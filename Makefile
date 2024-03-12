@@ -5,6 +5,3 @@ docker-build:
 
 zarf-build:
 	zarf package create . --confirm --set IMAGE_VERSION=${VERSION}
-
-zarf-publish:
-	zarf package publish . --confirm --set IMAGE_VERSION=${VERSION}
