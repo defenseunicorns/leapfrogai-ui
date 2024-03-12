@@ -1,20 +1,20 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: leapfrog-ui
+  name: leapfrogai-ui
   namespace: leapfrogai
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: leapfrog-ui
+  name: leapfrogai-ui
   namespace: leapfrogai
   labels:
-    app: leapfrog-ui
-    service: leapfrog-ui
+    app: leapfrogai-ui
+    service: leapfrogai-ui
 spec:
   selector:
-    app: leapfrog-ui
+    app: leapfrogai-ui
   ports:
     - name: http
       port: 3000

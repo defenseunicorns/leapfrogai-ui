@@ -1,7 +1,7 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: leapfrog-ui
+  name: leapfrogai-ui
   namespace: leapfrogai
 spec:
   gateways:
@@ -16,7 +16,7 @@ spec:
        uri: "/"
      route:
      - destination:
-        host: leapfrog-ui.leapfrogai.svc.cluster.local
+        host: leapfrogai-ui.leapfrogai.svc.cluster.local
         port:
           number: 3000
   # see https://github.com/istio/istio/issues/8076#issuecomment-427057691 for redirect setup and rationale

@@ -1,7 +1,7 @@
 kind: ZarfPackageConfig
 metadata:
-  name: "###ZARF_PKG_TMPL_NAME###"
-  version: "###ZARF_PKG_TMPL_IMAGE_VERSION###"
+  name: leapfrogai-ui
+  version: 0.3.4
   description: >
     A UI for LeapFrog AI
 
@@ -12,6 +12,10 @@ constants:
     value: "###ZARF_PKG_TMPL_NAME###"
 
 variables:
+  - name: CONCURRENT_REQUESTS
+    description: Allow multiple requests.
+    default: true
+    prompt: true
   - name: AI4NS_BRANDING
     description: Toggles between AI4NS (true) branding and LeapfrogAI (false) branding
     default: true
@@ -29,17 +33,17 @@ variables:
     sensitive: true
   - name: LEAPFROGAI_RAG_URL
     description: The URL for the Leapfrog AI rag api
-    default: http://rag.leapfrogai.svc.cluster.local:8080
+    default: http://rag.leapfrogai.svc.cluster.local:8000
     prompt: true
     sensitive: true
   - name: DOMAIN
     description: The domain to use for the application, Istio-ingress configuration
-    default: https://localhost:8080
+    default: https://leapfrog.bc.beast-code.com
     prompt: true
     sensitive: true
   - name: MODEL
     description: The default LLM model to use for chat and summarization
-    default: llama-cpp-python
+    default: vllm
     prompt: true
     sensitive: false
   - name: TRANSCRIPTION_MODEL
@@ -49,7 +53,7 @@ variables:
     sensitive: false
   - name: SYSTEM_PROMPT
     description: The default system prompt to use for the LLM
-    default: "You are a helpful AI assistant created by Defense Unicorns."
+    default: "You are a helpful AI assistant."
     prompt: true
     sensitive: false
   - name: FINAL_SUMMARIZATION_PROMPT
@@ -57,7 +61,7 @@ variables:
     default: "You are a summarizer tasked with creating summaries. You will return an coherent and concise summary using 3 concise sections that are each separated by a newline character: 1) BOTTOM LINE UP FRONT: this section will be a concise paragraph containing an overarching, executive summary of all the notes. 2) NOTES: this section will be bullet points highlighting and summarizing key points, risks, issues, and opportunities. 3) ACTION ITEMS: this section will focus on listing any action items, unanswered questions, or issues present in the text; if there are none that can be identified from the notes, just return 'None' for ACTION ITEMS; if possible, also include the individual or team assigned to each item in ACTION ITEMS."
     prompt: true
     sensitive: false
-  - name: INTERMEDIATE_SUMMARY_PROMPT
+  - name: INTERMEDIATE_SUMMARIZATION_PROMPT
     description: The default system summarization prompt to use for the LLM when summary batching activates
     default: "You are a summarizer tasked with creating summaries. Your key activities include identifying the main points and key details in the given text, and condensing the information into a concise summary that accurately reflects the original text. It is important to avoid any risks such as misinterpreting the text, omitting crucial information, or distorting the original meaning. Use clear and specific language, ensuring that the summary is coherent, well-organized, and effectively communicates the main ideas of the original text."
     prompt: true
@@ -84,7 +88,7 @@ components:
           - manifests/svc.yaml
           - manifests/istio.yaml
     images:
-      - "###ZARF_PKG_TMPL_IMAGE_REPOSITORY###:v###ZARF_PKG_TMPL_IMAGE_VERSION###"
+      - ghcr.io/defenseunicorns/leapfrogai/leapfrogai-ui:0.3.4
     actions:
       onDeploy:
         after:

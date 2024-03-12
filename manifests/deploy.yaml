@@ -1,24 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: leapfrog-ui
+  name: leapfrogai-ui
   namespace: leapfrogai
 spec:
   selector:
     matchLabels:
-      app: leapfrog-ui
+      app: leapfrogai-ui
   replicas: 1
   template:
     metadata:
       labels:
-        app: leapfrog-ui
+        app: leapfrogai-ui
     spec:
       containers:
-        - name: leapfrog-ui
-          image: "###ZARF_VAR_IMAGE_REPOSITORY###:###ZARF_VAR_IMAGE_VERSION###"
+        - name: leapfrogai-ui
+          image: ghcr.io/defenseunicorns/leapfrogai/leapfrogai-ui:0.3.4
           ports:
             - containerPort: 3000
           env:
+            - name: CONCURRENT_REQUESTS
+              value: "###ZARF_VAR_CONCURRENT_REQUESTS###"
             - name: PUBLIC_AI4NS_BRANDING
               value: "###ZARF_VAR_AI4NS_BRANDING###"
             - name: OPENAI_API_HOST
@@ -38,7 +40,7 @@ spec:
             - name: FINAL_SUMMARIZATION_PROMPT
               value: "###ZARF_VAR_FINAL_SUMMARIZATION_PROMPT###"
             - name: INTERMEDIATE_SUMMARY_PROMPT
-              value: "###ZARF_VAR_INTERMEDIATE_SUMMARY_PROMPT###"
+              value: "###ZARF_VAR_INTERMEDIATE_SUMMARIZATION_PROMPT###"
             - name: PUBLIC_DEFAULT_TEMPERATURE
               value: "###ZARF_VAR_TEMPERATURE###"
             - name: OPENAI_API_KEY
