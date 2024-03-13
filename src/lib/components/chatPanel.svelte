@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { ArrowRightSolid, RotateOutline } from "flowbite-svelte-icons";
+    import { ArrowRightSolid } from "flowbite-svelte-icons";
     import SvelteMarkdown from "svelte-markdown";
     import codeblock from "$lib/components/codeblock.svelte";
     import codespan from "$lib/components/codespan.svelte";
@@ -92,7 +92,7 @@
         if (ragEndpointActive && agentSettings.rag_enabled) {
             // Construct the RAG message that will be inserted before the user's message
             let ragResponse = {
-                role: "system",
+                role: "user",
                 content: await queryRag(lastMessage.content),
             };
 
