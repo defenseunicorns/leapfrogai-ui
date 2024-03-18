@@ -27,6 +27,8 @@ spec:
               value: "###ZARF_VAR_LEAPFROGAI_RAG_URL###"
             - name: ORIGIN
               value: "###ZARF_VAR_DOMAIN###"
+            - name: CONCURRENT_REQUESTS
+              value: "###ZARF_VAR_CONCURRENT_REQUESTS###"
             - name: PUBLIC_DEFAULT_MODEL
               value: "###ZARF_VAR_MODEL###"
             - name: SUMMARIZATION_MODEL
