@@ -19,18 +19,18 @@ const REQUEST_TIMEOUT = 36000 * 1000 // 10 hours
 const createCompletion = async (
   openaiClient: OpenAI,
   model: string,
-  prompt: string,
+  messages: Message[],
   maxTokens: number
 ) => {
-  const completion = await openaiClient.completions.create({
+  const completion = await openaiClient.chat.completions.create({
+    messages: messages as OpenAI.Chat.Completions.ChatCompletionMessageParam[],
     model: model,
+    temperature: 0,
     max_tokens: maxTokens,
-    temperature: 0.1,
-    frequency_penalty: 0.5,
-    presence_penalty: 0.0,
-    prompt,
+    stream: false,
   });
-  return completion.choices[0].text.trim();
+
+  return completion.choices[0].message.content.trim();
 };
 
 export const actions = {
@@ -58,8 +58,7 @@ export const actions = {
     const uid = uuidv4();
 
     console.log(
-      `Started new workflow for ${filename} (${audioFile.type}) of size ${
-        audioFile.size / 1000000
+      `Started new workflow for ${filename} (${audioFile.type}) of size ${audioFile.size / 1000000
       }MB.`
     );
 
@@ -117,27 +116,29 @@ export const actions = {
 
     // batching method only occurs at high token counts
     let intermediateSummary = "";
-    if (tokenizedTranscript.length > 7500) {
+    if (tokenizedTranscript.length > 16384) {
       console.log(`\tUsing batching method for ${filename}`);
-      const transcriptBatches = batchTranscript(tokenizedTranscript, 1500);
+      const transcriptBatches = batchTranscript(tokenizedTranscript, 2560);
 
       for (let i = 0; i < transcriptBatches.length; i++) {
         const chunk = transcriptBatches[i];
-        const prompt = generateSummarizationPrompt(model, chunk);
-        const text = createCompletion(openaiClient, model, prompt, 500);
+        const message: Message[] = [
+          { role: "system", content: env.INTERMEDIATE_SUMMARIZATION_PROMPT },
+          { role: "user", content: chunk },
+        ];
+        const text = createCompletion(openaiClient, model, message, 500);
         intermediateSummary += text;
       }
     } else {
       intermediateSummary = tokenizedTranscript.join(" ");
     }
 
-    const prompt = generateSummarizationPrompt(
-      model,
-      intermediateSummary,
-      true // finalSummary
-    );
+    const message: Message[] = [
+      { role: "system", content: env.FINAL_SUMMARIZATION_PROMPT },
+      { role: "user", content: intermediateSummary },
+    ];
 
-    const summary = await createCompletion(openaiClient, model, prompt, 8192);;
+    const summary = await createCompletion(openaiClient, model, message, 16384);
 
     await unlink(transcriptionFile);
     console.log(`\tSuccessfully summarized ${filename}`);
