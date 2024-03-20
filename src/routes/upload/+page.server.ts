@@ -15,8 +15,9 @@ import { clearTmp } from "$lib/cleanup";
 
 const TEMPORARY_DIRECTORY = tmpdir();
 const REQUEST_TIMEOUT = 36000 * 1000 // 10 hours
+const MAX_TOKENS = Number(env.MAX_TOKENS);
 
-const createCompletion = async (
+const createChatCompletion = async (
   openaiClient: OpenAI,
   model: string,
   messages: Message[],
@@ -116,9 +117,9 @@ export const actions = {
 
     // batching method only occurs at high token counts
     let intermediateSummary = "";
-    if (tokenizedTranscript.length > 16384) {
+    if (tokenizedTranscript.length > MAX_TOKENS) {
       console.log(`\tUsing batching method for ${filename}`);
-      const transcriptBatches = batchTranscript(tokenizedTranscript, 2560);
+      const transcriptBatches = batchTranscript(tokenizedTranscript, MAX_TOKENS/8);
 
       for (let i = 0; i < transcriptBatches.length; i++) {
         const chunk = transcriptBatches[i];
@@ -126,7 +127,7 @@ export const actions = {
           { role: "system", content: env.INTERMEDIATE_SUMMARIZATION_PROMPT },
           { role: "user", content: chunk },
         ];
-        const text = createCompletion(openaiClient, model, message, 500);
+        const text = createChatCompletion(openaiClient, model, message, MAX_TOKENS/16);
         intermediateSummary += text;
       }
     } else {
@@ -138,7 +139,7 @@ export const actions = {
       { role: "user", content: intermediateSummary },
     ];
 
-    const summary = await createCompletion(openaiClient, model, message, 16384);
+    const summary = await createChatCompletion(openaiClient, model, message, MAX_TOKENS);
 
     await unlink(transcriptionFile);
     console.log(`\tSuccessfully summarized ${filename}`);
