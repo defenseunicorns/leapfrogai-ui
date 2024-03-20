@@ -15,22 +15,23 @@ import { clearTmp } from "$lib/cleanup";
 
 const TEMPORARY_DIRECTORY = tmpdir();
 const REQUEST_TIMEOUT = 36000 * 1000 // 10 hours
+const MAX_TOKENS = Number(env.MAX_TOKENS);
 
-const createCompletion = async (
+const createChatCompletion = async (
   openaiClient: OpenAI,
   model: string,
-  prompt: string,
+  messages: Message[],
   maxTokens: number
 ) => {
-  const completion = await openaiClient.completions.create({
+  const completion = await openaiClient.chat.completions.create({
+    messages: messages as OpenAI.Chat.Completions.ChatCompletionMessageParam[],
     model: model,
+    temperature: 0,
     max_tokens: maxTokens,
-    temperature: 0.1,
-    frequency_penalty: 0.5,
-    presence_penalty: 0.0,
-    prompt,
+    stream: false,
   });
-  return completion.choices[0].text.trim();
+
+  return completion.choices[0].message.content.trim();
 };
 
 export const actions = {
@@ -58,8 +59,7 @@ export const actions = {
     const uid = uuidv4();
 
     console.log(
-      `Started new workflow for ${filename} (${audioFile.type}) of size ${
-        audioFile.size / 1000000
+      `Started new workflow for ${filename} (${audioFile.type}) of size ${audioFile.size / 1000000
       }MB.`
     );
 
@@ -117,27 +117,31 @@ export const actions = {
 
     // batching method only occurs at high token counts
     let intermediateSummary = "";
-    if (tokenizedTranscript.length > 7500) {
+    if (tokenizedTranscript.length > MAX_TOKENS) {
       console.log(`\tUsing batching method for ${filename}`);
-      const transcriptBatches = batchTranscript(tokenizedTranscript, 1500);
+      const maxBatchSize = MAX_TOKENS / 8;
+      const transcriptBatches = batchTranscript(tokenizedTranscript, maxBatchSize);
 
       for (let i = 0; i < transcriptBatches.length; i++) {
         const chunk = transcriptBatches[i];
-        const prompt = generateSummarizationPrompt(model, chunk);
-        const text = createCompletion(openaiClient, model, prompt, 500);
+        const message: Message[] = [
+          { role: "system", content: env.INTERMEDIATE_SUMMARIZATION_PROMPT },
+          { role: "user", content: chunk },
+        ];
+        const maxMessageSize = MAX_TOKENS / 16;
+        const text = createChatCompletion(openaiClient, model, message, maxMessageSize);
         intermediateSummary += text;
       }
     } else {
       intermediateSummary = tokenizedTranscript.join(" ");
     }
 
-    const prompt = generateSummarizationPrompt(
-      model,
-      intermediateSummary,
-      true // finalSummary
-    );
+    const message: Message[] = [
+      { role: "system", content: env.FINAL_SUMMARIZATION_PROMPT },
+      { role: "user", content: intermediateSummary },
+    ];
 
-    const summary = await createCompletion(openaiClient, model, prompt, 8192);;
+    const summary = await createChatCompletion(openaiClient, model, message, MAX_TOKENS);
 
     await unlink(transcriptionFile);
     console.log(`\tSuccessfully summarized ${filename}`);
