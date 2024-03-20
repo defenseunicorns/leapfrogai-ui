@@ -119,7 +119,8 @@ export const actions = {
     let intermediateSummary = "";
     if (tokenizedTranscript.length > MAX_TOKENS) {
       console.log(`\tUsing batching method for ${filename}`);
-      const transcriptBatches = batchTranscript(tokenizedTranscript, MAX_TOKENS/8);
+      const maxBatchSize = MAX_TOKENS / 8;
+      const transcriptBatches = batchTranscript(tokenizedTranscript, maxBatchSize);
 
       for (let i = 0; i < transcriptBatches.length; i++) {
         const chunk = transcriptBatches[i];
@@ -127,7 +128,8 @@ export const actions = {
           { role: "system", content: env.INTERMEDIATE_SUMMARIZATION_PROMPT },
           { role: "user", content: chunk },
         ];
-        const text = createChatCompletion(openaiClient, model, message, MAX_TOKENS/16);
+        const maxMessageSize = MAX_TOKENS / 16;
+        const text = createChatCompletion(openaiClient, model, message, maxMessageSize);
         intermediateSummary += text;
       }
     } else {
