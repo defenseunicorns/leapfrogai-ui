@@ -30,7 +30,6 @@
                     <p>Welcome to LeapfrogAI</p>
                 </div>
                 <div class="justify-center items-center py-4">
-                    F
                     <img src="big-leapfrog.svg" alt="" />
                 </div>
             {/if}
