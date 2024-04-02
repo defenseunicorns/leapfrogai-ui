@@ -39,7 +39,7 @@ spec:
               value: "###ZARF_VAR_SYSTEM_PROMPT###"
             - name: FINAL_SUMMARIZATION_PROMPT
               value: "###ZARF_VAR_FINAL_SUMMARIZATION_PROMPT###"
-            - name: INTERMEDIATE_SUMMARY_PROMPT
+            - name: INTERMEDIATE_SUMMARIZATION_PROMPT
               value: "###ZARF_VAR_INTERMEDIATE_SUMMARIZATION_PROMPT###"
             - name: PUBLIC_DEFAULT_TEMPERATURE
               value: "###ZARF_VAR_TEMPERATURE###"
