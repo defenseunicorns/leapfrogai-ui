@@ -10,7 +10,6 @@ import OpenAI from "openai";
 import { env } from "$env/dynamic/private";
 import { PUBLIC_TRANSCRIPTION_MODEL } from "$env/static/public";
 import { batchTranscript, tokenize } from "$lib/tokenizer";
-import { generateSummarizationPrompt } from "$lib/prompt";
 import { clearTmp } from "$lib/cleanup";
 
 const TEMPORARY_DIRECTORY = tmpdir();
