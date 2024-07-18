@@ -1,3 +1,7 @@
+# LeapfrogAI UI
+
+***⚠️This repo is archived in favor of the LeapfrogAI monorepo: https://github.com/defenseunicorns/leapfrogai⚠️***
+
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/defenseunicorns/leapfrogai-ui/badge)](https://securityscorecards.dev/viewer/?uri=github.com/defenseunicorns/leapfrogai-ui)
 
 UI Built with SvelteKit, Tailwind CSS with Daisy UI and [Flowbite Svelte](https://flowbite-svelte.com/docs/) for icons.
